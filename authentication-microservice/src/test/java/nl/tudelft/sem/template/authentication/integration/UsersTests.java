@@ -14,6 +14,7 @@ import nl.tudelft.sem.template.authentication.domain.user.AppUser;
 import nl.tudelft.sem.template.authentication.domain.user.HashedPassword;
 import nl.tudelft.sem.template.authentication.domain.user.NetId;
 import nl.tudelft.sem.template.authentication.domain.user.Password;
+import nl.tudelft.sem.template.authentication.domain.user.Role;
 import nl.tudelft.sem.template.authentication.domain.user.PasswordHashingService;
 import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import nl.tudelft.sem.template.authentication.framework.integration.utils.JsonUtil;
@@ -64,11 +65,13 @@ public class UsersTests {
         final NetId testUser = new NetId("SomeUser");
         final Password testPassword = new Password("password123");
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
+        final Role role = new Role("employee");
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
 
         RegistrationRequestModel model = new RegistrationRequestModel();
         model.setNetId(testUser.toString());
         model.setPassword(testPassword.toString());
+        model.setRole(role.toString());
 
         // Act
         ResultActions resultActions = mockMvc.perform(post("/register")
@@ -90,8 +93,9 @@ public class UsersTests {
         final NetId testUser = new NetId("SomeUser");
         final Password newTestPassword = new Password("password456");
         final HashedPassword existingTestPassword = new HashedPassword("password123");
+        final Role role = new Role("employee");
 
-        AppUser existingAppUser = new AppUser(testUser, existingTestPassword);
+        AppUser existingAppUser = new AppUser(testUser, existingTestPassword, role);
         userRepository.save(existingAppUser);
 
         RegistrationRequestModel model = new RegistrationRequestModel();
@@ -118,6 +122,7 @@ public class UsersTests {
         final NetId testUser = new NetId("SomeUser");
         final Password testPassword = new Password("password123");
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
+        final Role role = new Role("employee");
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
 
         when(mockAuthenticationManager.authenticate(argThat(authentication ->
@@ -130,7 +135,7 @@ public class UsersTests {
             argThat(userDetails -> userDetails.getUsername().equals(testUser.toString())))
         ).thenReturn(testToken);
 
-        AppUser appUser = new AppUser(testUser, testHashedPassword);
+        AppUser appUser = new AppUser(testUser, testHashedPassword, role);
         userRepository.save(appUser);
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();

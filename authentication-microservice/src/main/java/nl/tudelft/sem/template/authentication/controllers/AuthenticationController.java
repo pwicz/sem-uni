@@ -4,6 +4,7 @@ import nl.tudelft.sem.template.authentication.authentication.JwtTokenGenerator;
 import nl.tudelft.sem.template.authentication.authentication.JwtUserDetailsService;
 import nl.tudelft.sem.template.authentication.domain.user.NetId;
 import nl.tudelft.sem.template.authentication.domain.user.Password;
+import nl.tudelft.sem.template.authentication.domain.user.Role;
 import nl.tudelft.sem.template.authentication.domain.user.RegistrationService;
 import nl.tudelft.sem.template.authentication.models.AuthenticationRequestModel;
 import nl.tudelft.sem.template.authentication.models.AuthenticationResponseModel;
@@ -91,7 +92,8 @@ public class AuthenticationController {
         try {
             NetId netId = new NetId(request.getNetId());
             Password password = new Password(request.getPassword());
-            registrationService.registerUser(netId, password);
+            Role role = new Role(request.getRole());
+            registrationService.registerUser(netId, password, role);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

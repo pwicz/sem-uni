@@ -34,11 +34,12 @@ public class RegistrationServiceTests {
         // Arrange
         final NetId testUser = new NetId("SomeUser");
         final Password testPassword = new Password("password123");
+        final Role role = new Role("employee");
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
 
         // Act
-        registrationService.registerUser(testUser, testPassword);
+        registrationService.registerUser(testUser, testPassword, role);
 
         // Assert
         AppUser savedUser = userRepository.findByNetId(testUser).orElseThrow();
@@ -53,12 +54,13 @@ public class RegistrationServiceTests {
         final NetId testUser = new NetId("SomeUser");
         final HashedPassword existingTestPassword = new HashedPassword("password123");
         final Password newTestPassword = new Password("password456");
+        final Role role = new Role("employee");
 
-        AppUser existingAppUser = new AppUser(testUser, existingTestPassword);
+        AppUser existingAppUser = new AppUser(testUser, existingTestPassword, role);
         userRepository.save(existingAppUser);
 
         // Act
-        ThrowingCallable action = () -> registrationService.registerUser(testUser, newTestPassword);
+        ThrowingCallable action = () -> registrationService.registerUser(testUser, newTestPassword, role);
 
         // Assert
         assertThatExceptionOfType(Exception.class)
