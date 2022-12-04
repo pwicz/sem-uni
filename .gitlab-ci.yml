@@ -2,3 +2,5 @@ include:
   - authentication-microservice/.gitlab-ci.yml
   - example-microservice/.gitlab-ci.yml
   - jobs-microservice/.gitlab-ci.yml
+  - scheduler-microservice/.gitlab-ci.yml
+
