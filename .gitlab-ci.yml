@@ -3,4 +3,5 @@ include:
   - example-microservice/.gitlab-ci.yml
   - jobs-microservice/.gitlab-ci.yml
   - scheduler-microservice/.gitlab-ci.yml
+  - clusters-microservice/.gitlab-ci.yml
 
