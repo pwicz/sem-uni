@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="nl.tudelft.sem.template.example.authentication.JwtTokenVerifierTests" tests="5" skipped="0" failures="0" errors="0" timestamp="2022-11-27T13:08:15" hostname="MSI-F1L0" time="0.221">
+  <properties/>
+  <testcase name="validateExpiredToken()" classname="nl.tudelft.sem.template.example.authentication.JwtTokenVerifierTests" time="0.185"/>
+  <testcase name="parseNetid()" classname="nl.tudelft.sem.template.example.authentication.JwtTokenVerifierTests" time="0.018"/>
+  <testcase name="validateTokenIncorrectSignature()" classname="nl.tudelft.sem.template.example.authentication.JwtTokenVerifierTests" time="0.003"/>
+  <testcase name="validateNonExpiredToken()" classname="nl.tudelft.sem.template.example.authentication.JwtTokenVerifierTests" time="0.011"/>
+  <testcase name="validateMalformedToken()" classname="nl.tudelft.sem.template.example.authentication.JwtTokenVerifierTests" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
