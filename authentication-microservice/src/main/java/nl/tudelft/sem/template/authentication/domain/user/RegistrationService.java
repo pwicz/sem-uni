@@ -37,6 +37,7 @@ public class RegistrationService {
 
             // Create new account
             AppUser user = new AppUser(netId, hashedPassword, role);
+            System.out.println(netId.toString()+" "+role.toString());
             userRepository.save(user);
 
             return user;

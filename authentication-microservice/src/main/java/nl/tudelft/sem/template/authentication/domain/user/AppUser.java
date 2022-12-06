@@ -2,6 +2,8 @@ package nl.tudelft.sem.template.authentication.domain.user;
 
 import java.util.Objects;
 import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -21,6 +23,7 @@ public class AppUser extends HasEvents {
      */
     @Id
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @Column(name = "net_id", nullable = false, unique = true)
@@ -46,7 +49,7 @@ public class AppUser extends HasEvents {
         this.netId = netId;
         this.password = password;
         this.role = role;
-        this.recordThat(new UserWasCreatedEvent(netId));
+        this.recordThat(new UserWasCreatedEvent(this.netId));
     }
 
     public void changePassword(HashedPassword password) {

@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import nl.tudelft.sem.template.authentication.domain.providers.TimeProvider;
+import nl.tudelft.sem.template.authentication.domain.user.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,8 +41,9 @@ public class JwtTokenGenerator {
      * @param userDetails The user details
      * @return the JWT token
      */
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails, Role role) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role.toString());
         return Jwts.builder().setClaims(claims).setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(timeProvider.getCurrentTime().toEpochMilli()))
                 .setExpiration(new Date(timeProvider.getCurrentTime().toEpochMilli() + JWT_TOKEN_VALIDITY))
