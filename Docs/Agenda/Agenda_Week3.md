@@ -2,7 +2,7 @@
 
 ---
 
-Date:           22-2-2022\
+Date:           08-12-2022\
 Main focus:     \
 Chair:          Axel\
 Note taker:     Piotr
