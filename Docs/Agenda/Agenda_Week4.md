@@ -23,7 +23,8 @@
 - create controllers in every microservice
 - create unit tests for every class
 - user should be able to create a job
-- facultyAccount should be able to approve job
+- update UML according to TA feedback
+- finalize Assignment 1 based on TA feedback
 
 # Questions for the TA
 *List of questions for the TA:*
