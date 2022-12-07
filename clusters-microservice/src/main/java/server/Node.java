@@ -73,7 +73,7 @@ public class Node implements Comparable{
     public int compareTo(Object otherNode) {
         if (otherNode instanceof Node){
             Node o = (Node) otherNode;
-            return this.id.compareTo (o.id);
+            return ((int) this.id-o.id;
         } else {
             return -1;
         }

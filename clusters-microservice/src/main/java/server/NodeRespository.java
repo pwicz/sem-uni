@@ -1,6 +1,6 @@
 package server;
 
-import java.server.Node;
+import Node;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface NodeRepository extends JpaRepository<Node, Long> {
