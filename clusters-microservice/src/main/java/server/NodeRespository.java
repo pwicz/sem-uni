@@ -1,6 +1,6 @@
 package server;
 
-import clusters-microservice.src.main.java.server.Node;
+import java.server.Node;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface NodeRepository extends JpaRepository<Node, Long> {
@@ -13,7 +13,7 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
     @Query(
             nativeQuery=true,
             value="DELETE FROM Node WHERE id = ?1")
-    void deletedNode(long id);
+    void deleteNode(long id);
 
     /**
      * Gets all Nodes currently available
