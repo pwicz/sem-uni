@@ -15,16 +15,26 @@ public class Job {
     private long jobId;
     private String netId;
     private String resourceType;
-    private int CPUusage;
-    private int GPUusage;
+    private int cpuUsage;
+    private int gpuUsage;
     private int memoryUsage;
 
-    public Job(String netId, String resourceType, int CPUusage, int GPUusage, int memoryUsage) {
+
+    /**
+     * Constructor for the Job class, which represents jobs that need to be done.
+     *
+     * @param netId the netId of the user creating the job
+     * @param resourceType the type of resource needed to execute the job
+     * @param cpuUsage the amount of cpu units needed
+     * @param gpuUsage the amount of gpu units needed
+     * @param memoryUsage the amount of memory units needed
+     */
+    public Job(String netId, String resourceType, int cpuUsage, int gpuUsage, int memoryUsage) {
         this.jobId = id++;
         this.netId = netId;
         this.resourceType = resourceType;
-        this.CPUusage = CPUusage;
-        this.GPUusage = GPUusage;
+        this.cpuUsage = cpuUsage;
+        this.gpuUsage = gpuUsage;
         this.memoryUsage = memoryUsage;
     }
 
@@ -52,20 +62,20 @@ public class Job {
         this.resourceType = resourceType;
     }
 
-    public int getCPUusage() {
-        return CPUusage;
+    public int getCpuUsage() {
+        return cpuUsage;
     }
 
-    public void setCPUusage(int CPUusage) {
-        this.CPUusage = CPUusage;
+    public void setCpuUsage(int cpuUsage) {
+        this.cpuUsage = cpuUsage;
     }
 
-    public int getGPUusage() {
-        return GPUusage;
+    public int getGpuUsage() {
+        return gpuUsage;
     }
 
-    public void setGPUusage(int GPUusage) {
-        this.GPUusage = GPUusage;
+    public void setGpuUsage(int gpuUsage) {
+        this.gpuUsage = gpuUsage;
     }
 
     public int getMemoryUsage() {
