@@ -9,6 +9,7 @@
         </processorPath>
         <module name="template.authentication-microservice.main" />
         <module name="template.example-microservice.main" />
+        <module name="template.users-microservice.main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="11" />

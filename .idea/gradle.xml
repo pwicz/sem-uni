@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/authentication-microservice" />
             <option value="$PROJECT_DIR$/example-microservice" />
+              <option value="$PROJECT_DIR$/users-microservice" />
           </set>
         </option>
       </GradleProjectSettings>
