@@ -69,10 +69,14 @@ public class Node implements Comparable{
      * Comparator for Node
      * @param otherNode
      */
-//    @Override
-//    public int compareTo(Object otherNode) {
-//        int compareId = (int) ((Node) otherNode).getId();
-//        return compareId - this.id;
-//    }
+    @Override
+    public int compareTo(Object otherNode) {
+        if (otherNode instanceof Node){
+            Node o = (Node) otherNode;
+            return this.id.compareTo (o.id);
+        } else {
+            return -1;
+        }
+    }
 
 }
