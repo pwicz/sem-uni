@@ -66,13 +66,13 @@ public class Node implements Comparable{
     }
 
     /**
-     * Comparator for Node in descending order
-     * @param otherPlayer
+     * Comparator for Node
+     * @param otherNode
      */
-    @Override
-    public int compareTo(Object otherNode) {
-        int compareId = ((Node) otherNode).getId();
-        return compareId - this.id;
-    }
+//    @Override
+//    public int compareTo(Object otherNode) {
+//        int compareId = (int) ((Node) otherNode).getId();
+//        return compareId - this.id;
+//    }
 
 }
