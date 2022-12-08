@@ -1,8 +1,13 @@
 package server;
 
-import Node;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+
+@Repository
 public interface NodeRepository extends JpaRepository<Node, Long> {
 
     /**
@@ -28,7 +33,7 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
 
     /**
      * Gets all nodes belonging to the specific family
-     * @param the faculty you want to get the nodes of
+     * @param  faculty you want to get the nodes of
      * @return Optional of an Node list from the specific faculty
      */
     @Query(
