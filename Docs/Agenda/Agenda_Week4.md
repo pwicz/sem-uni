@@ -4,7 +4,7 @@
 
 **Date:**           08-12-2022\
 **Chair:**          Axel\
-**Note taker:**     Piotr
+**Note taker:**     Mircea
 
 
 # Points of action
@@ -28,9 +28,9 @@
 
 # Questions for the TA
 *List of questions for the TA:*
-- Can we use the Chain of Responsibility Design Pattern for the Scheduler Microservice?
+- Can we use the Chain of Responsibility Design Pattern for the Jobs Microservice?
 - Should we add a milestone on gitlab?
 - Should we add deadlines for the issues on gitlab?
 - Where does the example-microservice send requests to the authentication-microservice?
 - Can we use a seperate docs branch?
-- Should we fill in the Spring retrospective during TA meeting or before/after?
+- Should we fill in the Sprint retrospective during TA meeting or before/after?
