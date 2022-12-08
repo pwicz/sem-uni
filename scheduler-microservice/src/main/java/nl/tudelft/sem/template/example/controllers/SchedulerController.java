@@ -14,12 +14,18 @@ public class SchedulerController {
     private final transient ProcessingJobsService processingJobsService;
 
     @Autowired
-    public SchedulerController(ProcessingJobsService processingJobsService){
+    public SchedulerController(ProcessingJobsService processingJobsService) {
         this.processingJobsService = processingJobsService;
     }
 
+    /**
+     * Allows to request a job to be scheduled.
+     *
+     * @param job job to be scheduled
+     * @return confirmation that a job is now being processed
+     */
     @PostMapping("/schedule")
-    public ResponseEntity<String> scheduleJob(@RequestBody Job job){
+    public ResponseEntity<String> scheduleJob(@RequestBody Job job) {
         // 1. Send the job to the processing queue
         processingJobsService.addToQueue(job);
 
