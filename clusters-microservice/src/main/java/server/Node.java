@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.LocalDate;
 
 @Entity
 public class Node implements Comparable{
@@ -15,18 +16,16 @@ public class Node implements Comparable{
     private String url;
     private String faculty;
     private String token; //user auth token?
-    private int CPUaddtion;
-    private int GPUaddition;
-    private int memoryAddition;
+    private Resource resource;
+    private LocalDate released = null;
+    private int releaseTime = 0;
 
-    public Node(String name, String url, String faculty, String token, int CPUaddtion, int GPUaddition, int memoryAddition) {
+    public Node(String name, String url, String faculty, String token, Resource resource) {
         this.name = name;
         this.url = url;
         this.faculty = faculty;
         this.token = token;
-        this.CPUaddtion = CPUaddtion;
-        this.GPUaddition = GPUaddition;
-        this.memoryAddition = memoryAddition;
+        this.resource = resource;
     }
 
     public long getId() {
@@ -53,16 +52,24 @@ public class Node implements Comparable{
         return token;
     }
 
-    public int getCPUaddtion() {
-        return CPUaddtion;
+    public Resource getResource() {
+        return resource;
     }
 
-    public int getGPUaddition() {
-        return GPUaddition;
+    public LocalDate getReleased() {
+        return released;
     }
 
-    public int getMemoryAddition() {
-        return memoryAddition;
+    public void setReleased(LocalDate released) {
+        this.released = released;
+    }
+
+    public int getReleaseTime() {
+        return releaseTime;
+    }
+
+    public void setReleaseTime(int releaseTime) {
+        this.releaseTime = releaseTime;
     }
 
     /**

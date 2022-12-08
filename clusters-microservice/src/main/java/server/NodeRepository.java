@@ -13,7 +13,7 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
     /**
      * Deletes the Node from the database
      * @param id of the node you want to delete
-     * @return Optional of an Activity list
+     * @return
      */
     @Query(
             nativeQuery=true,
@@ -34,12 +34,32 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
     /**
      * Gets all nodes belonging to the specific family
      * @param  faculty you want to get the nodes of
-     * @return Optional of an Node list from the specific faculty
+     * @return Optional of a Node list from the specific faculty
      */
     @Query(
             nativeQuery=true,
             value="SELECT * FROM Node WHERE faculty = ?1")
     Optional<List<Node>> getNodesByFaculty(String faculty);
 
+    /**
+     * Gets all nodes that belong to faculty
+     * the nodes are not released
+     * @param  faculty you want to get the nodes of
+     * @return Optional of a Node list from the specific faculty
+     */
+    @Query(
+            nativeQuery=true,
+            value="SELECT * FROM Node WHERE faculty = ?1")
+    Optional<List<Node>> getFreeResources(String faculty, String date);
+
+    /**
+     * Gets all nodes that belong to the free pool
+     * @param
+     * @return Optional of a Node list that belong to the free Pool
+     */
+    @Query(
+            nativeQuery=true,
+            value="SELECT * FROM Node WHERE faculty = ?1")
+    Optional<List<Node>> getFreeResources();
 
 }
