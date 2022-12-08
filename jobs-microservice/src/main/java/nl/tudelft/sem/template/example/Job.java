@@ -1,4 +1,4 @@
-package server;
+package nl.tudelft.sem.template.example;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

@@ -1,6 +1,9 @@
 package server;
 
 import java.util.Optional;
+
+import nl.tudelft.sem.template.example.Job;
+import nl.tudelft.sem.template.example.database.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
