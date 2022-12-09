@@ -1,9 +1,9 @@
-package server;
+package nl.tudelft.sem.template.example.controllers;
 
 import java.util.Optional;
 
 import nl.tudelft.sem.template.example.Job;
-import nl.tudelft.sem.template.example.database.JobRepository;
+import nl.tudelft.sem.template.example.domain.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +25,23 @@ public class JobController {
     @Autowired
     public JobController(JobRepository repository) {
         this.repository = repository;
+    }
+
+    @PostMapping("/testAdd")
+    public ResponseEntity<Job> addJob() {
+        Job newJob = new Job();
+        Job savedJob = repository.save(newJob);
+        return ResponseEntity.ok(savedJob);
+    }
+
+    @PostMapping("/testDelete")
+    public void deleteJob() {
+        Optional<Job> optionalJob = repository.findById(-1L);
+        if (optionalJob.isEmpty()) {
+            return;
+        }
+        Optional<Job> p = repository.findById(-1L);
+        repository.deleteById(-1L);
     }
 
     /**

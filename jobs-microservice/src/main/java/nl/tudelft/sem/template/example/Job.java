@@ -8,8 +8,6 @@ import javax.persistence.Id;
 @Entity
 public class Job {
 
-    private static long id;
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long jobId;
@@ -30,7 +28,6 @@ public class Job {
      * @param memoryUsage the amount of memory units needed
      */
     public Job(String netId, String resourceType, int cpuUsage, int gpuUsage, int memoryUsage) {
-        this.jobId = id++;
         this.netId = netId;
         this.resourceType = resourceType;
         this.cpuUsage = cpuUsage;
@@ -38,9 +35,14 @@ public class Job {
         this.memoryUsage = memoryUsage;
     }
 
-    public static long getId() {
-        return id;
+    /**
+     * TEST CONSTRUCTOR
+     */
+    public Job() {
+        this.jobId = -1L;
+        this.netId = "TEST";
     }
+
 
     public long getJobId() {
         return jobId;

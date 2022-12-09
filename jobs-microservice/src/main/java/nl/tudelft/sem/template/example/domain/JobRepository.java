@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.database;
+package nl.tudelft.sem.template.example.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import nl.tudelft.sem.template.example.Job;
