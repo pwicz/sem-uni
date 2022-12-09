@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import java.util.List;
 import java.util.Optional;
 
 import nl.tudelft.sem.template.example.Job;
@@ -10,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import static org.h2.util.StringUtils.isNullOrEmpty;
 
 @RestController
 public class JobController {
@@ -32,58 +31,28 @@ public class JobController {
         this.authManager = authManager;
     }
 
-    @GetMapping("/get")
-    public ResponseEntity<String> helloWorld() {
-        return ResponseEntity.ok("Hello " + authManager.getNetId());
-
-    }
-
-    @PostMapping(path = "add")
-    public ResponseEntity<Object> add() {
-
+    @PostMapping(path = "testAdd")
+    public ResponseEntity<Job> testAdd() {
         Job job = new Job();
         Job saved = repository.save(job);
         return ResponseEntity.ok(saved);
     }
 
-    @PostMapping("/testAdd")
-    public ResponseEntity<Job> testAdd() {
-        Job newJob = new Job();
-        Job savedJob = repository.save(newJob);
-        return ResponseEntity.ok(savedJob);
-    }
-
-    @PostMapping("/testDelete")
-    public void testDelete() {
-        Optional<Job> optionalJob = repository.findById(-1L);
-        if (optionalJob.isEmpty()) {
-            return;
-        }
-        Optional<Job> p = repository.findById(-1L);
-        repository.deleteById(-1L);
+    @GetMapping(path = "getAllJobs")
+    public ResponseEntity<List<Job>> getAllJobs() {
+        List<Job> list = repository.findAll();
+        return ResponseEntity.ok(list);
     }
 
     /**
      * The api POST endpoint to add a Job.
      *
-     * @param netId the netId of the user creating the job
-     * @param resourceType the type of resource needed to execute the job
-     * @param cpuUsage the amount of cpu units needed
-     * @param gpuUsage the amount of gpu units needed
-     * @param memoryUsage the amount of memory units needed
+     * @param job the Job that is added to the database
      * @return 200 ok
      */
     @PostMapping("/addJob")
-    public ResponseEntity<Job> addJob(@RequestBody String netId, @RequestBody String resourceType,
-                                      @RequestBody int cpuUsage, @RequestBody int gpuUsage,
-                                      @RequestBody int memoryUsage) {
-
-        // TODO: check for authentication
-        //return ResponseEntity.badRequest().build();
-
-        Job newJob = new Job(netId, resourceType, cpuUsage, gpuUsage, memoryUsage);
-        Job savedJob = repository.save(newJob);
-
+    public ResponseEntity<Job> addJob(@RequestBody Job job) {
+        Job savedJob = repository.save(job);
         return ResponseEntity.ok(savedJob);
     }
 
