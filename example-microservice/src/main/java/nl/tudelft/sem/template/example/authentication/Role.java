@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.authentication.domain.user;
+package nl.tudelft.sem.template.example.authentication;
 
 import lombok.EqualsAndHashCode;
 import org.springframework.security.core.GrantedAuthority;

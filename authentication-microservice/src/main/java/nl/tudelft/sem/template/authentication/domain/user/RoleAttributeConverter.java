@@ -11,7 +11,7 @@ public class RoleAttributeConverter implements AttributeConverter<Role, String> 
 
     @Override
     public String convertToDatabaseColumn(Role role) {
-        return role.toString();
+        return role.getAuthority();
     }
 
     @Override

@@ -1,11 +1,13 @@
 package nl.tudelft.sem.template.authentication.authentication;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import nl.tudelft.sem.template.authentication.domain.user.AppUser;
 import nl.tudelft.sem.template.authentication.domain.user.NetId;
 import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -41,16 +43,17 @@ public class JwtUserDetailsService implements UserDetailsService {
         }
 
         var user = optionalUser.get();
-
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(user.getRole());
         return new User(user.getNetId().toString(), user.getPassword().toString(),
-                new ArrayList<>()); // no authorities/roles
+                authorities);
     }
-    public AppUser loadUserByUsernameFullUser(String username) throws UsernameNotFoundException {
-        var optionalUser = userRepository.findByNetId(new NetId(username));
-
-        if (optionalUser.isEmpty()) {
-            throw new UsernameNotFoundException("User does not exist");
-        }
-        return optionalUser.get();
-    }
+//    public AppUser loadUserByUsernameFullUser(String username) throws UsernameNotFoundException {
+//        var optionalUser = userRepository.findByNetId(new NetId(username));
+//
+//        if (optionalUser.isEmpty()) {
+//            throw new UsernameNotFoundException("User does not exist");
+//        }
+//        return optionalUser.get();
+//    }
 }

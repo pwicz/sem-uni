@@ -207,7 +207,7 @@ public class UsersTests {
                     && wrongPassword.equals(authentication.getCredentials())
         ))).thenThrow(new BadCredentialsException("Invalid password"));
 
-        AppUser appUser = new AppUser(new NetId(testUser), testHashedPassword);
+        AppUser appUser = new AppUser(new NetId(testUser), testHashedPassword, new Role("employee"));
         userRepository.save(appUser);
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();

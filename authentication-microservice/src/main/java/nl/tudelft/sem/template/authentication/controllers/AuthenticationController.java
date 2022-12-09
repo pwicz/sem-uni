@@ -72,8 +72,8 @@ public class AuthenticationController {
         }
 
         final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(request.getNetId());
-        final AppUser appUser = jwtUserDetailsService.loadUserByUsernameFullUser(request.getNetId());
-        final String jwtToken = jwtTokenGenerator.generateToken(userDetails, appUser.getRole());
+//        final AppUser appUser = jwtUserDetailsService.loadUserByUsernameFullUser(request.getNetId());
+        final String jwtToken = jwtTokenGenerator.generateToken(userDetails);
         return ResponseEntity.ok(new AuthenticationResponseModel(jwtToken));
     }
 

@@ -57,6 +57,7 @@ public class JwtRequestFilterTests {
         // Arrange
         String token = "randomtoken123";
         String user = "user123";
+        String role = "employee";
         when(mockRequest.getHeader("Authorization")).thenReturn("Bearer " + token);
         when(mockJwtTokenVerifier.validateToken(token)).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(token)).thenReturn(user);
