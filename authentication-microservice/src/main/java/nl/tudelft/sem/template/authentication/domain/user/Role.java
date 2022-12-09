@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 @EqualsAndHashCode
 public class Role implements GrantedAuthority {
     private final transient String roleValue;
+    private static final long serialVersionUID = 4L;
 
     public Role(String role) {
         // validate NetID
