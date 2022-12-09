@@ -19,10 +19,4 @@ public interface JobRepository extends JpaRepository<Job, Long> {
      */
     Optional<List<Job>> findAllByNetID(NetID netID);
 
-    /**
-     * Find job by id.
-     * @param uuid id of the job
-     * @return Optional<Job>
-     */
-    Optional<Job> findByID(UUID uuid);
 }

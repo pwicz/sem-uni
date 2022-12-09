@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.example;
 
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "jobs")
@@ -9,10 +10,11 @@ public class Job {
 
     @Id
     @Column(name = "job_id", nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long jobId;
     @Column(name = "net_id", nullable = false)
     @Convert(converter = NetIdAttributeConverter.class)
-    private String netId;
+    private NetID netId;
 
     @Column(name = "resourceType", nullable = false)
     private String resourceType;

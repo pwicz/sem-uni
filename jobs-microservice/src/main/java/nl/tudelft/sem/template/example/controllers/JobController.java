@@ -51,15 +51,15 @@ public class JobController {
      *
      * @return list of Jobs to be scheduled
      */
-    @GetMapping(path = "getAllJobs")
+    @GetMapping(path = "/getAllJobs")
     public ResponseEntity<List<Job>> getAllJobs() {
         List<Job> list = repository.findAll();
         return ResponseEntity.ok(list);
     }
 
     @GetMapping(path = "/jobStatus")
-    public ResponseEntity<Job> getJobStatusById(@RequestBody UUID uuid) {
-        Optional<Job> job = repository.findById(uuid);
+    public ResponseEntity<Job> getJobStatusById(@RequestBody long id) {
+        Optional<Job> job = repository.findById(id);
         return job.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(job.get());
     }
 
@@ -77,6 +77,7 @@ public class JobController {
      */
     @PostMapping("/addJob")
     public ResponseEntity<Job> addJob(@RequestBody Job job) {
+        if (!job.getNetId().equals(authManager.getNetId())) return ResponseEntity.badRequest().build();
         Job savedJob = repository.save(job);
         return ResponseEntity.ok(savedJob);
     }
