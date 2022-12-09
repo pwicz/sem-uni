@@ -1,6 +1,6 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import nl.tudelft.sem.template.example.domain.Job;
+import commons.Job;
 import nl.tudelft.sem.template.example.domain.processing.ProcessingJobsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
