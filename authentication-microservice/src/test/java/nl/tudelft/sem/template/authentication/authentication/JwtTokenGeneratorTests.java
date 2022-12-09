@@ -10,9 +10,13 @@ import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.List;
+
 import nl.tudelft.sem.template.authentication.domain.providers.TimeProvider;
+import nl.tudelft.sem.template.authentication.domain.user.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -37,8 +41,9 @@ public class JwtTokenGeneratorTests {
 
         jwtTokenGenerator = new JwtTokenGenerator(timeProvider);
         this.injectSecret(secret);
-
-        user = new User(netId, "someHash", new ArrayList<>());
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new Role("employee"));
+        user = new User(netId, "someHash", authorities);
     }
 
     @Test

@@ -45,6 +45,7 @@ public class JwtTokenGenerator {
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         ArrayList<GrantedAuthority> authorities = new ArrayList<>(userDetails.getAuthorities());
+
         claims.put("role", authorities.get(0).getAuthority());
         return Jwts.builder().setClaims(claims).setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(timeProvider.getCurrentTime().toEpochMilli()))
