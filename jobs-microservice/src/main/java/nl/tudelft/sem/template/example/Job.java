@@ -41,6 +41,10 @@ public class Job {
     public Job() {
         this.jobId = -1L;
         this.netId = "TEST";
+        this.resourceType = "TYPE";
+        cpuUsage = 0;
+        gpuUsage = 0;
+        memoryUsage = 0;
     }
 
 

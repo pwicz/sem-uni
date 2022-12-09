@@ -3,39 +3,58 @@ package nl.tudelft.sem.template.example.controllers;
 import java.util.Optional;
 
 import nl.tudelft.sem.template.example.Job;
+import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.h2.util.StringUtils.isNullOrEmpty;
+
 @RestController
-@RequestMapping("/api")
 public class JobController {
 
     private final JobRepository repository;
+    private final transient AuthManager authManager;
+
 
     /**
      * Constructor of the Job controller.
      *
      * @param repository the job database
+     * @param authManager
      */
     @Autowired
-    public JobController(JobRepository repository) {
+    public JobController(JobRepository repository, AuthManager authManager) {
         this.repository = repository;
+        this.authManager = authManager;
+    }
+
+    @GetMapping("/get")
+    public ResponseEntity<String> helloWorld() {
+        return ResponseEntity.ok("Hello " + authManager.getNetId());
+
+    }
+
+    @PostMapping(path = "add")
+    public ResponseEntity<Object> add() {
+
+        Job job = new Job();
+        Job saved = repository.save(job);
+        return ResponseEntity.ok(saved);
     }
 
     @PostMapping("/testAdd")
-    public ResponseEntity<Job> addJob() {
+    public ResponseEntity<Job> testAdd() {
         Job newJob = new Job();
         Job savedJob = repository.save(newJob);
         return ResponseEntity.ok(savedJob);
     }
 
     @PostMapping("/testDelete")
-    public void deleteJob() {
+    public void testDelete() {
         Optional<Job> optionalJob = repository.findById(-1L);
         if (optionalJob.isEmpty()) {
             return;
