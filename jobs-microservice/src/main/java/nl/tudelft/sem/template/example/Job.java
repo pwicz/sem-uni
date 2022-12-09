@@ -51,7 +51,9 @@ public class Job {
         return jobId;
     }
 
-    public void setJobId(long jobId) { this.jobId = jobId; }
+    public void setJobId(long jobId) {
+        this.jobId = jobId;
+    }
 
     public String getNetId() {
         return netId;
