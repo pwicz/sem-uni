@@ -1,21 +1,33 @@
 package nl.tudelft.sem.template.example;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+
+import javax.persistence.*;
 
 @Entity
+@Table(name = "jobs")
 public class Job {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "job_id", nullable = false, unique = true)
     private long jobId;
+    @Column(name = "net_id", nullable = false)
+    @Convert(converter = NetIdAttributeConverter.class)
     private String netId;
+
+    @Column(name = "resourceType", nullable = false)
     private String resourceType;
+
+    @Column(name = "cpu_usage", nullable = false)
     private int cpuUsage;
+
+    @Column(name = "gpu_usage", nullable = false)
     private int gpuUsage;
+
+    @Column(name = "memory_usage", nullable = false)
     private int memoryUsage;
+
+    @Column(name = "status", nullable = false)
+    private String status;
 
 
     /**
@@ -93,5 +105,13 @@ public class Job {
 
     public void setMemoryUsage(int memoryUsage) {
         this.memoryUsage = memoryUsage;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
