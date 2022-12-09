@@ -36,7 +36,7 @@ public class Job {
     }
 
     /**
-     * TEST CONSTRUCTOR
+     * TEST CONSTRUCTOR.
      */
     public Job() {
         this.jobId = -1L;

@@ -2,14 +2,14 @@ package nl.tudelft.sem.template.example.controllers;
 
 import java.util.List;
 import java.util.Optional;
-
 import nl.tudelft.sem.template.example.Job;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -23,7 +23,7 @@ public class JobController {
      * Constructor of the Job controller.
      *
      * @param repository the job database
-     * @param authManager
+     * @param authManager Spring Security component used to authenticate and authorize the user
      */
     @Autowired
     public JobController(JobRepository repository, AuthManager authManager) {
@@ -31,6 +31,11 @@ public class JobController {
         this.authManager = authManager;
     }
 
+    /**
+     * The api POST endpoint to test adding a Job.
+     *
+     * @return 200 ok
+     */
     @PostMapping(path = "testAdd")
     public ResponseEntity<Job> testAdd() {
         Job job = new Job();
@@ -38,6 +43,11 @@ public class JobController {
         return ResponseEntity.ok(saved);
     }
 
+    /**
+     * The api GET endpoint to get all Jobs in the database.
+     *
+     * @return list of Jobs to be scheduled
+     */
     @GetMapping(path = "getAllJobs")
     public ResponseEntity<List<Job>> getAllJobs() {
         List<Job> list = repository.findAll();
