@@ -4,6 +4,7 @@ import nl.tudelft.sem.template.example.Job;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,7 +17,7 @@ public interface JobRepository extends JpaRepository<Job, Long> {
      * @param netID netID of a user
      * @return Optional<Job>
      */
-    Optional<Job> findAllByNetID(NetID netID);
+    Optional<List<Job>> findAllByNetID(NetID netID);
 
     /**
      * Find job by id.

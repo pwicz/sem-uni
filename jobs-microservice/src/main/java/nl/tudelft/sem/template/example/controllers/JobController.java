@@ -2,6 +2,9 @@ package nl.tudelft.sem.template.example.controllers;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
+import java.util.UUID;
+
 import nl.tudelft.sem.template.example.Job;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.JobRepository;
@@ -52,6 +55,18 @@ public class JobController {
     public ResponseEntity<List<Job>> getAllJobs() {
         List<Job> list = repository.findAll();
         return ResponseEntity.ok(list);
+    }
+
+    @GetMapping(path = "/jobStatus")
+    public ResponseEntity<Job> getJobStatusById(@RequestBody UUID uuid) {
+        Optional<Job> job = repository.findById(uuid);
+        return job.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(job.get());
+    }
+
+    @GetMapping(path = "/getJobsNetID")
+    public ResponseEntity<List<Job>> getAllNetIDJobs(@RequestBody NetID netID) {
+        Optional<List<Job>> jobs = repository.findAllByNetID(netID);
+        return jobs.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(jobs.get());
     }
 
     /**
