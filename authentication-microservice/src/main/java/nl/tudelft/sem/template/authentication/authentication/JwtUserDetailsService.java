@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.authentication.authentication;
 
 import java.util.ArrayList;
-import nl.tudelft.sem.template.authentication.domain.user.NetId;
+import commons.NetId;
 import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;

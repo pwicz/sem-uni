@@ -1,19 +1,17 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import commons.NetId;
+import commons.Job;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
-import nl.tudelft.sem.template.example.Job;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.JobRepository;
+import nl.tudelft.sem.template.example.models.JobResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class JobController {
@@ -40,10 +38,10 @@ public class JobController {
      * @return 200 ok
      */
     @PostMapping(path = "testAdd")
-    public ResponseEntity<Job> testAdd() {
-        Job job = new Job();
-        Job saved = repository.save(job);
-        return ResponseEntity.ok(saved);
+    public ResponseEntity<JobResponseModel> testAdd() {
+        Job job = new Job(1);
+        repository.save(job);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -52,21 +50,25 @@ public class JobController {
      * @return list of Jobs to be scheduled
      */
     @GetMapping(path = "/getAllJobs")
-    public ResponseEntity<List<Job>> getAllJobs() {
+    public ResponseEntity<List<JobResponseModel>> getAllJobs() {
         List<Job> list = repository.findAll();
-        return ResponseEntity.ok(list);
+        List<JobResponseModel> rm = list.stream().map(x -> new JobResponseModel(x.getNetId().toString(), x.getStatus())).collect(Collectors.toList());
+        return ResponseEntity.ok(rm);
     }
 
     @GetMapping(path = "/jobStatus")
-    public ResponseEntity<Job> getJobStatusById(@RequestBody long id) {
+    public ResponseEntity<JobResponseModel> getJobStatusById(@RequestBody long id) {
         Optional<Job> job = repository.findById(id);
-        return job.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(job.get());
+        if (job.isEmpty()) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(new JobResponseModel(job.get().getNetId().toString(), job.get().getStatus()));
     }
 
     @GetMapping(path = "/getJobsNetID")
-    public ResponseEntity<List<Job>> getAllNetIDJobs(@RequestBody NetID netID) {
-        Optional<List<Job>> jobs = repository.findAllByNetID(netID);
-        return jobs.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(jobs.get());
+    public ResponseEntity<List<JobResponseModel>> getAllNetIDJobs(@RequestBody NetId netID) {
+        Optional<List<Job>> jobs = repository.findAllByNetId(netID);
+        if (jobs.isEmpty()) return ResponseEntity.notFound().build();
+        List<JobResponseModel> rm = jobs.get().stream().map(x -> new JobResponseModel(x.getNetId().toString(), x.getStatus())).collect(Collectors.toList());
+        return ResponseEntity.ok(rm);
     }
 
     /**
@@ -76,10 +78,11 @@ public class JobController {
      * @return 200 ok
      */
     @PostMapping("/addJob")
-    public ResponseEntity<Job> addJob(@RequestBody Job job) {
-        if (!job.getNetId().equals(authManager.getNetId())) return ResponseEntity.badRequest().build();
-        Job savedJob = repository.save(job);
-        return ResponseEntity.ok(savedJob);
+    public ResponseEntity<JobResponseModel> addJob(@RequestBody Job job) {
+        if (job.getNetId() == null) return ResponseEntity.badRequest().build();
+        if (!job.getNetId().toString().equals(authManager.getNetId())) return ResponseEntity.badRequest().build();
+        repository.save(job);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -88,12 +91,13 @@ public class JobController {
      * @param jobId the jobId which identifies the job that needs to be deleted
      */
     @PostMapping("/deleteJob")
-    public void deleteJob(@RequestBody long jobId) {
+    public ResponseEntity<JobResponseModel> deleteJob(@RequestBody long jobId) {
         Optional<Job> optionalJob = repository.findById(jobId);
         if (optionalJob.isEmpty()) {
-            return;
+            return ResponseEntity.notFound().build();
         }
         repository.deleteById(jobId);
+        return ResponseEntity.ok().build();
     }
 
 

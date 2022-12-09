@@ -1,5 +1,7 @@
 package nl.tudelft.sem.template.authentication.domain.user;
 
+import commons.NetId;
+
 /**
  * Exception to indicate the NetID is already in use.
  */

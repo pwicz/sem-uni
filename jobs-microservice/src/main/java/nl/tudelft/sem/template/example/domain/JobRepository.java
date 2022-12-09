@@ -1,12 +1,12 @@
 package nl.tudelft.sem.template.example.domain;
 
-import nl.tudelft.sem.template.example.Job;
+import commons.NetId;
+import commons.Job;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+
 
 @Repository
 public interface JobRepository extends JpaRepository<Job, Long> {
@@ -17,6 +17,6 @@ public interface JobRepository extends JpaRepository<Job, Long> {
      * @param netID netID of a user
      * @return Optional<Job>
      */
-    Optional<List<Job>> findAllByNetID(NetID netID);
+    Optional<List<Job>> findAllByNetId(NetId netID);
 
 }
