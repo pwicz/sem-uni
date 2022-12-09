@@ -10,7 +10,7 @@ public class Job {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long jobId;
+    private transient long jobId;
     private String netId;
     private String resourceType;
     private int cpuUsage;

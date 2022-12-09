@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class JobController {
 
-    private final JobRepository repository;
+    private final transient JobRepository repository;
     private final transient AuthManager authManager;
 
 
@@ -77,7 +77,6 @@ public class JobController {
         if (optionalJob.isEmpty()) {
             return;
         }
-        Optional<Job> p = repository.findById(jobId);
         repository.deleteById(jobId);
     }
 
