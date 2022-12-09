@@ -1,17 +1,19 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import commons.NetId;
 import commons.Job;
+import commons.NetId;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.JobRepository;
 import nl.tudelft.sem.template.example.models.JobResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class JobController {
@@ -52,22 +54,40 @@ public class JobController {
     @GetMapping(path = "/getAllJobs")
     public ResponseEntity<List<JobResponseModel>> getAllJobs() {
         List<Job> list = repository.findAll();
-        List<JobResponseModel> rm = list.stream().map(x -> new JobResponseModel(x.getNetId().toString(), x.getStatus())).collect(Collectors.toList());
+        List<JobResponseModel> rm = list.stream().map(
+                x -> new JobResponseModel(x.getNetId().toString(), x.getStatus())).collect(Collectors.toList());
         return ResponseEntity.ok(rm);
     }
 
+    /**
+     * The api GET endpoint to get the status of the requested Job.
+     *
+     * @param id the id of the Job
+     * @return status of the job
+     */
     @GetMapping(path = "/jobStatus")
     public ResponseEntity<JobResponseModel> getJobStatusById(@RequestBody long id) {
         Optional<Job> job = repository.findById(id);
-        if (job.isEmpty()) return ResponseEntity.notFound().build();
+        if (job.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(new JobResponseModel(job.get().getNetId().toString(), job.get().getStatus()));
     }
 
-    @GetMapping(path = "/getJobsNetID")
-    public ResponseEntity<List<JobResponseModel>> getAllNetIDJobs(@RequestBody NetId netID) {
-        Optional<List<Job>> jobs = repository.findAllByNetId(netID);
-        if (jobs.isEmpty()) return ResponseEntity.notFound().build();
-        List<JobResponseModel> rm = jobs.get().stream().map(x -> new JobResponseModel(x.getNetId().toString(), x.getStatus())).collect(Collectors.toList());
+    /**
+     * The api GET endpoint to get all Jobs belonging to the given netId (user).
+     *
+     * @param netId the netId of the user
+     * @return list of Jobs belonging to the given netId (user)
+     */
+    @GetMapping(path = "/getJobsNetId")
+    public ResponseEntity<List<JobResponseModel>> getAllNetIdJobs(@RequestBody NetId netId) {
+        Optional<List<Job>> jobs = repository.findAllByNetId(netId);
+        if (jobs.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        List<JobResponseModel> rm = jobs.get().stream().map(
+                x -> new JobResponseModel(x.getNetId().toString(), x.getStatus())).collect(Collectors.toList());
         return ResponseEntity.ok(rm);
     }
 
@@ -79,8 +99,12 @@ public class JobController {
      */
     @PostMapping("/addJob")
     public ResponseEntity<JobResponseModel> addJob(@RequestBody Job job) {
-        if (job.getNetId() == null) return ResponseEntity.badRequest().build();
-        if (!job.getNetId().toString().equals(authManager.getNetId())) return ResponseEntity.badRequest().build();
+        if (job.getNetId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        if (!job.getNetId().toString().equals(authManager.getNetId())) {
+            return ResponseEntity.badRequest().build();
+        }
         repository.save(job);
         return ResponseEntity.ok().build();
     }
