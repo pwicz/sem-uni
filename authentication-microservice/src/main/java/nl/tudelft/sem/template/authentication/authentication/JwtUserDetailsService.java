@@ -2,8 +2,6 @@ package nl.tudelft.sem.template.authentication.authentication;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import nl.tudelft.sem.template.authentication.domain.user.AppUser;
 import nl.tudelft.sem.template.authentication.domain.user.NetId;
 import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,12 +46,4 @@ public class JwtUserDetailsService implements UserDetailsService {
         return new User(user.getNetId().toString(), user.getPassword().toString(),
                 authorities);
     }
-//    public AppUser loadUserByUsernameFullUser(String username) throws UsernameNotFoundException {
-//        var optionalUser = userRepository.findByNetId(new NetId(username));
-//
-//        if (optionalUser.isEmpty()) {
-//            throw new UsernameNotFoundException("User does not exist");
-//        }
-//        return optionalUser.get();
-//    }
 }

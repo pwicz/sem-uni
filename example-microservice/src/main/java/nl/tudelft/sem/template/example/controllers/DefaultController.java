@@ -34,7 +34,7 @@ public class DefaultController {
      */
     @GetMapping("/hello")
     public ResponseEntity<String> helloWorld() {
-        return ResponseEntity.ok("Hello " + authManager.getNetId()+" "+authManager.getRole());
+        return ResponseEntity.ok("Hello " + authManager.getNetId());
 
     }
 
