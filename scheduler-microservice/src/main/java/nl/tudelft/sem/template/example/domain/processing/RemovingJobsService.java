@@ -15,7 +15,7 @@ public class RemovingJobsService {
         // 1. Search for Requests in the database
 
         // 2. Remove them and update the DaySummery objects
-
+        System.out.println("Removing job " + jobId);
         // 3. Return true if everything went well
         return true;
     }
