@@ -10,7 +10,7 @@ public class Job {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private transient long jobId;
+    private long jobId;
     private String netId;
     private String resourceType;
     private int cpuUsage;
@@ -39,7 +39,6 @@ public class Job {
      * TEST CONSTRUCTOR.
      */
     public Job() {
-        this.jobId = -1L;
         this.netId = "TEST";
         this.resourceType = "TYPE";
         cpuUsage = 0;
@@ -51,6 +50,8 @@ public class Job {
     public long getJobId() {
         return jobId;
     }
+
+    public void setJobId(long jobId) { this.jobId = jobId; }
 
     public String getNetId() {
         return netId;
