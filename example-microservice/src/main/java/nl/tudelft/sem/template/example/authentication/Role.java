@@ -8,6 +8,8 @@ import org.springframework.security.core.GrantedAuthority;
  */
 @EqualsAndHashCode
 public class Role implements GrantedAuthority {
+    private static final long serialVersionUID = 4L;      //Default serial version uid
+
     private final transient String roleValue;
 
     public Role(String role) {
