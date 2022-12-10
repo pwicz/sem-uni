@@ -61,12 +61,14 @@ public class UsersTests {
         final Password testPassword = new Password("password123");
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
         final Role role = new Role("employee");
+        final Faculty faculty = new Faculty("EEMCS");
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
 
         RegistrationRequestModel model = new RegistrationRequestModel();
         model.setNetId(testUser.toString());
         model.setPassword(testPassword.toString());
         model.setRole(role.toString());
+        model.setFaculty(faculty.toString());
 
         // Act
         ResultActions resultActions = mockMvc.perform(post("/register")
