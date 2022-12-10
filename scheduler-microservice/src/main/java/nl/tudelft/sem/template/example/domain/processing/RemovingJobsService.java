@@ -23,7 +23,7 @@ public class RemovingJobsService {
     public boolean removeJob(long jobId) {
         // 1. Search for Requests in the database
         List<ScheduledInstance> instances = scheduledInstanceRepository.findAllByJobId(jobId);
-        if (instances.size() < 1) {
+        if (instances.isEmpty()) {
             return false;
         }
 

@@ -27,7 +27,6 @@ public class ProcessingJobsService {
 
     public int addToQueue(Job job) {
         jobsToProcess.add(job);
-        System.out.println("Job added to queue...");
         return jobsToProcess.size();
     }
 
