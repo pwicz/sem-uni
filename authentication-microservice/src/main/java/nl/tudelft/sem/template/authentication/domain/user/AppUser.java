@@ -2,7 +2,6 @@ package nl.tudelft.sem.template.authentication.domain.user;
 
 import java.util.Objects;
 import javax.persistence.*;
-
 import commons.Faculty;
 import commons.FacultyAttributeConverter;
 import lombok.NoArgsConstructor;
@@ -35,9 +34,9 @@ public class AppUser extends HasEvents {
     @Convert(converter = RoleAttributeConverter.class)
     private Role role;
 
-//    @Column(name = "faculties", nullable = false)
-//    @Convert(converter = FacultyAttributeConverter.class)
-//    private Set<Faculty> faculties;
+    //    @Column(name = "faculties", nullable = false)
+    //    @Convert(converter = FacultyAttributeConverter.class)
+    //    private Set<Faculty> faculties;
 
     @Column(name = "faculty", nullable = false)
     @Convert(converter = FacultyAttributeConverter.class)

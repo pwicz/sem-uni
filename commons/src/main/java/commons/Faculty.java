@@ -3,7 +3,7 @@ package commons;
 import lombok.EqualsAndHashCode;
 
 /**
- * A DDD value object representing a Faculty in our domain
+ * A DDD value object representing a Faculty in our domain.
  */
 @EqualsAndHashCode
 public class Faculty {

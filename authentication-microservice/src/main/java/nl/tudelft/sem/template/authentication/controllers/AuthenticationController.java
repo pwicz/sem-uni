@@ -4,9 +4,7 @@ import commons.Faculty;
 import nl.tudelft.sem.template.authentication.authentication.JwtTokenGenerator;
 import nl.tudelft.sem.template.authentication.authentication.JwtUserDetailsService;
 import nl.tudelft.sem.template.authentication.domain.user.*;
-import nl.tudelft.sem.template.authentication.models.AuthenticationRequestModel;
-import nl.tudelft.sem.template.authentication.models.AuthenticationResponseModel;
-import nl.tudelft.sem.template.authentication.models.RegistrationRequestModel;
+import nl.tudelft.sem.template.authentication.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import java.util.Optional;
 
 @RestController
 public class AuthenticationController {
@@ -31,6 +30,8 @@ public class AuthenticationController {
 
     private final transient RegistrationService registrationService;
 
+    private final transient UserRepository userRepository;
+
     /**
      * Instantiates a new UsersController.
      *
@@ -38,16 +39,18 @@ public class AuthenticationController {
      * @param jwtTokenGenerator     the token generator
      * @param jwtUserDetailsService the user service
      * @param registrationService   the registration service
+     * @param userRepository        the user repository
      */
     @Autowired
     public AuthenticationController(AuthenticationManager authenticationManager,
                                     JwtTokenGenerator jwtTokenGenerator,
                                     JwtUserDetailsService jwtUserDetailsService,
-                                    RegistrationService registrationService) {
+                                    RegistrationService registrationService, UserRepository userRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenGenerator = jwtTokenGenerator;
         this.jwtUserDetailsService = jwtUserDetailsService;
         this.registrationService = registrationService;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -99,5 +102,29 @@ public class AuthenticationController {
         }
 
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Endpoint for retrieving the faculty of a user.
+     *
+     * @param request The registration model
+     * @return 200 OK if the registration is successful
+     * @throws Exception if a user with this netid already exists
+     */
+    @PostMapping("/faculty")
+    public ResponseEntity<FacultyResponseModel> retrieveFaculty(@RequestBody FacultyRequestModel request) throws Exception {
+        if (request.getNetId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Optional<AppUser> user = userRepository.findByNetId(request.getNetId());
+
+        //        if (!user.isPresent()) {
+        //            return ResponseEntity.badRequest().build();
+        //        }
+
+        String faculty = user.get().getFaculty().toString();
+
+        return ResponseEntity.ok(new FacultyResponseModel(faculty));
     }
 }
