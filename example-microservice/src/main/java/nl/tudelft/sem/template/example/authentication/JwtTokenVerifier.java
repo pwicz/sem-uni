@@ -26,6 +26,11 @@ public class JwtTokenVerifier {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
+    public String getRoleFromToken(String token) {
+        Claims claims = getClaims(token);
+        return claims.get("role").toString();
+    }
+
     public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
     }
@@ -43,4 +48,5 @@ public class JwtTokenVerifier {
     private Claims getClaims(String token) {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
     }
+
 }

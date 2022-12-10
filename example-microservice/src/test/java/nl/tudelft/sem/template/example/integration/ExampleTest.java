@@ -45,6 +45,7 @@ public class ExampleTest {
         when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getRoleFromToken(anyString())).thenReturn("employee");
 
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked

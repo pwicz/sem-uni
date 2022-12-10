@@ -6,6 +6,8 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.NoArgsConstructor;
@@ -23,6 +25,7 @@ public class AppUser extends HasEvents {
      */
     @Id
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @Column(name = "net_id", nullable = false, unique = true)
@@ -33,16 +36,22 @@ public class AppUser extends HasEvents {
     @Convert(converter = HashedPasswordAttributeConverter.class)
     private HashedPassword password;
 
+    @Column(name = "role", nullable = false)
+    @Convert(converter = RoleAttributeConverter.class)
+    private Role role;
+
     /**
      * Create new application user.
      *
      * @param netId The NetId for the new user
      * @param password The password for the new user
+     * @param role The role of the new user(employee, admin, faculty account)
      */
-    public AppUser(NetId netId, HashedPassword password) {
+    public AppUser(NetId netId, HashedPassword password, Role role) {
         this.netId = netId;
         this.password = password;
-        this.recordThat(new UserWasCreatedEvent(netId));
+        this.role = role;
+        this.recordThat(new UserWasCreatedEvent(this.netId));
     }
 
     public void changePassword(HashedPassword password) {
@@ -56,6 +65,10 @@ public class AppUser extends HasEvents {
 
     public HashedPassword getPassword() {
         return password;
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     /**
