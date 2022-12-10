@@ -3,7 +3,6 @@ package nl.tudelft.sem.template.authentication.authentication;
 import commons.NetId;
 import java.util.ArrayList;
 import java.util.List;
-import nl.tudelft.sem.template.authentication.domain.user.NetId;
 import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
