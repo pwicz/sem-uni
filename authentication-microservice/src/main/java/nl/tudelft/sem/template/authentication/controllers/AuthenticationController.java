@@ -4,8 +4,6 @@ import commons.Faculty;
 import java.util.Optional;
 import nl.tudelft.sem.template.authentication.authentication.JwtTokenGenerator;
 import nl.tudelft.sem.template.authentication.authentication.JwtUserDetailsService;
-//import nl.tudelft.sem.template.authentication.domain.user.*;
-//import nl.tudelft.sem.template.authentication.models.*;
 import nl.tudelft.sem.template.authentication.domain.user.AppUser;
 import nl.tudelft.sem.template.authentication.domain.user.NetId;
 import nl.tudelft.sem.template.authentication.domain.user.Password;
