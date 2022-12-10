@@ -40,7 +40,6 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok:1.18.24'
 	annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
-	implementation project(":commons")
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
 	implementation 'org.springframework.boot:spring-boot-starter'
@@ -115,4 +114,12 @@ pitest {
 	threads = 4
 	outputFormats = ['XML', 'HTML']
 	timestampedReports = false
+}
+
+bootJar {
+	enabled = false
+}
+
+jar {
+	enabled = true
 }

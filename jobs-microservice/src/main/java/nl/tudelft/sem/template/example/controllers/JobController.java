@@ -1,10 +1,13 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import commons.Job;
+import commons.NetId;
 import java.util.List;
 import java.util.Optional;
-import nl.tudelft.sem.template.example.Job;
+import java.util.stream.Collectors;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.JobRepository;
+import nl.tudelft.sem.template.example.models.JobResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,10 +40,10 @@ public class JobController {
      * @return 200 ok
      */
     @PostMapping(path = "testAdd")
-    public ResponseEntity<Job> testAdd() {
-        Job job = new Job();
-        Job saved = repository.save(job);
-        return ResponseEntity.ok(saved);
+    public ResponseEntity<JobResponseModel> testAdd() {
+        Job job = new Job(1);
+        repository.save(job);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -48,10 +51,44 @@ public class JobController {
      *
      * @return list of Jobs to be scheduled
      */
-    @GetMapping(path = "getAllJobs")
-    public ResponseEntity<List<Job>> getAllJobs() {
+    @GetMapping(path = "/getAllJobs")
+    public ResponseEntity<List<JobResponseModel>> getAllJobs() {
         List<Job> list = repository.findAll();
-        return ResponseEntity.ok(list);
+        List<JobResponseModel> rm = list.stream().map(
+                x -> new JobResponseModel(x.getNetId().toString(), x.getStatus())).collect(Collectors.toList());
+        return ResponseEntity.ok(rm);
+    }
+
+    /**
+     * The api GET endpoint to get the status of the requested Job.
+     *
+     * @param id the id of the Job
+     * @return status of the job
+     */
+    @GetMapping(path = "/jobStatus")
+    public ResponseEntity<JobResponseModel> getJobStatusById(@RequestBody long id) {
+        Optional<Job> job = repository.findById(id);
+        if (job.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(new JobResponseModel(job.get().getNetId().toString(), job.get().getStatus()));
+    }
+
+    /**
+     * The api GET endpoint to get all Jobs belonging to the given netId (user).
+     *
+     * @param netId the netId of the user
+     * @return list of Jobs belonging to the given netId (user)
+     */
+    @GetMapping(path = "/getJobsNetId")
+    public ResponseEntity<List<JobResponseModel>> getAllNetIdJobs(@RequestBody NetId netId) {
+        Optional<List<Job>> jobs = repository.findAllByNetId(netId);
+        if (jobs.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        List<JobResponseModel> rm = jobs.get().stream().map(
+                x -> new JobResponseModel(x.getNetId().toString(), x.getStatus())).collect(Collectors.toList());
+        return ResponseEntity.ok(rm);
     }
 
     /**
@@ -61,9 +98,15 @@ public class JobController {
      * @return 200 ok
      */
     @PostMapping("/addJob")
-    public ResponseEntity<Job> addJob(@RequestBody Job job) {
-        Job savedJob = repository.save(job);
-        return ResponseEntity.ok(savedJob);
+    public ResponseEntity<JobResponseModel> addJob(@RequestBody Job job) {
+        if (job.getNetId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        if (!job.getNetId().toString().equals(authManager.getNetId())) {
+            return ResponseEntity.badRequest().build();
+        }
+        repository.save(job);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -72,12 +115,13 @@ public class JobController {
      * @param jobId the jobId which identifies the job that needs to be deleted
      */
     @PostMapping("/deleteJob")
-    public void deleteJob(@RequestBody long jobId) {
+    public ResponseEntity<JobResponseModel> deleteJob(@RequestBody long jobId) {
         Optional<Job> optionalJob = repository.findById(jobId);
         if (optionalJob.isEmpty()) {
-            return;
+            return ResponseEntity.notFound().build();
         }
         repository.deleteById(jobId);
+        return ResponseEntity.ok().build();
     }
 
 
