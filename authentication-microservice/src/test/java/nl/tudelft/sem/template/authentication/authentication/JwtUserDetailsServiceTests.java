@@ -3,11 +3,7 @@ package nl.tudelft.sem.template.authentication.authentication;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import nl.tudelft.sem.template.authentication.domain.user.AppUser;
-import nl.tudelft.sem.template.authentication.domain.user.HashedPassword;
-import nl.tudelft.sem.template.authentication.domain.user.NetId;
-import nl.tudelft.sem.template.authentication.domain.user.Role;
-import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
+import nl.tudelft.sem.template.authentication.domain.user.*;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +14,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -38,8 +39,11 @@ public class JwtUserDetailsServiceTests {
         final NetId testUser = new NetId("SomeUser");
         final HashedPassword testHashedPassword = new HashedPassword("password123Hash");
         final Role role = new Role("employee");
+        final Faculty faculty = new Faculty("EEMCS");
+//        final Set<Faculty> faculties = new HashSet<>();
+//        faculties.add(new Faculty("EEMCS"));
 
-        AppUser appUser = new AppUser(testUser, testHashedPassword, role);
+        AppUser appUser = new AppUser(testUser, testHashedPassword, role, faculty);
         userRepository.save(appUser);
 
         // Act
@@ -58,8 +62,11 @@ public class JwtUserDetailsServiceTests {
         final NetId testUser = new NetId("AnotherUser");
         final String testPasswordHash = "password123Hash";
         final Role role = new Role("employee");
+        final Faculty faculty = new Faculty("EEMCS");
+//        final Set<Faculty> faculties = new HashSet<>();
+//        faculties.add(new Faculty("EEMCS"));
 
-        AppUser appUser = new AppUser(testUser, new HashedPassword(testPasswordHash), role);
+        AppUser appUser = new AppUser(testUser, new HashedPassword(testPasswordHash), role, faculty);
         userRepository.save(appUser);
 
         // Act

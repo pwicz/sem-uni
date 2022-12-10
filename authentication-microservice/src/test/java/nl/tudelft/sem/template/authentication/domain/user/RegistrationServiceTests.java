@@ -13,6 +13,11 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 // activate profiles to have spring use mocks during auto-injection of certain beans.
@@ -35,11 +40,14 @@ public class RegistrationServiceTests {
         final NetId testUser = new NetId("SomeUser");
         final Password testPassword = new Password("password123");
         final Role role = new Role("employee");
+        final Faculty faculty = new Faculty("EEMCS");
+//        final Set<Faculty> faculties = new HashSet<>();
+//        faculties.add(new Faculty("EEMCS"));
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
 
         // Act
-        registrationService.registerUser(testUser, testPassword, role);
+        registrationService.registerUser(testUser, testPassword, role, faculty);
 
         // Assert
         AppUser savedUser = userRepository.findByNetId(testUser).orElseThrow();
@@ -55,12 +63,15 @@ public class RegistrationServiceTests {
         final HashedPassword existingTestPassword = new HashedPassword("password123");
         final Password newTestPassword = new Password("password456");
         final Role role = new Role("employee");
+        final Faculty faculty = new Faculty("EEMCS");
+//        final Set<Faculty> faculties = new HashSet<>();
+//        faculties.add(new Faculty("EEMCS"));
 
-        AppUser existingAppUser = new AppUser(testUser, existingTestPassword, role);
+        AppUser existingAppUser = new AppUser(testUser, existingTestPassword, role, faculty);
         userRepository.save(existingAppUser);
 
         // Act
-        ThrowingCallable action = () -> registrationService.registerUser(testUser, newTestPassword, role);
+        ThrowingCallable action = () -> registrationService.registerUser(testUser, newTestPassword, role, faculty);
 
         // Assert
         assertThatExceptionOfType(Exception.class)

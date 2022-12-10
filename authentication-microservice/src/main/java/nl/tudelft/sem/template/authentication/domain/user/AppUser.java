@@ -1,13 +1,8 @@
 package nl.tudelft.sem.template.authentication.domain.user;
 
 import java.util.Objects;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.authentication.domain.HasEvents;
 
@@ -38,6 +33,14 @@ public class AppUser extends HasEvents {
     @Convert(converter = RoleAttributeConverter.class)
     private Role role;
 
+//    @Column(name = "faculties", nullable = false)
+//    @Convert(converter = FacultyAttributeConverter.class)
+//    private Set<Faculty> faculties;
+
+    @Column(name = "faculty", nullable = false)
+    @Convert(converter = FacultyAttributeConverter.class)
+    private Faculty faculty;
+
     /**
      * Create new application user.
      *
@@ -45,10 +48,11 @@ public class AppUser extends HasEvents {
      * @param password The password for the new user
      * @param role The role of the new user(employee, admin, faculty account)
      */
-    public AppUser(NetId netId, HashedPassword password, Role role) {
+    public AppUser(NetId netId, HashedPassword password, Role role, Faculty faculty) {
         this.netId = netId;
         this.password = password;
         this.role = role;
+        this.faculty = faculty;
         this.recordThat(new UserWasCreatedEvent(this.netId));
     }
 
@@ -67,6 +71,10 @@ public class AppUser extends HasEvents {
 
     public Role getRole() {
         return role;
+    }
+
+    public Faculty getFaculty() {
+        return faculty;
     }
 
     /**
