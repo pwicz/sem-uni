@@ -4,7 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import commons.Faculty;
-import nl.tudelft.sem.template.authentication.domain.user.*;
+import nl.tudelft.sem.template.authentication.domain.user.AppUser;
+import nl.tudelft.sem.template.authentication.domain.user.HashedPassword;
+import nl.tudelft.sem.template.authentication.domain.user.NetId;
+import nl.tudelft.sem.template.authentication.domain.user.Role;
+import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,8 +40,8 @@ public class JwtUserDetailsServiceTests {
         final HashedPassword testHashedPassword = new HashedPassword("password123Hash");
         final Role role = new Role("employee");
         final Faculty faculty = new Faculty("EEMCS");
-//        final Set<Faculty> faculties = new HashSet<>();
-//        faculties.add(new Faculty("EEMCS"));
+        //        final Set<Faculty> faculties = new HashSet<>();
+        //        faculties.add(new Faculty("EEMCS"));
 
         AppUser appUser = new AppUser(testUser, testHashedPassword, role, faculty);
         userRepository.save(appUser);
@@ -59,8 +63,8 @@ public class JwtUserDetailsServiceTests {
         final String testPasswordHash = "password123Hash";
         final Role role = new Role("employee");
         final Faculty faculty = new Faculty("EEMCS");
-//        final Set<Faculty> faculties = new HashSet<>();
-//        faculties.add(new Faculty("EEMCS"));
+        //        final Set<Faculty> faculties = new HashSet<>();
+        //        faculties.add(new Faculty("EEMCS"));
 
         AppUser appUser = new AppUser(testUser, new HashedPassword(testPasswordHash), role, faculty);
         userRepository.save(appUser);

@@ -11,7 +11,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import commons.Faculty;
 import nl.tudelft.sem.template.authentication.authentication.JwtTokenGenerator;
-import nl.tudelft.sem.template.authentication.domain.user.*;
+import nl.tudelft.sem.template.authentication.domain.user.AppUser;
+import nl.tudelft.sem.template.authentication.domain.user.HashedPassword;
+import nl.tudelft.sem.template.authentication.domain.user.NetId;
+import nl.tudelft.sem.template.authentication.domain.user.Password;
+import nl.tudelft.sem.template.authentication.domain.user.PasswordHashingService;
+import nl.tudelft.sem.template.authentication.domain.user.Role;
+import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import nl.tudelft.sem.template.authentication.framework.integration.utils.JsonUtil;
 import nl.tudelft.sem.template.authentication.models.AuthenticationRequestModel;
 import nl.tudelft.sem.template.authentication.models.AuthenticationResponseModel;
@@ -92,8 +98,8 @@ public class UsersTests {
         final HashedPassword existingTestPassword = new HashedPassword("password123");
         final Role role = new Role("employee");
         final Faculty faculty = new Faculty("EEMCS");
-//        final Set<Faculty> faculties = new HashSet<>();
-//        faculties.add(new Faculty("EEMCS"));
+        //        final Set<Faculty> faculties = new HashSet<>();
+        //        faculties.add(new Faculty("EEMCS"));
 
         AppUser existingAppUser = new AppUser(testUser, existingTestPassword, role, faculty);
         userRepository.save(existingAppUser);
@@ -124,8 +130,8 @@ public class UsersTests {
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
         final Role role = new Role("employee");
         final Faculty faculty = new Faculty("EEMCS");
-//        final Set<Faculty> faculties = new HashSet<>();
-//        faculties.add(new Faculty("EEMCS"));
+        //        final Set<Faculty> faculties = new HashSet<>();
+        //        faculties.add(new Faculty("EEMCS"));
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
 
         when(mockAuthenticationManager.authenticate(argThat(authentication ->
@@ -210,8 +216,8 @@ public class UsersTests {
                     && wrongPassword.equals(authentication.getCredentials())
         ))).thenThrow(new BadCredentialsException("Invalid password"));
 
-//        final Set<Faculty> faculties = new HashSet<>();
-//        faculties.add(new Faculty("EEMCS"));
+        //        final Set<Faculty> faculties = new HashSet<>();
+        //        faculties.add(new Faculty("EEMCS"));
 
         AppUser appUser = new AppUser(new NetId(testUser), testHashedPassword, new Role("employee"), new Faculty("EEMCS"));
         userRepository.save(appUser);

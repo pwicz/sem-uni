@@ -37,8 +37,8 @@ public class RegistrationServiceTests {
         final Password testPassword = new Password("password123");
         final Role role = new Role("employee");
         final Faculty faculty = new Faculty("EEMCS");
-//        final Set<Faculty> faculties = new HashSet<>();
-//        faculties.add(new Faculty("EEMCS"));
+        //        final Set<Faculty> faculties = new HashSet<>();
+        //        faculties.add(new Faculty("EEMCS"));
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
 
@@ -60,8 +60,8 @@ public class RegistrationServiceTests {
         final Password newTestPassword = new Password("password456");
         final Role role = new Role("employee");
         final Faculty faculty = new Faculty("EEMCS");
-//        final Set<Faculty> faculties = new HashSet<>();
-//        faculties.add(new Faculty("EEMCS"));
+        //        final Set<Faculty> faculties = new HashSet<>();
+        //        faculties.add(new Faculty("EEMCS"));
 
         AppUser existingAppUser = new AppUser(testUser, existingTestPassword, role, faculty);
         userRepository.save(existingAppUser);
