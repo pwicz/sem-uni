@@ -1,4 +1,6 @@
-package nl.tudelft.sem.template.authentication.domain.user;
+package commons;
+
+import commons.Faculty;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
