@@ -8,5 +8,5 @@ import nl.tudelft.sem.template.authentication.domain.user.NetId;
  */
 @Data
 public class FacultyRequestModel {
-    private NetId netId;
+    private String netId;
 }

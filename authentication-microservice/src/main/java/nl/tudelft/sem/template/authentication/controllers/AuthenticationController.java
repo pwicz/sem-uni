@@ -1,10 +1,9 @@
 package nl.tudelft.sem.template.authentication.controllers;
 
 import commons.Faculty;
-import java.util.Optional;
 import nl.tudelft.sem.template.authentication.authentication.JwtTokenGenerator;
 import nl.tudelft.sem.template.authentication.authentication.JwtUserDetailsService;
-import nl.tudelft.sem.template.authentication.domain.user.AppUser;
+import nl.tudelft.sem.template.authentication.domain.user.GetFacultyService;
 import nl.tudelft.sem.template.authentication.domain.user.NetId;
 import nl.tudelft.sem.template.authentication.domain.user.Password;
 import nl.tudelft.sem.template.authentication.domain.user.RegistrationService;
@@ -39,6 +38,8 @@ public class AuthenticationController {
 
     private final transient RegistrationService registrationService;
 
+    private final transient GetFacultyService getFacultyService;
+
     private final transient UserRepository userRepository;
 
     /**
@@ -48,17 +49,21 @@ public class AuthenticationController {
      * @param jwtTokenGenerator     the token generator
      * @param jwtUserDetailsService the user service
      * @param registrationService   the registration service
+     * @param getFacultyService     the getFaculty service
      * @param userRepository        the user repository
      */
     @Autowired
     public AuthenticationController(AuthenticationManager authenticationManager,
                                     JwtTokenGenerator jwtTokenGenerator,
                                     JwtUserDetailsService jwtUserDetailsService,
-                                    RegistrationService registrationService, UserRepository userRepository) {
+                                    RegistrationService registrationService,
+                                    GetFacultyService getFacultyService,
+                                    UserRepository userRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenGenerator = jwtTokenGenerator;
         this.jwtUserDetailsService = jwtUserDetailsService;
         this.registrationService = registrationService;
+        this.getFacultyService = getFacultyService;
         this.userRepository = userRepository;
     }
 
@@ -122,18 +127,12 @@ public class AuthenticationController {
      */
     @PostMapping("/faculty")
     public ResponseEntity<FacultyResponseModel> retrieveFaculty(@RequestBody FacultyRequestModel request) throws Exception {
-        if (request.getNetId() == null) {
-            return ResponseEntity.badRequest().build();
+        try {
+            NetId netId = new NetId(request.getNetId());
+            Faculty faculty = getFacultyService.getFaculty(netId);
+            return ResponseEntity.ok(new FacultyResponseModel(faculty.toString()));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-
-        Optional<AppUser> user = userRepository.findByNetId(request.getNetId());
-
-        //        if (!user.isPresent()) {
-        //            return ResponseEntity.badRequest().build();
-        //        }
-
-        String faculty = user.get().getFaculty().toString();
-
-        return ResponseEntity.ok(new FacultyResponseModel(faculty));
     }
 }
