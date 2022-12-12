@@ -7,7 +7,7 @@ package nl.tudelft.sem.template.example.domain;
 public class InvalidResourcesException extends Exception {
 
     /**
-     * Constructor of InvalidResourcesException
+     * Constructor of InvalidResourcesException.
      *
      * @param resource the invalid resource
      */

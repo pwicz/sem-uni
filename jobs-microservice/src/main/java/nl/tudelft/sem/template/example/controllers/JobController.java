@@ -6,21 +6,27 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
+import nl.tudelft.sem.template.example.domain.InvalidNetIdException;
+import nl.tudelft.sem.template.example.domain.InvalidResourcesException;
 import nl.tudelft.sem.template.example.domain.JobRepository;
+import nl.tudelft.sem.template.example.domain.JobService;
 import nl.tudelft.sem.template.example.models.JobRequestModel;
 import nl.tudelft.sem.template.example.models.JobResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 public class JobController {
 
     private final transient JobRepository repository;
     private final transient AuthManager authManager;
+    private final transient JobService jobService;
 
 
     /**
@@ -30,9 +36,10 @@ public class JobController {
      * @param authManager Spring Security component used to authenticate and authorize the user
      */
     @Autowired
-    public JobController(JobRepository repository, AuthManager authManager) {
+    public JobController(JobRepository repository, AuthManager authManager, JobService jobService) {
         this.repository = repository;
         this.authManager = authManager;
+        this.jobService = jobService;
     }
 
     /**
@@ -93,7 +100,7 @@ public class JobController {
     }
 
     /**
-     * The api POST endpoint to add a Job using the JobRequestModel.
+     * The API POST endpoint to create a Job using the JobRequestModel.
      *
      * @param request the parameters used to create a new job.
      * @return 200 ok
@@ -101,18 +108,29 @@ public class JobController {
     @PostMapping("/addJob")
     public ResponseEntity<JobResponseModel> addJob(@RequestBody JobRequestModel request) {
 
-        if (request.getNetId() == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        if (!request.getNetId().equals(authManager.getNetId())) {
-            return ResponseEntity.badRequest().build();
-        }
+        try {
+            NetId jobNetId = new NetId(request.getNetId());
+            NetId authNetId = new NetId(authManager.getNetId());
+            String resourceType = request.getResourceType();
+            int cpuUsage = request.getCpuUsage();
+            int gpuUsage = request.getGpuUsage();
+            int memoryUsage = request.getMemoryUsage();
 
-        Job newJob = new Job(new NetId(request.getNetId()), request.getResourceType(),
-                request.getCpuUsage(), request.getGpuUsage(), request.getMemoryUsage());
+            Job createdJob = this.jobService.createJob(jobNetId, authNetId, resourceType, cpuUsage, gpuUsage, memoryUsage);
 
-        repository.save(newJob);
-        return ResponseEntity.ok().build();
+            JobResponseModel jobResponseModel = new JobResponseModel(createdJob.getNetId().toString(), "pending approval");
+
+            return ResponseEntity.ok(jobResponseModel);
+        }
+        catch (InvalidNetIdException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "INVALID_ID", e);
+        }
+        catch (InvalidResourcesException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "INVALID_RESOURCE_ALLOCATION", e);
+        }
+        catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "EXCEPTION", e);
+        }
     }
 
     /**
