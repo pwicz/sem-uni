@@ -95,13 +95,15 @@ public class JobController {
     /**
      * The api POST endpoint to add a Job using the JobRequestModel.
      *
-     * @param job the Job that is added to the database
+     * @param request the parameters used to create a new job.
      * @return 200 ok
      */
     @PostMapping("/addJob")
     public ResponseEntity<JobResponseModel> addJob(@RequestBody JobRequestModel request) {
 
-        if (request.getNetId() == null) return ResponseEntity.badRequest().build();
+        if (request.getNetId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
         if (!request.getNetId().equals(authManager.getNetId())) {
             return ResponseEntity.badRequest().build();
         }
