@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.JobRepository;
+import nl.tudelft.sem.template.example.models.JobRequestModel;
 import nl.tudelft.sem.template.example.models.JobResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -92,20 +93,25 @@ public class JobController {
     }
 
     /**
-     * The api POST endpoint to add a Job.
+     * The api POST endpoint to add a Job using the JobRequestModel.
      *
-     * @param job the Job that is added to the database
+     * @param request the parameters used to create a new job.
      * @return 200 ok
      */
     @PostMapping("/addJob")
-    public ResponseEntity<JobResponseModel> addJob(@RequestBody Job job) {
-        if (job.getNetId() == null) {
+    public ResponseEntity<JobResponseModel> addJob(@RequestBody JobRequestModel request) {
+
+        if (request.getNetId() == null) {
             return ResponseEntity.badRequest().build();
         }
-        if (!job.getNetId().toString().equals(authManager.getNetId())) {
+        if (!request.getNetId().equals(authManager.getNetId())) {
             return ResponseEntity.badRequest().build();
         }
-        repository.save(job);
+
+        Job newJob = new Job(new NetId(request.getNetId()), request.getResourceType(),
+                request.getCpuUsage(), request.getGpuUsage(), request.getMemoryUsage());
+
+        repository.save(newJob);
         return ResponseEntity.ok().build();
     }
 
