@@ -5,6 +5,9 @@ import commons.Job;
 import commons.NetId;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 /**
  * A DDD service for handling jobs.
  */
@@ -63,5 +66,24 @@ public class JobService {
             throw new InvalidIdException(id);
         }
         jobRepository.deleteById(id);
+    }
+
+    /**
+     * Collect all the jobs in the database created by a specific user.
+     *
+     * @param netId NetId of the request creator
+     * @param authNetId NetId of the authenticated user
+     * @return a list of Job corresponding to the NetId provided
+     * @throws Exception if the NetId is invalid or there is no associated Job to the NetId
+     */
+    public List<Job> collectJobsByNetId(NetId netId, NetId authNetId) throws Exception {
+        if (netId == null) {
+            throw new InvalidNetIdException("null");
+        }
+        Optional<List<Job>> jobs = jobRepository.findAllByNetId(netId);
+        if (jobs.isEmpty() || !netId.toString().equals(authNetId.toString())) {
+            throw new InvalidNetIdException(netId.toString());
+        }
+        return jobs.get();
     }
 }

@@ -9,6 +9,7 @@ import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.*;
 import nl.tudelft.sem.template.example.models.JobRequestModel;
 import nl.tudelft.sem.template.example.models.JobResponseModel;
+import nl.tudelft.sem.template.example.models.NetIdRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -82,18 +83,26 @@ public class JobController {
     /**
      * The api GET endpoint to get all Jobs belonging to the given netId (user).
      *
-     * @param netId the netId of the user
+     * @param request the parameters for NetId
      * @return list of Jobs belonging to the given netId (user)
      */
-    @GetMapping(path = "/getJobsNetId")
-    public ResponseEntity<List<JobResponseModel>> getAllNetIdJobs(@RequestBody NetId netId) {
-        Optional<List<Job>> jobs = repository.findAllByNetId(netId);
-        if (jobs.isEmpty()) {
-            return ResponseEntity.notFound().build();
+    @GetMapping(path = "/getJobs")
+    public ResponseEntity<List<JobResponseModel>> getJobsByNetId(@RequestBody NetIdRequestModel request) throws Exception {
+        try {
+            NetId netId = new NetId(request.getNetId());
+            NetId authNetId = new NetId(authManager.getNetId());
+            List<Job> jobs = this.jobService.collectJobsByNetId(netId, authNetId);
+            List<JobResponseModel> responseModels = jobs.stream().map(
+                    x -> new JobResponseModel(x.getNetId().toString(), x.getStatus())).collect(Collectors.toList());
+
+            return ResponseEntity.ok(responseModels);
         }
-        List<JobResponseModel> rm = jobs.get().stream().map(
-                x -> new JobResponseModel(x.getNetId().toString(), x.getStatus())).collect(Collectors.toList());
-        return ResponseEntity.ok(rm);
+        catch (InvalidNetIdException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "INVALID_ID", e);
+        }
+        catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "EXCEPTION", e);
+        }
     }
 
     /**
@@ -103,7 +112,7 @@ public class JobController {
      * @return 200 ok
      */
     @PostMapping("/addJob")
-    public ResponseEntity<JobResponseModel> addJob(@RequestBody JobRequestModel request) throws Exception{
+    public ResponseEntity addJob(@RequestBody JobRequestModel request) throws Exception {
 
         try {
             NetId jobNetId = new NetId(request.getNetId());
@@ -136,7 +145,7 @@ public class JobController {
      * @param jobId the jobId which identifies the job that needs to be deleted
      */
     @PostMapping("/deleteJob")
-    public ResponseEntity deleteJob(@RequestBody long jobId) throws Exception{
+    public ResponseEntity deleteJob(@RequestBody long jobId) throws Exception {
         try {
             this.jobService.deleteJob(jobId);
         }
