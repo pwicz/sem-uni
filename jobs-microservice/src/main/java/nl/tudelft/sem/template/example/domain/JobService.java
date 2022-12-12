@@ -52,4 +52,16 @@ public class JobService {
 
         return newJob;
     }
+
+    /**
+     * Remove a job from the database.
+     * @param id the unique id of the Job.
+     * @throws Exception if there is no Job with the provided id.
+     */
+    public void deleteJob(long id) throws Exception {
+        if (!jobRepository.existsById(id)) {
+            throw new InvalidIdException(id);
+        }
+        jobRepository.deleteById(id);
+    }
 }

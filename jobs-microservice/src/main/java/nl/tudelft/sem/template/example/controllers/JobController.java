@@ -6,10 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
-import nl.tudelft.sem.template.example.domain.InvalidNetIdException;
-import nl.tudelft.sem.template.example.domain.InvalidResourcesException;
-import nl.tudelft.sem.template.example.domain.JobRepository;
-import nl.tudelft.sem.template.example.domain.JobService;
+import nl.tudelft.sem.template.example.domain.*;
 import nl.tudelft.sem.template.example.models.JobRequestModel;
 import nl.tudelft.sem.template.example.models.JobResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +103,7 @@ public class JobController {
      * @return 200 ok
      */
     @PostMapping("/addJob")
-    public ResponseEntity<JobResponseModel> addJob(@RequestBody JobRequestModel request) {
+    public ResponseEntity<JobResponseModel> addJob(@RequestBody JobRequestModel request) throws Exception{
 
         try {
             NetId jobNetId = new NetId(request.getNetId());
@@ -139,12 +136,13 @@ public class JobController {
      * @param jobId the jobId which identifies the job that needs to be deleted
      */
     @PostMapping("/deleteJob")
-    public ResponseEntity<JobResponseModel> deleteJob(@RequestBody long jobId) {
-        Optional<Job> optionalJob = repository.findById(jobId);
-        if (optionalJob.isEmpty()) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity deleteJob(@RequestBody long jobId) throws Exception{
+        try {
+            this.jobService.deleteJob(jobId);
         }
-        repository.deleteById(jobId);
+        catch (InvalidIdException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "INVALID_ID", e);
+        }
         return ResponseEntity.ok().build();
     }
 
