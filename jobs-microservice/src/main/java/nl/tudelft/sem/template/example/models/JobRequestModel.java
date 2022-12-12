@@ -16,7 +16,7 @@ public class JobRequestModel {
 
     /**
      * Constructor for the request model when creating a job.
-     * 
+     *
      * @param netId netId of the job issuer
      * @param resourceType resource type
      * @param cpuUsage CPU usage of the job.
