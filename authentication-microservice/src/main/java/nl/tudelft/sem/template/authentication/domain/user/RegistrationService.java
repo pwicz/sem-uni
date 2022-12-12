@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.authentication.domain.user;
 
+import commons.NetId;
 import org.springframework.stereotype.Service;
 
 /**
