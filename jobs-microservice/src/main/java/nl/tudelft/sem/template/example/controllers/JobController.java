@@ -1,14 +1,21 @@
 package nl.tudelft.sem.template.example.controllers;
 
+
 import commons.Job;
 import commons.NetId;
 import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
-import nl.tudelft.sem.template.example.domain.*;
-import nl.tudelft.sem.template.example.models.*;
+import nl.tudelft.sem.template.example.domain.InvalidIdException;
+import nl.tudelft.sem.template.example.domain.InvalidNetIdException;
+import nl.tudelft.sem.template.example.domain.InvalidResourcesException;
+import nl.tudelft.sem.template.example.domain.JobRepository;
+import nl.tudelft.sem.template.example.domain.JobService;
+import nl.tudelft.sem.template.example.models.IdRequestModel;
+import nl.tudelft.sem.template.example.models.JobRequestModel;
+import nl.tudelft.sem.template.example.models.JobResponseModel;
+import nl.tudelft.sem.template.example.models.NetIdRequestModel;
+import nl.tudelft.sem.template.example.models.StatusResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +26,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+
+
+
 @RestController
 public class JobController {
 
@@ -26,11 +36,13 @@ public class JobController {
     private final transient AuthManager authManager;
     private final transient JobService jobService;
 
+    private static final String invalidId = "INVALID_ID";
+
 
     /**
      * Constructor of the Job controller.
      *
-     * @param repository the job database
+     * @param repository  the job database
      * @param authManager Spring Security component used to authenticate and authorize the user
      */
     @Autowired
@@ -65,14 +77,12 @@ public class JobController {
             String role = authManager.getRole().toString();
 
             List<Job> jobs = this.jobService.getAllJobs(netId, authNetId, role);
-            List<JobResponseModel> responseModels = jobs.stream().map(
-                    x -> new JobResponseModel(x.getNetId().toString(), x.getStatus())).collect(Collectors.toList());
+            List<JobResponseModel> responseModels = jobs.stream()
+                    .map(x -> new JobResponseModel(x.getNetId().toString(), x.getStatus())).collect(Collectors.toList());
             return ResponseEntity.ok(responseModels);
-        }
-        catch (InvalidNetIdException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "INVALID_ID", e);
-        }
-        catch (BadCredentialsException e) {
+        } catch (InvalidNetIdException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, invalidId, e);
+        } catch (BadCredentialsException e) {
             throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "BAD_CREDENTIALS", e);
         }
     }
@@ -91,9 +101,8 @@ public class JobController {
             String status = this.jobService.getJobStatus(authNetId, authNetId, jobId);
             StatusResponseModel statusResponseModel = new StatusResponseModel(status);
             return ResponseEntity.ok(statusResponseModel);
-        }
-        catch (InvalidNetIdException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "INVALID_ID", e);
+        } catch (InvalidNetIdException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, invalidId, e);
         }
     }
 
@@ -109,15 +118,13 @@ public class JobController {
             NetId netId = new NetId(request.getNetId());
             NetId authNetId = new NetId(authManager.getNetId());
             List<Job> jobs = this.jobService.collectJobsByNetId(netId, authNetId);
-            List<JobResponseModel> responseModels = jobs.stream().map(
-                    x -> new JobResponseModel(x.getNetId().toString(), x.getStatus())).collect(Collectors.toList());
+            List<JobResponseModel> responseModels = jobs.stream()
+                .map(x -> new JobResponseModel(x.getNetId().toString(), x.getStatus())).collect(Collectors.toList());
 
             return ResponseEntity.ok(responseModels);
-        }
-        catch (InvalidNetIdException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "INVALID_ID", e);
-        }
-        catch (Exception e) {
+        } catch (InvalidNetIdException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, invalidId, e);
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "EXCEPTION", e);
         }
     }
@@ -144,14 +151,11 @@ public class JobController {
             JobResponseModel jobResponseModel = new JobResponseModel(createdJob.getNetId().toString(), "pending approval");
 
             return ResponseEntity.ok(jobResponseModel);
-        }
-        catch (InvalidNetIdException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "INVALID_ID", e);
-        }
-        catch (InvalidResourcesException e) {
+        } catch (InvalidNetIdException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, invalidId, e);
+        } catch (InvalidResourcesException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "INVALID_RESOURCE_ALLOCATION", e);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "EXCEPTION", e);
         }
     }
@@ -165,9 +169,8 @@ public class JobController {
     public ResponseEntity deleteJob(@RequestBody long jobId) throws Exception {
         try {
             this.jobService.deleteJob(jobId);
-        }
-        catch (InvalidIdException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "INVALID_ID", e);
+        } catch (InvalidIdException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, invalidId, e);
         }
         return ResponseEntity.ok().build();
     }

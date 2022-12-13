@@ -6,6 +6,8 @@ package nl.tudelft.sem.template.example.domain;
  */
 public class InvalidResourcesException extends Exception {
 
+    static final long serialVersionUID = -3387516993124229948L;
+
     /**
      * Constructor of InvalidResourcesException.
      *

@@ -6,8 +6,11 @@ package nl.tudelft.sem.template.example.domain;
  */
 public class InvalidNetIdException extends Exception {
 
+    static final long serialVersionUID = -3387516993124229948L;
+
     /**
      * Constructor for the InvalidNetIdException.
+     *
      * @param netId invalid NetId provided
      */
     public InvalidNetIdException(String netId) {

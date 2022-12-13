@@ -3,11 +3,13 @@ package nl.tudelft.sem.template.example.domain;
 
 import commons.Job;
 import commons.NetId;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+
+
 
 /**
  * A DDD service for handling jobs.
@@ -15,6 +17,8 @@ import java.util.Optional;
 
 @Service
 public class JobService {
+
+    private static final String nullValue = "null";
 
 
     private final transient JobRepository jobRepository;
@@ -40,12 +44,13 @@ public class JobService {
      * @return a new Job
      * @throws Exception if the resources of NetId are invalid
      */
-    public Job createJob(NetId netId, NetId authNetId, String resourceType, int cpuUsage, int gpuUsage, int memoryUsage) throws Exception {
+    public Job createJob(NetId netId, NetId authNetId,
+                         String resourceType, int cpuUsage, int gpuUsage, int memoryUsage) throws Exception {
         if (cpuUsage < 0 || gpuUsage < 0 || memoryUsage < 0) {
             throw new InvalidResourcesException(Math.min(cpuUsage, Math.min(gpuUsage, memoryUsage)));
         }
         if (netId == null) {
-            throw new InvalidNetIdException("null");
+            throw new InvalidNetIdException(nullValue);
         }
         if (!netId.toString().equals(authNetId.toString())) {
             throw new InvalidNetIdException(netId.toString());
@@ -59,6 +64,7 @@ public class JobService {
 
     /**
      * Remove a job from the database.
+     *
      * @param id the unique id of the Job.
      * @throws Exception if there is no Job with the provided id.
      */
@@ -79,7 +85,7 @@ public class JobService {
      */
     public List<Job> collectJobsByNetId(NetId netId, NetId authNetId) throws Exception {
         if (netId == null) {
-            throw new InvalidNetIdException("null");
+            throw new InvalidNetIdException(nullValue);
         }
         Optional<List<Job>> jobs = jobRepository.findAllByNetId(netId);
         if (jobs.isEmpty() || !netId.toString().equals(authNetId.toString())) {
@@ -90,6 +96,7 @@ public class JobService {
 
     /**
      * Retrieve the status of a specific Job stored in the database.
+     *
      * @param netId NetId of the request creator
      * @param authNetId NetId of the authenticated user
      * @param jobId the unique id of the Job
@@ -98,7 +105,7 @@ public class JobService {
      */
     public String getJobStatus(NetId netId, NetId authNetId, long jobId) throws Exception {
         if (netId == null) {
-            throw new InvalidNetIdException("null");
+            throw new InvalidNetIdException(nullValue);
         }
 
         Optional<Job> job = jobRepository.findById(jobId);
@@ -113,6 +120,7 @@ public class JobService {
 
     /**
      * Retrieve all the Job entities from the database.
+     *
      * @param netId NetId of the request creator
      * @param authNetId NetId of the authenticated user
      * @param role role of the request creator
@@ -121,7 +129,7 @@ public class JobService {
      */
     public List<Job> getAllJobs(NetId netId, NetId authNetId, String role) throws Exception {
         if (netId == null) {
-            throw new InvalidNetIdException("null");
+            throw new InvalidNetIdException(nullValue);
         }
         if (!netId.toString().equals(authNetId.toString())) {
             throw new InvalidNetIdException(netId.toString());

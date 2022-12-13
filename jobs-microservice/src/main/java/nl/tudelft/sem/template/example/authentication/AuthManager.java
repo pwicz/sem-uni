@@ -17,5 +17,7 @@ public class AuthManager {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
-    public Object getRole() { return SecurityContextHolder.getContext().getAuthentication().getCredentials();}
+    public Object getRole() {
+        return SecurityContextHolder.getContext().getAuthentication().getCredentials();
+    }
 }

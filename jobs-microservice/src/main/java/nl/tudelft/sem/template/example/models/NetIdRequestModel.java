@@ -8,7 +8,7 @@ public class NetIdRequestModel {
     private String netId;
 
     /**
-     * Constructor for NetIdRequestModel
+     * Constructor for NetIdRequestModel.
      *
      * @param netId string of the provided NetId
      */

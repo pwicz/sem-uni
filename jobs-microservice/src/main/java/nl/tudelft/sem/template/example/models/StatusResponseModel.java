@@ -12,6 +12,7 @@ public class StatusResponseModel {
 
     /**
      * Constructor for StatusResponseModel.
+     *
      * @param status the status of the request Job
      */
     public StatusResponseModel(String status) {
