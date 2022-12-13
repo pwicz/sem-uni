@@ -4,6 +4,7 @@ import commons.Job;
 import commons.NetId;
 import java.util.List;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.*;
@@ -11,6 +12,7 @@ import nl.tudelft.sem.template.example.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,11 +58,23 @@ public class JobController {
      * @return list of Jobs to be scheduled
      */
     @GetMapping(path = "/getAllJobs")
-    public ResponseEntity<List<JobResponseModel>> getAllJobs() {
-        List<Job> list = repository.findAll();
-        List<JobResponseModel> rm = list.stream().map(
-                x -> new JobResponseModel(x.getNetId().toString(), x.getStatus())).collect(Collectors.toList());
-        return ResponseEntity.ok(rm);
+    public ResponseEntity<List<JobResponseModel>> getAllJobs() throws Exception {
+        try {
+            NetId netId = new NetId(authManager.getNetId());
+            NetId authNetId = new NetId(authManager.getNetId());
+            String role = authManager.getRole().toString();
+
+            List<Job> jobs = this.jobService.getAllJobs(netId, authNetId, role);
+            List<JobResponseModel> responseModels = jobs.stream().map(
+                    x -> new JobResponseModel(x.getNetId().toString(), x.getStatus())).collect(Collectors.toList());
+            return ResponseEntity.ok(responseModels);
+        }
+        catch (InvalidNetIdException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "INVALID_ID", e);
+        }
+        catch (BadCredentialsException e) {
+            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "BAD_CREDENTIALS", e);
+        }
     }
 
     /**

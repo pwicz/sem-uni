@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.example.domain;
 
 import commons.Job;
 import commons.NetId;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -108,5 +109,26 @@ public class JobService {
             throw new InvalidNetIdException(netId.toString());
         }
         return job.get().getStatus();
+    }
+
+    /**
+     * Retrieve all the Job entities from the database.
+     * @param netId NetId of the request creator
+     * @param authNetId NetId of the authenticated user
+     * @param role role of the request creator
+     * @return a list of Job entities containing all jobs in the database.
+     * @throws Exception if the NetId is invalid or the creator of the request does not have the admin role.
+     */
+    public List<Job> getAllJobs(NetId netId, NetId authNetId, String role) throws Exception {
+        if (netId == null) {
+            throw new InvalidNetIdException("null");
+        }
+        if (!netId.toString().equals(authNetId.toString())) {
+            throw new InvalidNetIdException(netId.toString());
+        }
+        if (!role.equals("admin")) {
+            throw new BadCredentialsException(role);
+        }
+        return jobRepository.findAll();
     }
 }
