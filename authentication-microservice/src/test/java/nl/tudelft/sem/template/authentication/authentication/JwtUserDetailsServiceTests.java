@@ -20,6 +20,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 // activate profiles to have spring use mocks during auto-injection of certain beans.
@@ -39,11 +41,13 @@ public class JwtUserDetailsServiceTests {
         final NetId testUser = new NetId("SomeUser");
         final HashedPassword testHashedPassword = new HashedPassword("password123Hash");
         final Role role = new Role("employee");
+        final ArrayList<Faculty> faculties = new ArrayList<>();
         final Faculty faculty = new Faculty("EEMCS");
+        faculties.add(faculty);
         //        final Set<Faculty> faculties = new HashSet<>();
         //        faculties.add(new Faculty("EEMCS"));
 
-        AppUser appUser = new AppUser(testUser, testHashedPassword, role, faculty);
+        AppUser appUser = new AppUser(testUser, testHashedPassword, role, faculties);
         userRepository.save(appUser);
 
         // Act
@@ -62,11 +66,13 @@ public class JwtUserDetailsServiceTests {
         final NetId testUser = new NetId("AnotherUser");
         final String testPasswordHash = "password123Hash";
         final Role role = new Role("employee");
+        final ArrayList<Faculty> faculties = new ArrayList<>();
         final Faculty faculty = new Faculty("EEMCS");
+        faculties.add(faculty);
         //        final Set<Faculty> faculties = new HashSet<>();
         //        faculties.add(new Faculty("EEMCS"));
 
-        AppUser appUser = new AppUser(testUser, new HashedPassword(testPasswordHash), role, faculty);
+        AppUser appUser = new AppUser(testUser, new HashedPassword(testPasswordHash), role, faculties);
         userRepository.save(appUser);
 
         // Act

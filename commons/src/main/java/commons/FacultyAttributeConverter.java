@@ -2,19 +2,30 @@ package commons;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
+import java.util.ArrayList;
 
 /**
  * JPA converter for the Faculty value object.
  */
 @Converter
-public class FacultyAttributeConverter implements AttributeConverter<Faculty, String> {
+public class FacultyAttributeConverter implements AttributeConverter<ArrayList<Faculty>, String> {
     @Override
-    public String convertToDatabaseColumn(Faculty faculty) {
-        return faculty.toString();
+    public String convertToDatabaseColumn(ArrayList<Faculty> faculties) {
+        String dbvalue = "";
+
+        for(Faculty f:faculties){
+            dbvalue+=f.toString()+";";
+        }
+        return dbvalue;
     }
 
     @Override
-    public Faculty convertToEntityAttribute(String dbData) {
-        return new Faculty(dbData);
+    public ArrayList<Faculty> convertToEntityAttribute(String dbData) {
+        String[] faculties = dbData.split(";");
+        ArrayList<Faculty> fac = new ArrayList<>();
+        for(String f : faculties){
+            fac.add(new Faculty(f));
+        }
+        return fac;
     }
 }

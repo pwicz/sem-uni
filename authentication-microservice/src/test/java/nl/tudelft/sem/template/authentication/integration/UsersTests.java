@@ -38,6 +38,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.ArrayList;
+
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 // activate profiles to have spring use mocks during auto-injection of certain beans.
@@ -97,11 +99,12 @@ public class UsersTests {
         final Password newTestPassword = new Password("password456");
         final HashedPassword existingTestPassword = new HashedPassword("password123");
         final Role role = new Role("employee");
-        final Faculty faculty = new Faculty("EEMCS");
+        final ArrayList<Faculty> faculties = new ArrayList<>();
+        faculties.add(new Faculty("EEMCS"));
         //        final Set<Faculty> faculties = new HashSet<>();
         //        faculties.add(new Faculty("EEMCS"));
 
-        AppUser existingAppUser = new AppUser(testUser, existingTestPassword, role, faculty);
+        AppUser existingAppUser = new AppUser(testUser, existingTestPassword, role, faculties);
         userRepository.save(existingAppUser);
 
         RegistrationRequestModel model = new RegistrationRequestModel();
@@ -129,7 +132,9 @@ public class UsersTests {
         final Password testPassword = new Password("password123");
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
         final Role role = new Role("employee");
+        final ArrayList<Faculty> faculties = new ArrayList<>();
         final Faculty faculty = new Faculty("EEMCS");
+        faculties.add(faculty);
         //        final Set<Faculty> faculties = new HashSet<>();
         //        faculties.add(new Faculty("EEMCS"));
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
@@ -144,7 +149,7 @@ public class UsersTests {
             argThat(userDetails -> userDetails.getUsername().equals(testUser.toString())))
         ).thenReturn(testToken);
 
-        AppUser appUser = new AppUser(testUser, testHashedPassword, role, faculty);
+        AppUser appUser = new AppUser(testUser, testHashedPassword, role, faculties);
         userRepository.save(appUser);
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();
@@ -219,7 +224,10 @@ public class UsersTests {
         //        final Set<Faculty> faculties = new HashSet<>();
         //        faculties.add(new Faculty("EEMCS"));
 
-        AppUser appUser = new AppUser(new NetId(testUser), testHashedPassword, new Role("employee"), new Faculty("EEMCS"));
+        final ArrayList<Faculty> faculties = new ArrayList<>();
+        final Faculty faculty = new Faculty("EEMCS");
+        faculties.add(faculty);
+        AppUser appUser = new AppUser(new NetId(testUser), testHashedPassword, new Role("employee"), faculties);
         userRepository.save(appUser);
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();

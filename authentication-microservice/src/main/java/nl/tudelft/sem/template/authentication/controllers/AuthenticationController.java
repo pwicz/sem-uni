@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
+
 @RestController
 public class AuthenticationController {
 
@@ -108,9 +110,10 @@ public class AuthenticationController {
             NetId netId = new NetId(request.getNetId());
             Password password = new Password(request.getPassword());
             Role role = new Role(request.getRole());
-            Faculty faculty = new Faculty(request.getFaculty());
+            ArrayList<Faculty> faculties = new ArrayList<>();
+            faculties.add(new Faculty("EEMCS"));
             //Set<Faculty> faculties = new HashSet<>(request.getFaculties());
-            registrationService.registerUser(netId, password, role, faculty);
+            registrationService.registerUser(netId, password, role, faculties);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -129,7 +132,7 @@ public class AuthenticationController {
     public ResponseEntity<FacultyResponseModel> retrieveFaculty(@RequestBody FacultyRequestModel request) throws Exception {
         try {
             NetId netId = new NetId(request.getNetId());
-            Faculty faculty = getFacultyService.getFaculty(netId);
+            ArrayList<Faculty> faculty = getFacultyService.getFaculty(netId);
             return ResponseEntity.ok(new FacultyResponseModel(faculty.toString()));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());

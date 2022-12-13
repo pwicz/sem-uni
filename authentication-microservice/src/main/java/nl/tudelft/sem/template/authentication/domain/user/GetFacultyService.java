@@ -2,6 +2,8 @@ package nl.tudelft.sem.template.authentication.domain.user;
 
 import commons.Faculty;
 import commons.NetId;
+
+import java.util.ArrayList;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +30,7 @@ public class GetFacultyService {
      * @return the faculty of the user
      * @throws NetIdDoesNotExistException if the netID does not exist in the database
      */
-    public Faculty getFaculty(NetId netId) throws NetIdDoesNotExistException {
+    public ArrayList<Faculty> getFaculty(NetId netId) throws NetIdDoesNotExistException {
         if (checkNetIdExists(netId)) {
             Optional<AppUser> user = userRepository.findByNetId(netId);
 

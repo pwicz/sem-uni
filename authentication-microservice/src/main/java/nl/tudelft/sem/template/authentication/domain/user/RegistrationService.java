@@ -4,6 +4,8 @@ import commons.Faculty;
 import commons.NetId;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 /**
  * A DDD service for registering a new user.
  */
@@ -31,7 +33,7 @@ public class RegistrationService {
      * @param role The role of the user
      * @throws Exception if the user already exists
      */
-    public AppUser registerUser(NetId netId, Password password, Role role, Faculty faculty) throws Exception {
+    public AppUser registerUser(NetId netId, Password password, Role role, ArrayList<Faculty> faculty) throws Exception {
 
         if (checkNetIdIsUnique(netId)) {
             // Hash password
