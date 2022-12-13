@@ -1,5 +1,7 @@
 package nl.tudelft.sem.template.authentication.domain.user;
 
+import commons.NetId;
+
 /**
  * Exception to indicate that a user with this NetID does not exist in the database.
  */
