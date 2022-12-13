@@ -4,27 +4,21 @@ import commons.FacultyResource;
 import commons.ScheduleJob;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
 import lombok.Synchronized;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstance;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstanceRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestTemplate;
 
 @SuppressWarnings("PMD")
 @Service
 public class ProcessingJobsService {
 
     private final transient ScheduledInstanceRepository scheduledInstanceRepository;
-    private final transient WebClient client = WebClient.create();
+    private final RestTemplate restTemplate;
 
     private String resourcesUrl = "http://localhost:8085";
     private String jobsUrl = "http://localhost:8083";
@@ -39,6 +33,7 @@ public class ProcessingJobsService {
 
     ProcessingJobsService(ScheduledInstanceRepository scheduledInstanceRepository) {
         this.scheduledInstanceRepository = scheduledInstanceRepository;
+        this.restTemplate = new RestTemplate();
     }
 
     /**
@@ -119,13 +114,16 @@ public class ProcessingJobsService {
     }
 
     private List<FacultyResource> getAvailableResources(String faculty, LocalDate date) {
-        List<FacultyResource> facultyResources =
-                client.get().uri(resourcesUrl + "/facultyResources?faculty=" + faculty
-                                + "&day=" + date.toString()).retrieve().bodyToFlux(FacultyResource.class)
-                        .collectList().block();
-        if (facultyResources == null) {
+        ResponseEntity<FacultyResource[]> facultyResourcesResponse = restTemplate.getForEntity(resourcesUrl
+                + "/facultyResources?faculty=" + faculty + "&day=" + date.toString(), FacultyResource[].class);
+
+        List<FacultyResource> facultyResources;
+        if (facultyResourcesResponse.getBody() == null) {
             facultyResources = new ArrayList<>();
+        } else {
+            facultyResources = Arrays.asList(facultyResourcesResponse.getBody());
         }
+
         return facultyResources;
     }
 }
