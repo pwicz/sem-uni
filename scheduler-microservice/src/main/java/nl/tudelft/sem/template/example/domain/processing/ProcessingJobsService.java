@@ -12,6 +12,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+
+import lombok.Synchronized;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstance;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstanceRepository;
 import org.springframework.stereotype.Service;
@@ -21,44 +23,52 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Service
 public class ProcessingJobsService {
 
-    private final transient ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
-    private final transient Queue<ScheduleJob> jobsToProcess;
     private final transient ScheduledInstanceRepository scheduledInstanceRepository;
-    private final transient WebClient client = WebClient.create("http://localhost:8085");
+    private final transient WebClient client = WebClient.create();
+
+    private String resourcesUrl = "http://localhost:8085";
+    private String jobsUrl = "http://localhost:8083";
+
+    public void setResources_url(String resourcesUrl) {
+        this.resourcesUrl = resourcesUrl;
+    }
+
+    public void setJobs_url(String jobsUrl) {
+        this.jobsUrl = jobsUrl;
+    }
 
     ProcessingJobsService(ScheduledInstanceRepository scheduledInstanceRepository) {
-        jobsToProcess = new LinkedList<>();
         this.scheduledInstanceRepository = scheduledInstanceRepository;
     }
 
-    public int addToQueue(ScheduleJob job) {
-        jobsToProcess.add(job);
-        return jobsToProcess.size();
-    }
+    /**
+     * This method tries to schedule a job defined by a ScheduleJob object.
+     * Does not return anything, but sends a proper message to the Jobs
+     * microservice (whether the job was scheduled or not).
+     *
+     * @param j a ScheduleJob DTO of a Job to be scheduled
+     */
+    @Synchronized
+    public void scheduleJob(ScheduleJob j) {
+        // start with the first possible day: tomorrow
+        List<ScheduledInstance> scheduledInstances =
+                trySchedulingBetween(j, LocalDate.now().plusDays(1), j.getScheduleBefore());
 
-    private void processJobs() {
-        while (!jobsToProcess.isEmpty()) {
-            ScheduleJob j = jobsToProcess.poll();
-            System.out.println("Processing job " + j.getJobId());
-
-            // start with the first possible day: tomorrow
-            List<ScheduledInstance> scheduledInstances =
-                    trySchedulingBetween(j, LocalDate.now().plusDays(1), j.getScheduleBefore());
-
-            if (scheduledInstances.isEmpty()) {
-                // inform the Job microservice that the job was not scheduled
-                return;
-            }
-
-            try {
-                scheduledInstanceRepository.saveAll(scheduledInstances);
-            } catch (Exception e) {
-                System.out.println("There was a problem: " + e.getMessage());
-            }
-
-            // inform the Job microservice about a success!
-            System.out.println("saved!");
+        if (scheduledInstances.isEmpty()) {
+            // TODO: inform the Job microservice that the job was not scheduled
+            // can't be done right now because there is no such endpoint.
+            return;
         }
+
+        try {
+            scheduledInstanceRepository.saveAll(scheduledInstances);
+        } catch (Exception e) {
+            System.out.println("There was a problem: " + e.getMessage());
+        }
+
+        // TODO: inform the Job microservice about a success!
+        // can't be done right now because there is no such endpoint.
+        System.out.println("saved!");
     }
 
     private List<ScheduledInstance> trySchedulingBetween(ScheduleJob job, LocalDate start, LocalDate end) {
@@ -110,22 +120,12 @@ public class ProcessingJobsService {
 
     private List<FacultyResource> getAvailableResources(String faculty, LocalDate date) {
         List<FacultyResource> facultyResources =
-                client.get().uri("/facultyResources?faculty=" + faculty
+                client.get().uri(resourcesUrl + "/facultyResources?faculty=" + faculty
                                 + "&day=" + date.toString()).retrieve().bodyToFlux(FacultyResource.class)
                         .collectList().block();
         if (facultyResources == null) {
             facultyResources = new ArrayList<>();
         }
         return facultyResources;
-    }
-
-    @PostConstruct
-    private void startProcesser() {
-        executorService.scheduleAtFixedRate(this::processJobs, 5, 5, TimeUnit.SECONDS);
-    }
-
-    @PreDestroy
-    private void stopProcesser() {
-        executorService.shutdown();
     }
 }
