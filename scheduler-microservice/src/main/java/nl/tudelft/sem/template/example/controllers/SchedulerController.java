@@ -32,8 +32,8 @@ public class SchedulerController {
      */
     @PostMapping("/schedule")
     public ResponseEntity<String> scheduleJob(@RequestBody ScheduleJob job) {
-        int queuePosition = processingJobsService.addToQueue(job);
-        return ResponseEntity.ok("Processing. Position in queue: " + queuePosition);
+        processingJobsService.scheduleJob(job);
+        return ResponseEntity.ok("Processing");
     }
 
     /**
