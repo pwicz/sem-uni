@@ -7,9 +7,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.*;
-import nl.tudelft.sem.template.example.models.JobRequestModel;
-import nl.tudelft.sem.template.example.models.JobResponseModel;
-import nl.tudelft.sem.template.example.models.NetIdRequestModel;
+import nl.tudelft.sem.template.example.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,16 +66,21 @@ public class JobController {
     /**
      * The api GET endpoint to get the status of the requested Job.
      *
-     * @param id the id of the Job
+     * @param request the id of a Job stored in the database.
      * @return status of the job
      */
     @GetMapping(path = "/jobStatus")
-    public ResponseEntity<JobResponseModel> getJobStatusById(@RequestBody long id) {
-        Optional<Job> job = repository.findById(id);
-        if (job.isEmpty()) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<StatusResponseModel> getJobStatusById(@RequestBody IdRequestModel request) throws Exception {
+        try {
+            NetId authNetId = new NetId(authManager.getNetId());
+            long jobId = request.getId();
+            String status = this.jobService.getJobStatus(authNetId, authNetId, jobId);
+            StatusResponseModel statusResponseModel = new StatusResponseModel(status);
+            return ResponseEntity.ok(statusResponseModel);
         }
-        return ResponseEntity.ok(new JobResponseModel(job.get().getNetId().toString(), job.get().getStatus()));
+        catch (InvalidNetIdException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "INVALID_ID", e);
+        }
     }
 
     /**

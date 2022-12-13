@@ -86,4 +86,27 @@ public class JobService {
         }
         return jobs.get();
     }
+
+    /**
+     * Retrieve the status of a specific Job stored in the database.
+     * @param netId NetId of the request creator
+     * @param authNetId NetId of the authenticated user
+     * @param jobId the unique id of the Job
+     * @return a String with the status of the Job
+     * @throws Exception if the NetId is invalid or the NetId does not have permission to access the requested job.
+     */
+    public String getJobStatus(NetId netId, NetId authNetId, long jobId) throws Exception {
+        if (netId == null) {
+            throw new InvalidNetIdException("null");
+        }
+
+        Optional<Job> job = jobRepository.findById(jobId);
+        if (job.isEmpty()) {
+            throw new InvalidIdException(jobId);
+        }
+        if (!netId.toString().equals(authNetId.toString()) || !job.get().getNetId().toString().equals(netId.toString())) {
+            throw new InvalidNetIdException(netId.toString());
+        }
+        return job.get().getStatus();
+    }
 }
