@@ -2,6 +2,8 @@ package nl.tudelft.sem.template.authentication.domain.user;
 
 import commons.Faculty;
 import commons.FacultyAttributeConverter;
+import commons.NetId;
+import commons.NetIdAttributeConverter;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Convert;

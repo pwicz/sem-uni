@@ -1,0 +1,526 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="33f1a657-47ee-42df-bed2-d2a4c7be285a" name="Changes" comment="merge with main resolved conflicts">
+      <change afterPath="$PROJECT_DIR$/.gradle/7.4.2/checksums/checksums.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/7.4.2/dependencies-accessors/dependencies-accessors.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/7.4.2/dependencies-accessors/gc.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/7.4.2/executionHistory/executionHistory.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/7.4.2/fileChanges/last-build.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/7.4.2/fileHashes/fileHashes.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/7.4.2/gc.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/7.4/checksums/checksums.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/7.4/checksums/md5-checksums.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/7.4/checksums/sha1-checksums.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/7.4/dependencies-accessors/dependencies-accessors.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/7.4/dependencies-accessors/gc.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/7.4/fileChanges/last-build.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/7.4/gc.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gradle/vcs-1/gc.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/.gradle/7.4/checksums/checksums.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/.gradle/7.4/dependencies-accessors/dependencies-accessors.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/.gradle/7.4/dependencies-accessors/gc.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/.gradle/7.4/executionHistory/executionHistory.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/.gradle/7.4/executionHistory/executionHistory.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/.gradle/7.4/fileChanges/last-build.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/.gradle/7.4/fileHashes/fileHashes.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/.gradle/7.4/fileHashes/fileHashes.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/.gradle/7.4/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/.gradle/7.4/gc.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/.gradle/buildOutputCleanup/cache.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/.gradle/file-system.probe" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/.gradle/vcs-1/gc.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/authentication-microservice/sem_authentication.mv.db" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/Application.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/application/user/UserWasCreatedListener.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/authentication/JwtTokenGenerator.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/authentication/JwtUserDetailsService.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/config/H2Config.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/config/WebSecurityConfig.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/controllers/AuthenticationController.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/domain/HasEvents.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/domain/providers/TimeProvider.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/domain/providers/implementations/CurrentTimeProvider.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/domain/user/AppUser.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/domain/user/HashedPassword.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/domain/user/HashedPasswordAttributeConverter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/domain/user/NetId.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/domain/user/NetIdAlreadyInUseException.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/domain/user/NetIdAttributeConverter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/domain/user/Password.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/domain/user/PasswordHashingService.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/domain/user/PasswordWasChangedEvent.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/domain/user/RegistrationService.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/domain/user/Role.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/domain/user/RoleAttributeConverter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/domain/user/UserRepository.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/domain/user/UserWasCreatedEvent.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/models/AuthenticationRequestModel.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/models/AuthenticationResponseModel.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/main/nl/tudelft/sem/template/authentication/models/RegistrationRequestModel.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/test/nl/tudelft/sem/template/authentication/authentication/JwtTokenGeneratorTests.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/test/nl/tudelft/sem/template/authentication/authentication/JwtUserDetailsServiceTests.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/test/nl/tudelft/sem/template/authentication/domain/user/RegistrationServiceTests.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/test/nl/tudelft/sem/template/authentication/integration/UsersTests.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/test/nl/tudelft/sem/template/authentication/integration/utils/JsonUtil.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/test/nl/tudelft/sem/template/authentication/profiles/MockAuthenticationManagerProfile.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/test/nl/tudelft/sem/template/authentication/profiles/MockPasswordEncoderProfile.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/bin/test/nl/tudelft/sem/template/authentication/profiles/MockTokenGeneratorProfile.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/Application.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/application/user/UserWasCreatedListener.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/authentication/JwtTokenGenerator.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/authentication/JwtUserDetailsService.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/config/H2Config.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/config/WebSecurityConfig.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/controllers/AuthenticationController.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/HasEvents.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/providers/TimeProvider.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/providers/implementations/CurrentTimeProvider.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/AppUser.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/HashedPassword.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/HashedPasswordAttributeConverter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/NetIdAlreadyInUseException.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/Password.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/PasswordHashingService.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/PasswordWasChangedEvent.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/RegistrationService.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/UserRepository.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/UserWasCreatedEvent.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/models/AuthenticationRequestModel.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/models/AuthenticationResponseModel.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/models/RegistrationRequestModel.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/test/nl/tudelft/sem/template/authentication/authentication/JwtTokenGeneratorTests.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/test/nl/tudelft/sem/template/authentication/authentication/JwtUserDetailsServiceTests.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/test/nl/tudelft/sem/template/authentication/domain/user/RegistrationServiceTests.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/test/nl/tudelft/sem/template/authentication/framework/integration/utils/JsonUtil.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/test/nl/tudelft/sem/template/authentication/integration/UsersTests.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/test/nl/tudelft/sem/template/authentication/profiles/MockAuthenticationManagerProfile.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/test/nl/tudelft/sem/template/authentication/profiles/MockPasswordEncoderProfile.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/test/nl/tudelft/sem/template/authentication/profiles/MockTokenGeneratorProfile.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/jacoco/test.exec" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/libs/authentication-microservice-0.0.1-SNAPSHOT.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/reports/checkstyle/main.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/reports/checkstyle/main.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/reports/checkstyle/test.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/reports/checkstyle/test.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/reports/pmd/main.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/reports/pmd/main.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/reports/tests/test/classes/nl.tudelft.sem.template.authentication.authentication.JwtTokenGeneratorTests.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/reports/tests/test/classes/nl.tudelft.sem.template.authentication.authentication.JwtUserDetailsServiceTests.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/reports/tests/test/classes/nl.tudelft.sem.template.authentication.domain.user.RegistrationServiceTests.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/reports/tests/test/classes/nl.tudelft.sem.template.authentication.integration.UsersTests.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/reports/tests/test/css/base-style.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/reports/tests/test/css/style.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/reports/tests/test/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/reports/tests/test/js/report.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/reports/tests/test/packages/nl.tudelft.sem.template.authentication.authentication.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/reports/tests/test/packages/nl.tudelft.sem.template.authentication.domain.user.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/reports/tests/test/packages/nl.tudelft.sem.template.authentication.integration.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/resources/main/application-dev.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/resources/main/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/resources/test/application-test.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/test-results/test/TEST-nl.tudelft.sem.template.authentication.authentication.JwtTokenGeneratorTests.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/test-results/test/TEST-nl.tudelft.sem.template.authentication.authentication.JwtUserDetailsServiceTests.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/test-results/test/TEST-nl.tudelft.sem.template.authentication.domain.user.RegistrationServiceTests.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/test-results/test/TEST-nl.tudelft.sem.template.authentication.integration.UsersTests.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/test-results/test/binary/output.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/test-results/test/binary/output.bin.idx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/test-results/test/binary/results.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/tmp/bootJar/MANIFEST.MF" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/tmp/compileTestJava/previous-compilation-data.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/tmp/expandedArchives/org.jacoco.agent-0.8.7.jar_3a83c50b4a016f281c4e9f3500d16b55/META-INF/MANIFEST.MF" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/tmp/expandedArchives/org.jacoco.agent-0.8.7.jar_3a83c50b4a016f281c4e9f3500d16b55/META-INF/maven/org.jacoco/org.jacoco.agent/pom.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/tmp/expandedArchives/org.jacoco.agent-0.8.7.jar_3a83c50b4a016f281c4e9f3500d16b55/META-INF/maven/org.jacoco/org.jacoco.agent/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/tmp/expandedArchives/org.jacoco.agent-0.8.7.jar_3a83c50b4a016f281c4e9f3500d16b55/about.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/tmp/expandedArchives/org.jacoco.agent-0.8.7.jar_3a83c50b4a016f281c4e9f3500d16b55/jacocoagent.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/tmp/expandedArchives/org.jacoco.agent-0.8.7.jar_3a83c50b4a016f281c4e9f3500d16b55/org/jacoco/agent/AgentJar.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authentication-microservice/build/tmp/pmdMain/incremental.cache" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/.gradle/7.4/checksums/checksums.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/.gradle/7.4/dependencies-accessors/dependencies-accessors.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/.gradle/7.4/dependencies-accessors/gc.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/.gradle/7.4/executionHistory/executionHistory.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/.gradle/7.4/executionHistory/executionHistory.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/.gradle/7.4/fileChanges/last-build.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/.gradle/7.4/fileHashes/fileHashes.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/.gradle/7.4/fileHashes/fileHashes.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/.gradle/7.4/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/.gradle/7.4/gc.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/.gradle/buildOutputCleanup/cache.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/.gradle/file-system.probe" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/.gradle/vcs-1/gc.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/bin/main/nl/tudelft/sem/template/example/Application.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/bin/main/nl/tudelft/sem/template/example/authentication/AuthManager.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/bin/main/nl/tudelft/sem/template/example/authentication/JwtAuthenticationEntryPoint.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/bin/main/nl/tudelft/sem/template/example/authentication/JwtRequestFilter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/bin/main/nl/tudelft/sem/template/example/authentication/JwtTokenVerifier.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/bin/main/nl/tudelft/sem/template/example/config/H2Config.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/bin/main/nl/tudelft/sem/template/example/config/RequestAuthenticationConfig.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/bin/main/nl/tudelft/sem/template/example/controllers/DefaultController.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/bin/test/nl/tudelft/sem/template/example/authentication/AuthManagerTests.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/bin/test/nl/tudelft/sem/template/example/authentication/JwtAuthenticationEntryPointTests.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/bin/test/nl/tudelft/sem/template/example/authentication/JwtRequestFilterTests.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/bin/test/nl/tudelft/sem/template/example/authentication/JwtTokenVerifierTests.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/bin/test/nl/tudelft/sem/template/example/integration/ExampleTest.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/bin/test/nl/tudelft/sem/template/example/profiles/MockAuthenticationManagerProfile.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/bin/test/nl/tudelft/sem/template/example/profiles/MockTokenVerifierProfile.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/classes/java/main/nl/tudelft/sem/template/example/Application.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/classes/java/main/nl/tudelft/sem/template/example/authentication/AuthManager.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/classes/java/main/nl/tudelft/sem/template/example/authentication/JwtAuthenticationEntryPoint.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/classes/java/main/nl/tudelft/sem/template/example/authentication/JwtRequestFilter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/classes/java/main/nl/tudelft/sem/template/example/authentication/JwtTokenVerifier.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/classes/java/main/nl/tudelft/sem/template/example/config/H2Config.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/classes/java/main/nl/tudelft/sem/template/example/config/RequestAuthenticationConfig.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/classes/java/main/nl/tudelft/sem/template/example/controllers/DefaultController.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/classes/java/test/nl/tudelft/sem/template/example/authentication/AuthManagerTests.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/classes/java/test/nl/tudelft/sem/template/example/authentication/JwtAuthenticationEntryPointTests.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/classes/java/test/nl/tudelft/sem/template/example/authentication/JwtRequestFilterTests.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/classes/java/test/nl/tudelft/sem/template/example/authentication/JwtTokenVerifierTests.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/classes/java/test/nl/tudelft/sem/template/example/integration/ExampleTest.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/classes/java/test/nl/tudelft/sem/template/example/profiles/MockAuthenticationManagerProfile.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/classes/java/test/nl/tudelft/sem/template/example/profiles/MockTokenVerifierProfile.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/jacoco/test.exec" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/libs/example-microservice-0.0.1-SNAPSHOT.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/reports/checkstyle/main.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/reports/checkstyle/main.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/reports/checkstyle/test.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/reports/checkstyle/test.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/reports/pmd/main.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/reports/pmd/main.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/reports/tests/test/classes/nl.tudelft.sem.template.example.authentication.AuthManagerTests.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/reports/tests/test/classes/nl.tudelft.sem.template.example.authentication.JwtAuthenticationEntryPointTests.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/reports/tests/test/classes/nl.tudelft.sem.template.example.authentication.JwtRequestFilterTests.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/reports/tests/test/classes/nl.tudelft.sem.template.example.authentication.JwtTokenVerifierTests.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/reports/tests/test/classes/nl.tudelft.sem.template.example.integration.ExampleTest.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/reports/tests/test/css/base-style.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/reports/tests/test/css/style.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/reports/tests/test/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/reports/tests/test/js/report.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/reports/tests/test/packages/nl.tudelft.sem.template.example.authentication.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/reports/tests/test/packages/nl.tudelft.sem.template.example.integration.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/resources/main/application-dev.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/resources/main/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/test-results/test/TEST-nl.tudelft.sem.template.example.authentication.AuthManagerTests.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/test-results/test/TEST-nl.tudelft.sem.template.example.authentication.JwtAuthenticationEntryPointTests.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/test-results/test/TEST-nl.tudelft.sem.template.example.authentication.JwtRequestFilterTests.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/test-results/test/TEST-nl.tudelft.sem.template.example.authentication.JwtTokenVerifierTests.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/test-results/test/TEST-nl.tudelft.sem.template.example.integration.ExampleTest.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/test-results/test/binary/output.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/test-results/test/binary/output.bin.idx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/test-results/test/binary/results.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/tmp/bootJar/MANIFEST.MF" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/tmp/compileTestJava/previous-compilation-data.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/tmp/expandedArchives/org.jacoco.agent-0.8.7.jar_3a83c50b4a016f281c4e9f3500d16b55/META-INF/MANIFEST.MF" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/tmp/expandedArchives/org.jacoco.agent-0.8.7.jar_3a83c50b4a016f281c4e9f3500d16b55/META-INF/maven/org.jacoco/org.jacoco.agent/pom.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/tmp/expandedArchives/org.jacoco.agent-0.8.7.jar_3a83c50b4a016f281c4e9f3500d16b55/META-INF/maven/org.jacoco/org.jacoco.agent/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/tmp/expandedArchives/org.jacoco.agent-0.8.7.jar_3a83c50b4a016f281c4e9f3500d16b55/about.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/tmp/expandedArchives/org.jacoco.agent-0.8.7.jar_3a83c50b4a016f281c4e9f3500d16b55/jacocoagent.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/tmp/expandedArchives/org.jacoco.agent-0.8.7.jar_3a83c50b4a016f281c4e9f3500d16b55/org/jacoco/agent/AgentJar.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/build/tmp/pmdMain/incremental.cache" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/example-microservice/example-microservice/example.mv.db" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jobs-microservice/src/main/java/nl/tudelft/sem/template/example/controllers/JobController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jobs-microservice/src/main/java/nl/tudelft/sem/template/example/domain/JobRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jobs-microservice/src/main/java/nl/tudelft/sem/template/example/models/JobRequestModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jobs-microservice/src/main/java/nl/tudelft/sem/template/example/models/JobResponseModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scheduler-microservice/src/main/java/nl/tudelft/sem/template/example/controllers/SchedulerController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scheduler-microservice/src/main/java/nl/tudelft/sem/template/example/domain/db/ScheduledInstance.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scheduler-microservice/src/main/java/nl/tudelft/sem/template/example/domain/db/ScheduledInstanceRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scheduler-microservice/src/main/java/nl/tudelft/sem/template/example/domain/processing/ProcessingJobsService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scheduler-microservice/src/main/java/nl/tudelft/sem/template/example/domain/processing/RemovingJobsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/authentication/JwtUserDetailsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/authentication/JwtUserDetailsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/controllers/AuthenticationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/controllers/AuthenticationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/domain/user/AppUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/domain/user/AppUser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/domain/user/GetFacultyService.java" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/domain/user/GetFacultyService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/domain/user/NetId.java" beforeDir="false" afterPath="$PROJECT_DIR$/commons/src/main/java/commons/NetId.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/domain/user/NetIdAlreadyInUseException.java" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/domain/user/NetIdAlreadyInUseException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/domain/user/NetIdAttributeConverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/commons/src/main/java/commons/NetIdAttributeConverter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/domain/user/NetIdDoesNotExistException.java" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/domain/user/NetIdDoesNotExistException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/domain/user/RegistrationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/domain/user/RegistrationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/domain/user/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/domain/user/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/domain/user/UserWasCreatedEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/domain/user/UserWasCreatedEvent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/models/FacultyRequestModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/models/FacultyRequestModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication-microservice/src/test/java/nl/tudelft/sem/template/authentication/authentication/JwtUserDetailsServiceTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/src/test/java/nl/tudelft/sem/template/authentication/authentication/JwtUserDetailsServiceTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication-microservice/src/test/java/nl/tudelft/sem/template/authentication/domain/user/RegistrationServiceTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/src/test/java/nl/tudelft/sem/template/authentication/domain/user/RegistrationServiceTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication-microservice/src/test/java/nl/tudelft/sem/template/authentication/integration/UsersTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/src/test/java/nl/tudelft/sem/template/authentication/integration/UsersTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/commons/src/main/java/commons/Job.java" beforeDir="false" afterPath="$PROJECT_DIR$/commons/src/main/java/commons/Job.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/example-microservice/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example-microservice/src/main/java/nl/tudelft/sem/template/example/controllers/DefaultController.java" beforeDir="false" afterPath="$PROJECT_DIR$/example-microservice/src/main/java/nl/tudelft/sem/template/example/controllers/DefaultController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jobs-microservice/src/main/java/nl/tudelft/sem/template/example/Application.java" beforeDir="false" afterPath="$PROJECT_DIR$/jobs-microservice/src/main/java/nl/tudelft/sem/template/example/Application.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jobs-microservice/src/main/resources/application-dev.properties" beforeDir="false" afterPath="$PROJECT_DIR$/jobs-microservice/src/main/resources/application-dev.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scheduler-microservice/src/main/java/nl/tudelft/sem/template/example/config/RequestAuthenticationConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/scheduler-microservice/src/main/java/nl/tudelft/sem/template/example/config/RequestAuthenticationConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scheduler-microservice/src/main/java/nl/tudelft/sem/template/example/controllers/DefaultController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scheduler-microservice/src/main/resources/application-dev.properties" beforeDir="false" afterPath="$PROJECT_DIR$/scheduler-microservice/src/main/resources/application-dev.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scheduler-microservice/src/test/java/nl/tudelft/sem/template/example/integration/ExampleTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/scheduler-microservice/src/test/java/nl/tudelft/sem/template/example/integration/ExampleTest.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$/example-microservice">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/authentication-microservice">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="template" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="template" type="f1a62948:ProjectNode" />
+                <item name="Run Configurations" type="7b0102dc:RunConfigurationsNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="template" type="f1a62948:ProjectNode" />
+                <item name="authentication-microservice" type="2d1252cf:ModuleNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="template" type="f1a62948:ProjectNode" />
+                <item name="authentication-microservice" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="template" type="f1a62948:ProjectNode" />
+                <item name="authentication-microservice" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="application" type="c8890929:TasksNode$1" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="template" type="f1a62948:ProjectNode" />
+                <item name="authentication-microservice" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="build" type="c8890929:TasksNode$1" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="JpbToolWindowState">
+    <option name="isToolWindowVisible" value="false" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2I8BVNvxpKetdxLDzYWXbtO32qs" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/filip/Desktop/TUDelft/SEM/SEM09b&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Global Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
+  }
+}</component>
+  <component name="RunManager" selected="Gradle.SEM09b:example-microservice [bootRun]">
+    <configuration name="SEM09b [bootRun]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="bootRun" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="SEM09b [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="build" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="SEM09b:authentication-microservice [bootRun]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/authentication-microservice" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="bootRun" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="SEM09b:example-microservice [bootRun]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/example-microservice" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="bootRun" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="SEM09b:example-microservice [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/example-microservice" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="build" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Gradle.SEM09b [bootRun]" />
+      <item itemvalue="Gradle.SEM09b [build]" />
+      <item itemvalue="Gradle.SEM09b:example-microservice [build]" />
+      <item itemvalue="Gradle.SEM09b:example-microservice [bootRun]" />
+      <item itemvalue="Gradle.SEM09b:authentication-microservice [bootRun]" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.SEM09b:example-microservice [bootRun]" />
+        <item itemvalue="Gradle.SEM09b [bootRun]" />
+        <item itemvalue="Gradle.SEM09b [build]" />
+        <item itemvalue="Gradle.SEM09b:authentication-microservice [bootRun]" />
+        <item itemvalue="Gradle.SEM09b:example-microservice [build]" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="33f1a657-47ee-42df-bed2-d2a4c7be285a" name="Changes" comment="" />
+      <created>1669553354459</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1669553354459</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="template" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="merge with main resolved conflicts" />
+    <option name="LAST_COMMIT_MESSAGE" value="merge with main resolved conflicts" />
+  </component>
+</project>

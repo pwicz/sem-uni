@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.authentication.controllers;
 
+import commons.NetId;
 import commons.Faculty;
 import nl.tudelft.sem.template.authentication.authentication.JwtTokenGenerator;
 import nl.tudelft.sem.template.authentication.authentication.JwtUserDetailsService;
