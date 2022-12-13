@@ -9,6 +9,7 @@ import java.util.List;
 import lombok.Synchronized;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstance;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstanceRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -31,9 +32,17 @@ public class ProcessingJobsService {
         this.jobsUrl = jobsUrl;
     }
 
-    ProcessingJobsService(ScheduledInstanceRepository scheduledInstanceRepository) {
+    public String getResourcesUrl() {
+        return resourcesUrl;
+    }
+
+    public String getJobsUrl() {
+        return jobsUrl;
+    }
+
+    ProcessingJobsService(ScheduledInstanceRepository scheduledInstanceRepository, RestTemplate restTemplate) {
         this.scheduledInstanceRepository = scheduledInstanceRepository;
-        this.restTemplate = new RestTemplate();
+        this.restTemplate = restTemplate;
     }
 
     /**
@@ -117,13 +126,10 @@ public class ProcessingJobsService {
         ResponseEntity<FacultyResource[]> facultyResourcesResponse = restTemplate.getForEntity(resourcesUrl
                 + "/facultyResources?faculty=" + faculty + "&day=" + date.toString(), FacultyResource[].class);
 
-        List<FacultyResource> facultyResources;
         if (facultyResourcesResponse.getBody() == null) {
-            facultyResources = new ArrayList<>();
-        } else {
-            facultyResources = Arrays.asList(facultyResourcesResponse.getBody());
+            return new ArrayList<>();
         }
 
-        return facultyResources;
+        return Arrays.asList(facultyResourcesResponse.getBody());
     }
 }
