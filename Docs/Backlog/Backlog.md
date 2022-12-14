@@ -48,9 +48,10 @@
 # Wont-haves:
 
 - User
-  - An employee won't be able to approve jobs
+    - An employee won't be able to approve jobs
 - Job
-  - Jobs will not be scheduled across several days
+    - Jobs will not be scheduled across several days
 - Schedule
+    - Scheduler won't be able to finish a Job by distributing the workload for one Job over multiple days
 - Clusters
 
