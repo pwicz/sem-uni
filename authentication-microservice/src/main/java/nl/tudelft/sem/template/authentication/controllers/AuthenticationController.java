@@ -110,8 +110,9 @@ public class AuthenticationController {
             Password password = new Password(request.getPassword());
             Role role = new Role(request.getRole());
             ArrayList<Faculty> faculties = new ArrayList<>();
-            faculties.add(new Faculty("EEMCS"));
-            //Set<Faculty> faculties = new HashSet<>(request.getFaculties());
+            for (String f : request.getFaculty().split(";")) {
+                faculties.add(new Faculty(f));
+            }
             registrationService.registerUser(netId, password, role, faculties);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());

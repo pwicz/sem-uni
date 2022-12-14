@@ -40,8 +40,7 @@ public class RegistrationServiceTests {
         final Role role = new Role("employee");
         final ArrayList<Faculty> faculties = new ArrayList<>();
         faculties.add(new Faculty("EEMCS"));
-        //        final Set<Faculty> faculties = new HashSet<>();
-        //        faculties.add(new Faculty("EEMCS"));
+
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
 
@@ -65,8 +64,6 @@ public class RegistrationServiceTests {
         final ArrayList<Faculty> faculties = new ArrayList<>();
         final Faculty faculty = new Faculty("EEMCS");
         faculties.add(faculty);
-        //        final Set<Faculty> faculties = new HashSet<>();
-        //        faculties.add(new Faculty("EEMCS"));
 
         AppUser existingAppUser = new AppUser(testUser, existingTestPassword, role, faculties);
         userRepository.save(existingAppUser);
@@ -83,4 +80,30 @@ public class RegistrationServiceTests {
         assertThat(savedUser.getNetId()).isEqualTo(testUser);
         assertThat(savedUser.getPassword()).isEqualTo(existingTestPassword);
     }
+
+    @Test
+    public void createUser_withMultipleFaculties_worksCorrectly() throws Exception {
+        // Arrange
+        final NetId testUser = new NetId("SomeUser");
+        final Password testPassword = new Password("password123");
+        final Role role = new Role("employee");
+        final ArrayList<Faculty> faculties = new ArrayList<>();
+        faculties.add(new Faculty("EEMCS"));
+        faculties.add(new Faculty("3ME"));
+        faculties.add(new Faculty("CG"));
+
+        final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
+        when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
+
+        // Act
+        registrationService.registerUser(testUser, testPassword, role, faculties);
+
+        // Assert
+        AppUser savedUser = userRepository.findByNetId(testUser).orElseThrow();
+
+        assertThat(savedUser.getNetId()).isEqualTo(testUser);
+        assertThat(savedUser.getPassword()).isEqualTo(testHashedPassword);
+        assertThat(savedUser.getFaculty()).isEqualTo(faculties);
+    }
+
 }
