@@ -43,23 +43,26 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
 
     /**
      * Gets all nodes that belong to faculty
-     * the nodes are not released
+     * And Nodes that are released
      * @param  faculty you want to get the nodes of
+     * @param date date you want to get the resources on
      * @return Optional of a Node list from the specific faculty
      */
     @Query(
             nativeQuery=true,
-            value="SELECT * FROM Node WHERE faculty = ?1")
-    Optional<List<Node>> getFreeResources(String faculty, String date);
+            value="SELECT SUM(CPU), SUM(GPU), SUM(MEM) FROM Node WHERE faculty = ?1 OR (released <= ?2 AND releaseEND >= ?2)")
+    Optional<Resource> getFreeResources(String faculty, String date);
 
     /**
-     * Gets all nodes that belong to the free pool
-     * @param
-     * @return Optional of a Node list that belong to the free Pool
+     * Meant to return in a FacultyResource model
+     * @param  facultyToUpdate faculty of nodes you want to update
+     * @param  newDate date you want to free resouces on
+     * @param  newDays how many days to want to free for
+     * @return
      */
     @Query(
             nativeQuery=true,
-            value="SELECT * FROM Node WHERE faculty = ?1")
-    Optional<List<Node>> getFreeResources();
+            value="UPDATE Node SET date = ?2, days = ?3 WHERE faculty = ?1")
+    void updateRelease(String facultyToUpdate, String newDate, int newDays);
 
 }

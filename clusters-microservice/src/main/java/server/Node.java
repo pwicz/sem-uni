@@ -1,5 +1,7 @@
 package server;
 
+import org.apache.tomcat.jni.Local;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,9 +18,9 @@ public class Node implements Comparable{
     private String url;
     private String faculty;
     private String token; //user auth token?
-    private Resource resource;
+    private Resource resource; // this should just be cpu, gpu, mem
     private LocalDate released = null;
-    private int releaseTime = 0;
+    private LocalDate releaseEnd = null;
 
     public Node(String name, String url, String faculty, String token, Resource resource) {
         this.name = name;
@@ -64,12 +66,12 @@ public class Node implements Comparable{
         this.released = released;
     }
 
-    public int getReleaseTime() {
-        return releaseTime;
+    public LocalDate getReleaseEndTime() {
+        return releaseEnd;
     }
 
-    public void setReleaseTime(int releaseTime) {
-        this.releaseTime = releaseTime;
+    public void setReleaseTime(LocalDate releasEnd) {
+        this.releaseEnd = releaseEnd;
     }
 
     /**
