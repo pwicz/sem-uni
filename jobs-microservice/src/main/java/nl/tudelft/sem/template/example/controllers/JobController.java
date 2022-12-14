@@ -145,8 +145,9 @@ public class JobController {
             int cpuUsage = request.getCpuUsage();
             int gpuUsage = request.getGpuUsage();
             int memoryUsage = request.getMemoryUsage();
-
-            Job createdJob = this.jobService.createJob(jobNetId, authNetId, resourceType, cpuUsage, gpuUsage, memoryUsage);
+            String role = (String)authManager.getRole();
+            System.out.println(role);
+            Job createdJob = this.jobService.createJob(jobNetId, authNetId, resourceType, cpuUsage, gpuUsage, memoryUsage, role);
 
             JobResponseModel jobResponseModel = new JobResponseModel(createdJob.getNetId().toString(), "pending approval");
 
