@@ -2,9 +2,8 @@ package nl.tudelft.sem.template.authentication.domain.user;
 
 import commons.Faculty;
 import commons.NetId;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
+import org.springframework.stereotype.Service;
 
 /**
  * A DDD service for registering a new user.

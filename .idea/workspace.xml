@@ -4,34 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="33f1a657-47ee-42df-bed2-d2a4c7be285a" name="Changes" comment="merge with main resolved conflicts">
+    <list default="true" id="33f1a657-47ee-42df-bed2-d2a4c7be285a" name="Changes" comment="user can have multiple faculties">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/Application.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/Application.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/application/user/UserWasCreatedListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/application/user/UserWasCreatedListener.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/authentication/JwtTokenGenerator.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/authentication/JwtTokenGenerator.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/authentication/JwtUserDetailsService.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/authentication/JwtUserDetailsService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/config/H2Config.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/config/H2Config.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/config/WebSecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/config/WebSecurityConfig.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/controllers/AuthenticationController.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/controllers/AuthenticationController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/HasEvents.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/HasEvents.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/AppUser.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/AppUser.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/HashedPassword.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/HashedPassword.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/HashedPasswordAttributeConverter.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/HashedPasswordAttributeConverter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/NetIdAlreadyInUseException.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/NetIdAlreadyInUseException.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/Password.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/Password.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/PasswordHashingService.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/PasswordHashingService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/PasswordWasChangedEvent.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/PasswordWasChangedEvent.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/RegistrationService.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/RegistrationService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/UserRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/UserRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/UserWasCreatedEvent.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/domain/user/UserWasCreatedEvent.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/models/AuthenticationRequestModel.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/models/AuthenticationRequestModel.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/models/AuthenticationResponseModel.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/models/AuthenticationResponseModel.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/models/RegistrationRequestModel.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/main/nl/tudelft/sem/template/authentication/models/RegistrationRequestModel.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/test/nl/tudelft/sem/template/authentication/authentication/JwtTokenGeneratorTests.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/test/nl/tudelft/sem/template/authentication/authentication/JwtTokenGeneratorTests.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/test/nl/tudelft/sem/template/authentication/authentication/JwtUserDetailsServiceTests.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/test/nl/tudelft/sem/template/authentication/authentication/JwtUserDetailsServiceTests.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/test/nl/tudelft/sem/template/authentication/domain/user/RegistrationServiceTests.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/test/nl/tudelft/sem/template/authentication/domain/user/RegistrationServiceTests.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/test/nl/tudelft/sem/template/authentication/framework/integration/utils/JsonUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/test/nl/tudelft/sem/template/authentication/framework/integration/utils/JsonUtil.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication-microservice/build/classes/java/test/nl/tudelft/sem/template/authentication/integration/UsersTests.class" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/build/classes/java/test/nl/tudelft/sem/template/authentication/integration/UsersTests.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/controllers/AuthenticationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/controllers/AuthenticationController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/domain/user/AppUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/domain/user/AppUser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/domain/user/GetFacultyService.java" beforeDir="false" afterPath="$PROJECT_DIR$/authentication-microservice/src/main/java/nl/tudelft/sem/template/authentication/domain/user/GetFacultyService.java" afterDir="false" />
@@ -261,7 +235,14 @@
       <option name="project" value="LOCAL" />
       <updated>1670942055854</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="user can have multiple faculties">
+      <created>1670943711149</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1670943711149</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -289,6 +270,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="merge with main resolved conflicts" />
-    <option name="LAST_COMMIT_MESSAGE" value="merge with main resolved conflicts" />
+    <MESSAGE value="user can have multiple faculties" />
+    <option name="LAST_COMMIT_MESSAGE" value="user can have multiple faculties" />
   </component>
 </project>

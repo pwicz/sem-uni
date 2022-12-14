@@ -1,7 +1,8 @@
 package nl.tudelft.sem.template.authentication.controllers;
 
-import commons.NetId;
 import commons.Faculty;
+import commons.NetId;
+import java.util.ArrayList;
 import nl.tudelft.sem.template.authentication.authentication.JwtTokenGenerator;
 import nl.tudelft.sem.template.authentication.authentication.JwtUserDetailsService;
 import nl.tudelft.sem.template.authentication.domain.user.GetFacultyService;
@@ -26,8 +27,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.ArrayList;
 
 @RestController
 public class AuthenticationController {

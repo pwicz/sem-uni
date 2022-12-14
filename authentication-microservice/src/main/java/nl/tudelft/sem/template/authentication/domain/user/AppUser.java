@@ -4,7 +4,6 @@ import commons.Faculty;
 import commons.FacultyAttributeConverter;
 import commons.NetId;
 import commons.NetIdAttributeConverter;
-
 import java.util.ArrayList;
 import java.util.Objects;
 import javax.persistence.Column;
