@@ -14,6 +14,9 @@ public class JobRequestModel {
     private int gpuUsage;
     private int memoryUsage;
 
+    public JobRequestModel() {
+    }
+
     /**
      * Constructor for the request model when creating a job.
      *
@@ -28,6 +31,46 @@ public class JobRequestModel {
         this.resourceType = resourceType;
         this.cpuUsage = cpuUsage;
         this.gpuUsage = gpuUsage;
+        this.memoryUsage = memoryUsage;
+    }
+
+    public String getNetId() {
+        return netId;
+    }
+
+    public void setNetId(String netId) {
+        this.netId = netId;
+    }
+
+    public String getResourceType() {
+        return resourceType;
+    }
+
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
+    }
+
+    public int getCpuUsage() {
+        return cpuUsage;
+    }
+
+    public void setCpuUsage(int cpuUsage) {
+        this.cpuUsage = cpuUsage;
+    }
+
+    public int getGpuUsage() {
+        return gpuUsage;
+    }
+
+    public void setGpuUsage(int gpuUsage) {
+        this.gpuUsage = gpuUsage;
+    }
+
+    public int getMemoryUsage() {
+        return memoryUsage;
+    }
+
+    public void setMemoryUsage(int memoryUsage) {
         this.memoryUsage = memoryUsage;
     }
 }

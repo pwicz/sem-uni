@@ -45,7 +45,7 @@ public class JobService {
      * @throws Exception if the resources of NetId are invalid
      */
     public Job createJob(NetId netId, NetId authNetId,
-                         String resourceType, int cpuUsage, int gpuUsage, int memoryUsage) throws Exception {
+                         String resourceType, int cpuUsage, int gpuUsage, int memoryUsage, String role) throws Exception {
         if (cpuUsage < 0 || gpuUsage < 0 || memoryUsage < 0) {
             throw new InvalidResourcesException(Math.min(cpuUsage, Math.min(gpuUsage, memoryUsage)));
         }
@@ -54,6 +54,10 @@ public class JobService {
         }
         if (!netId.toString().equals(authNetId.toString())) {
             throw new InvalidNetIdException(netId.toString());
+        }
+        if (!role.equals("employee")) {
+            System.out.println(role);
+            throw new BadCredentialsException(role);
         }
 
         Job newJob = new Job(netId, resourceType, cpuUsage, gpuUsage, memoryUsage);
