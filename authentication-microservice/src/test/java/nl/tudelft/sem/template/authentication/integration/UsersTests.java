@@ -9,10 +9,12 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import commons.Faculty;
+import commons.NetId;
+import java.util.ArrayList;
 import nl.tudelft.sem.template.authentication.authentication.JwtTokenGenerator;
 import nl.tudelft.sem.template.authentication.domain.user.AppUser;
 import nl.tudelft.sem.template.authentication.domain.user.HashedPassword;
-import nl.tudelft.sem.template.authentication.domain.user.NetId;
 import nl.tudelft.sem.template.authentication.domain.user.Password;
 import nl.tudelft.sem.template.authentication.domain.user.PasswordHashingService;
 import nl.tudelft.sem.template.authentication.domain.user.Role;
@@ -66,12 +68,14 @@ public class UsersTests {
         final Password testPassword = new Password("password123");
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
         final Role role = new Role("employee");
+        final Faculty faculty = new Faculty("EEMCS");
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
 
         RegistrationRequestModel model = new RegistrationRequestModel();
         model.setNetId(testUser.toString());
         model.setPassword(testPassword.toString());
         model.setRole(role.toString());
+        model.setFaculty(faculty.toString());
 
         // Act
         ResultActions resultActions = mockMvc.perform(post("/register")
@@ -94,8 +98,12 @@ public class UsersTests {
         final Password newTestPassword = new Password("password456");
         final HashedPassword existingTestPassword = new HashedPassword("password123");
         final Role role = new Role("employee");
+        final ArrayList<Faculty> faculties = new ArrayList<>();
+        faculties.add(new Faculty("EEMCS"));
+        //        final Set<Faculty> faculties = new HashSet<>();
+        //        faculties.add(new Faculty("EEMCS"));
 
-        AppUser existingAppUser = new AppUser(testUser, existingTestPassword, role);
+        AppUser existingAppUser = new AppUser(testUser, existingTestPassword, role, faculties);
         userRepository.save(existingAppUser);
 
         RegistrationRequestModel model = new RegistrationRequestModel();
@@ -123,6 +131,11 @@ public class UsersTests {
         final Password testPassword = new Password("password123");
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
         final Role role = new Role("employee");
+        final ArrayList<Faculty> faculties = new ArrayList<>();
+        final Faculty faculty = new Faculty("EEMCS");
+        faculties.add(faculty);
+        //        final Set<Faculty> faculties = new HashSet<>();
+        //        faculties.add(new Faculty("EEMCS"));
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
 
         when(mockAuthenticationManager.authenticate(argThat(authentication ->
@@ -135,7 +148,7 @@ public class UsersTests {
             argThat(userDetails -> userDetails.getUsername().equals(testUser.toString())))
         ).thenReturn(testToken);
 
-        AppUser appUser = new AppUser(testUser, testHashedPassword, role);
+        AppUser appUser = new AppUser(testUser, testHashedPassword, role, faculties);
         userRepository.save(appUser);
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();
@@ -207,7 +220,13 @@ public class UsersTests {
                     && wrongPassword.equals(authentication.getCredentials())
         ))).thenThrow(new BadCredentialsException("Invalid password"));
 
-        AppUser appUser = new AppUser(new NetId(testUser), testHashedPassword, new Role("employee"));
+        //        final Set<Faculty> faculties = new HashSet<>();
+        //        faculties.add(new Faculty("EEMCS"));
+
+        final ArrayList<Faculty> faculties = new ArrayList<>();
+        final Faculty faculty = new Faculty("EEMCS");
+        faculties.add(faculty);
+        AppUser appUser = new AppUser(new NetId(testUser), testHashedPassword, new Role("employee"), faculties);
         userRepository.save(appUser);
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();

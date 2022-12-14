@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.authentication.domain.user;
+package commons;
 
 import lombok.EqualsAndHashCode;
 

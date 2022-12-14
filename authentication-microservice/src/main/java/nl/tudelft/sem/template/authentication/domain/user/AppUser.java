@@ -1,5 +1,10 @@
 package nl.tudelft.sem.template.authentication.domain.user;
 
+import commons.Faculty;
+import commons.FacultyAttributeConverter;
+import commons.NetId;
+import commons.NetIdAttributeConverter;
+import java.util.ArrayList;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -38,6 +43,14 @@ public class AppUser extends HasEvents {
     @Convert(converter = RoleAttributeConverter.class)
     private Role role;
 
+    //    @Column(name = "faculties", nullable = false)
+    //    @Convert(converter = FacultyAttributeConverter.class)
+    //    private Set<Faculty> faculties;
+
+    @Column(name = "faculty", nullable = false)
+    @Convert(converter = FacultyAttributeConverter.class)
+    private ArrayList<Faculty> faculty;
+
     /**
      * Create new application user.
      *
@@ -45,10 +58,11 @@ public class AppUser extends HasEvents {
      * @param password The password for the new user
      * @param role The role of the new user(employee, admin, faculty account)
      */
-    public AppUser(NetId netId, HashedPassword password, Role role) {
+    public AppUser(NetId netId, HashedPassword password, Role role, ArrayList<Faculty> faculty) {
         this.netId = netId;
         this.password = password;
         this.role = role;
+        this.faculty = faculty;
         this.recordThat(new UserWasCreatedEvent(this.netId));
     }
 
@@ -67,6 +81,10 @@ public class AppUser extends HasEvents {
 
     public Role getRole() {
         return role;
+    }
+
+    public ArrayList<Faculty> getFaculty() {
+        return faculty;
     }
 
     /**

@@ -3,9 +3,11 @@ package nl.tudelft.sem.template.authentication.authentication;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import commons.Faculty;
+import commons.NetId;
+import java.util.ArrayList;
 import nl.tudelft.sem.template.authentication.domain.user.AppUser;
 import nl.tudelft.sem.template.authentication.domain.user.HashedPassword;
-import nl.tudelft.sem.template.authentication.domain.user.NetId;
 import nl.tudelft.sem.template.authentication.domain.user.Role;
 import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import org.assertj.core.api.ThrowableAssert;
@@ -38,8 +40,11 @@ public class JwtUserDetailsServiceTests {
         final NetId testUser = new NetId("SomeUser");
         final HashedPassword testHashedPassword = new HashedPassword("password123Hash");
         final Role role = new Role("employee");
+        final ArrayList<Faculty> faculties = new ArrayList<>();
+        faculties.add(new Faculty("EEMCS"));
+        faculties.add(new Faculty("3ME"));
 
-        AppUser appUser = new AppUser(testUser, testHashedPassword, role);
+        AppUser appUser = new AppUser(testUser, testHashedPassword, role, faculties);
         userRepository.save(appUser);
 
         // Act
@@ -58,8 +63,13 @@ public class JwtUserDetailsServiceTests {
         final NetId testUser = new NetId("AnotherUser");
         final String testPasswordHash = "password123Hash";
         final Role role = new Role("employee");
+        final ArrayList<Faculty> faculties = new ArrayList<>();
+        final Faculty faculty = new Faculty("EEMCS");
+        faculties.add(faculty);
+        //        final Set<Faculty> faculties = new HashSet<>();
+        //        faculties.add(new Faculty("EEMCS"));
 
-        AppUser appUser = new AppUser(testUser, new HashedPassword(testPasswordHash), role);
+        AppUser appUser = new AppUser(testUser, new HashedPassword(testPasswordHash), role, faculties);
         userRepository.save(appUser);
 
         // Act

@@ -1,5 +1,7 @@
 package nl.tudelft.sem.template.authentication.domain.user;
 
+import commons.NetId;
+
 /**
  * A DDD domain event that indicated a user was created.
  */
