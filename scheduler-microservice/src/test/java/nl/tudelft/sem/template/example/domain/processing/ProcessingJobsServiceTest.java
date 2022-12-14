@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import commons.FacultyResource;
 import commons.ScheduleJob;
+import commons.UpdateJob;
 import java.time.LocalDate;
 import java.util.List;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstance;
@@ -48,13 +49,116 @@ public class ProcessingJobsServiceTest {
         Mockito.when(restTemplate.getForEntity(url, FacultyResource[].class))
                 .thenReturn(new ResponseEntity<>(s, HttpStatus.OK));
 
-        ScheduledInstance expected = new ScheduledInstance(1L, facultyConstant, 5, 2, 2, dateConstant);
 
         processingJobsService.scheduleJob(scheduleJob);
+
+        Mockito.verify(restTemplate).postForEntity(processingJobsService.getJobsUrl() + "/updateStatus",
+                new UpdateJob(1, "scheduled", dateConstant), Void.class);
+
         List<ScheduledInstance> fromDb = scheduledInstanceRepository.findAllByJobId(1L);
 
+        ScheduledInstance expected = new ScheduledInstance(1L, facultyConstant, 5, 2, 2, dateConstant);
         assertThat(fromDb.size()).isEqualTo(1);
         assertThat(compareScheduledInstances(fromDb.get(0), expected)).isEqualTo(true);
+    }
+
+    @Test
+    public void scheduleJob_forOtherDay_worksCorrectly() {
+        String facultyConstant = "EEMCS";
+        LocalDate dateConstant = LocalDate.now().plusDays(1);
+
+        ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(5),
+                5, 2, 2);
+
+        FacultyResource[] dayOne = {new FacultyResource(facultyConstant, dateConstant, 10, 1, 1)};
+        FacultyResource[] dayTwo = {new FacultyResource(facultyConstant, dateConstant.plusDays(1), 5, 2, 2)};
+
+        String url = processingJobsService.getResourcesUrl() + "/facultyResources?faculty="
+                + facultyConstant + "&day=";
+
+        Mockito.when(restTemplate.getForEntity(url + dateConstant, FacultyResource[].class))
+                .thenReturn(new ResponseEntity<>(dayOne, HttpStatus.OK));
+        Mockito.when(restTemplate.getForEntity(url + dateConstant.plusDays(1), FacultyResource[].class))
+                .thenReturn(new ResponseEntity<>(dayTwo, HttpStatus.OK));
+
+        processingJobsService.scheduleJob(scheduleJob);
+
+        Mockito.verify(restTemplate).postForEntity(processingJobsService.getJobsUrl() + "/updateStatus",
+                new UpdateJob(1, "scheduled", dateConstant.plusDays(1)), Void.class);
+
+        List<ScheduledInstance> fromDb = scheduledInstanceRepository.findAllByJobId(1L);
+
+        ScheduledInstance expected = new ScheduledInstance(1L, facultyConstant, 5, 2, 2, dateConstant.plusDays(1));
+        assertThat(fromDb.size()).isEqualTo(1);
+        assertThat(compareScheduledInstances(fromDb.get(0), expected)).isEqualTo(true);
+    }
+
+    @Test
+    public void scheduleJob_splitBetweenFaculties_worksCorrectly() {
+        String facultyConstant = "EEMCS";
+        String facultyConstant2 = "3ME";
+        LocalDate dateConstant = LocalDate.now().plusDays(1);
+
+        ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(5),
+                5, 2, 2);
+
+        FacultyResource[] dayOne = {new FacultyResource(facultyConstant, dateConstant, 2, 1, 0),
+            new FacultyResource(facultyConstant2, dateConstant, 10, 10, 10)};
+
+        String url = processingJobsService.getResourcesUrl() + "/facultyResources?faculty="
+                + facultyConstant + "&day=";
+
+        Mockito.when(restTemplate.getForEntity(url + dateConstant, FacultyResource[].class))
+                .thenReturn(new ResponseEntity<>(dayOne, HttpStatus.OK));
+
+        processingJobsService.scheduleJob(scheduleJob);
+
+        Mockito.verify(restTemplate).postForEntity(processingJobsService.getJobsUrl() + "/updateStatus",
+                new UpdateJob(1, "scheduled", dateConstant), Void.class);
+
+        List<ScheduledInstance> fromDb = scheduledInstanceRepository.findAllByJobId(1L);
+
+        ScheduledInstance expectedEemcs = new ScheduledInstance(1L, facultyConstant, 2, 1, 0, dateConstant);
+        ScheduledInstance expected3me = new ScheduledInstance(1L, facultyConstant2, 3, 1, 2, dateConstant);
+        assertThat(fromDb.size()).isEqualTo(2);
+        for (var si : fromDb) {
+            if (si.getFaculty().equals(facultyConstant)) {
+                assertThat(compareScheduledInstances(si, expectedEemcs)).isEqualTo(true);
+            } else if (si.getFaculty().equals(facultyConstant2)) {
+                assertThat(compareScheduledInstances(si, expected3me)).isEqualTo(true);
+            }
+        }
+
+    }
+
+    @Test
+    public void scheduleJob_notAbleToSchedule_worksCorrectly() {
+        String facultyConstant = "EEMCS";
+        String facultyConstant2 = "3ME";
+        LocalDate dateConstant = LocalDate.now().plusDays(1);
+
+        ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(2),
+                50, 10, 2);
+
+        FacultyResource[] dayOne = {new FacultyResource(facultyConstant, dateConstant, 2, 1, 0),
+                new FacultyResource(facultyConstant2, dateConstant, 10, 10, 10)};
+        FacultyResource[] dayTwo = {new FacultyResource(facultyConstant, dateConstant.plusDays(1), 5, 2, 2)};
+
+        String url = processingJobsService.getResourcesUrl() + "/facultyResources?faculty="
+                + facultyConstant + "&day=";
+
+        Mockito.when(restTemplate.getForEntity(url + dateConstant, FacultyResource[].class))
+                .thenReturn(new ResponseEntity<>(dayOne, HttpStatus.OK));
+        Mockito.when(restTemplate.getForEntity(url + dateConstant.plusDays(1), FacultyResource[].class))
+                .thenReturn(new ResponseEntity<>(dayTwo, HttpStatus.OK));
+
+        processingJobsService.scheduleJob(scheduleJob);
+
+        Mockito.verify(restTemplate).postForEntity(processingJobsService.getJobsUrl() + "/updateStatus",
+                new UpdateJob(1, "unscheduled", null), Void.class);
+
+        List<ScheduledInstance> fromDb = scheduledInstanceRepository.findAllByJobId(1L);
+        assertThat(fromDb.size()).isEqualTo(0);
     }
 
     private boolean compareScheduledInstances(ScheduledInstance a, ScheduledInstance b) {
