@@ -67,10 +67,13 @@ public class ProcessingJobsServiceTest {
         String facultyConstant = "EEMCS";
         LocalDate dateConstant = LocalDate.now().plusDays(1);
 
+        ScheduledInstance toDb = new ScheduledInstance(4L, "EEMCS", 6, 5, 5, dateConstant);
+        scheduledInstanceRepository.save(toDb);
+
         ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(5),
                 5, 2, 2);
 
-        FacultyResource[] dayOne = {new FacultyResource(facultyConstant, dateConstant, 10, 1, 1)};
+        FacultyResource[] dayOne = {new FacultyResource(facultyConstant, dateConstant, 10, 7, 7)};
         FacultyResource[] dayTwo = {new FacultyResource(facultyConstant, dateConstant.plusDays(1), 5, 2, 2)};
 
         String url = processingJobsService.getResourcesUrl() + "/facultyResources?faculty="
@@ -154,6 +157,42 @@ public class ProcessingJobsServiceTest {
                 .thenReturn(new ResponseEntity<>(dayOne, HttpStatus.OK));
         Mockito.when(restTemplate.getForEntity(url + dateConstant.plusDays(1), FacultyResource[].class))
                 .thenReturn(new ResponseEntity<>(dayTwo, HttpStatus.OK));
+
+        processingJobsService.scheduleJob(scheduleJob);
+
+        Mockito.verify(restTemplate).postForEntity(processingJobsService.getJobsUrl() + "/updateStatus",
+                new UpdateJob(1, "unscheduled", null), Void.class);
+
+        List<ScheduledInstance> fromDb = scheduledInstanceRepository.findAllByJobId(1L);
+        assertThat(fromDb.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void scheduleJob_notAbleToSchedule_fullDay_worksCorrectly() {
+        String facultyConstant = "EEMCS";
+        String facultyConstant2 = "3ME";
+        LocalDate dateConstant = LocalDate.now().plusDays(1);
+
+        ScheduledInstance toDb = new ScheduledInstance(4L, "3ME", 7, 1, 1, dateConstant);
+        scheduledInstanceRepository.save(toDb);
+
+        //CHECKSTYLE.OFF: Indentation
+        FacultyResource[] dayOne = {
+                new FacultyResource(facultyConstant, dateConstant, 2, 1, 0),
+                new FacultyResource(facultyConstant2, dateConstant, 10, 10, 10)};
+        //CHECKSTYLE.ON: Indentation
+        FacultyResource[] dayTwo = {new FacultyResource(facultyConstant, dateConstant.plusDays(1), 5, 2, 2)};
+
+        String url = processingJobsService.getResourcesUrl() + "/facultyResources?faculty="
+                + facultyConstant + "&day=";
+
+        Mockito.when(restTemplate.getForEntity(url + dateConstant, FacultyResource[].class))
+                .thenReturn(new ResponseEntity<>(dayOne, HttpStatus.OK));
+        Mockito.when(restTemplate.getForEntity(url + dateConstant.plusDays(1), FacultyResource[].class))
+                .thenReturn(new ResponseEntity<>(dayTwo, HttpStatus.OK));
+
+        ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(2),
+                6, 2, 2);
 
         processingJobsService.scheduleJob(scheduleJob);
 
