@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.example.domain.processing;
 
 import commons.FacultyResource;
 import commons.ScheduleJob;
+import commons.UpdateJob;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,7 +10,6 @@ import java.util.List;
 import lombok.Synchronized;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstance;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstanceRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -59,8 +59,9 @@ public class ProcessingJobsService {
                 trySchedulingBetween(j, LocalDate.now().plusDays(1), j.getScheduleBefore());
 
         if (scheduledInstances.isEmpty()) {
-            // TODO: inform the Job microservice that the job was not scheduled
-            // can't be done right now because there is no such endpoint.
+            // inform the Job microservice that the job was not scheduled
+            restTemplate.postForEntity(jobsUrl + "/updateStatus",
+                    new UpdateJob(j.getJobId(), "unscheduled", null), Void.class);
             return;
         }
 
@@ -70,8 +71,9 @@ public class ProcessingJobsService {
             System.out.println("There was a problem: " + e.getMessage());
         }
 
-        // TODO: inform the Job microservice about a success!
-        // can't be done right now because there is no such endpoint.
+        // inform the Job microservice about a success!
+        restTemplate.postForEntity(jobsUrl + "/updateStatus",
+                new UpdateJob(j.getJobId(), "scheduled", scheduledInstances.get(0).getDate()), Void.class);
         System.out.println("saved!");
     }
 
@@ -106,7 +108,7 @@ public class ProcessingJobsService {
                 cpuToSchedule -= providedCpu;
                 gpuToSchedule -= providedGpu;
                 memoryToSchedule -= providedMemory;
-                scheduledInstances.add(new ScheduledInstance(job.getJobId(), job.getFaculty(),
+                scheduledInstances.add(new ScheduledInstance(job.getJobId(), r.getFaculty(),
                         providedCpu, providedGpu, providedMemory, currentDate));
             }
 
