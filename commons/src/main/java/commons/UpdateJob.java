@@ -11,7 +11,6 @@ public class UpdateJob {
 
     private long id;
     private String status;
-
     private LocalDate scheduleDate;
 
     /**

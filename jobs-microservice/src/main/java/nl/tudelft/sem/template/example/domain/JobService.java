@@ -3,13 +3,11 @@ package nl.tudelft.sem.template.example.domain;
 
 import commons.Job;
 import commons.NetId;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
-
-
-
 
 /**
  * A DDD service for handling jobs.
@@ -138,5 +136,23 @@ public class JobService {
             throw new BadCredentialsException(role);
         }
         return jobRepository.findAll();
+    }
+
+    /**
+     * Update information about the Job specified by a microservice.
+     *
+     * @param id id of the Job
+     * @param status the new status of the Job
+     * @param localDate the time the Job is scheduled to start
+     * @throws Exception if the id does not exist in the database
+     */
+    public void updateJob(long id, String status, LocalDate localDate) throws Exception {
+        Optional<Job> jobOptional = jobRepository.findById(id);
+        if (jobOptional.isEmpty()) {
+            throw new InvalidIdException(id);
+        }
+        Job job = jobOptional.get();
+        job.setStatus(status);
+        jobRepository.save(job);
     }
 }

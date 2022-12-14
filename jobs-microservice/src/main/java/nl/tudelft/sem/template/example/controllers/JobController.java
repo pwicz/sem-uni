@@ -3,6 +3,8 @@ package nl.tudelft.sem.template.example.controllers;
 
 import commons.Job;
 import commons.NetId;
+import commons.UpdateJob;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
@@ -25,8 +27,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
-
 
 
 @RestController
@@ -169,6 +169,26 @@ public class JobController {
     public ResponseEntity deleteJob(@RequestBody long jobId) throws Exception {
         try {
             this.jobService.deleteJob(jobId);
+        } catch (InvalidIdException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, invalidId, e);
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * REST API post request to update the information about a Job.
+     *
+     * @param request the parameters to find and update
+     * @return 200 HTTP CODE if everything works as planned
+     */
+    @PostMapping("/update")
+    public ResponseEntity updateJob(@RequestBody UpdateJob request) throws Exception {
+        try {
+            long id = request.getId();
+            String status = request.getStatus();
+            LocalDate localDate = request.getScheduleDate();
+
+            this.jobService.updateJob(id, status, localDate);
         } catch (InvalidIdException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, invalidId, e);
         }
