@@ -140,8 +140,11 @@ public class ProcessingJobsServiceTest {
         ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(2),
                 50, 10, 2);
 
-        FacultyResource[] dayOne = {new FacultyResource(facultyConstant, dateConstant, 2, 1, 0),
+        //CHECKSTYLE.OFF: Indentation
+        FacultyResource[] dayOne = {
+                new FacultyResource(facultyConstant, dateConstant, 2, 1, 0),
                 new FacultyResource(facultyConstant2, dateConstant, 10, 10, 10)};
+        //CHECKSTYLE.ON: Indentation
         FacultyResource[] dayTwo = {new FacultyResource(facultyConstant, dateConstant.plusDays(1), 5, 2, 2)};
 
         String url = processingJobsService.getResourcesUrl() + "/facultyResources?faculty="
