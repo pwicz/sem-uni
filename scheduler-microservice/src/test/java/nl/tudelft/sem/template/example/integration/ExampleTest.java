@@ -36,8 +36,11 @@ public class ExampleTest {
     @Autowired
     private transient AuthManager mockAuthenticationManager;
 
-
-    @Test
+    /**
+     * This function is kept as an example. It is not a valid test anymore.
+     *
+     * @throws Exception yes it does
+     */
     public void helloWorld() throws Exception {
         // Arrange
         // Notice how some custom parts of authorisation need to be mocked.
