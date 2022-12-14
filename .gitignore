@@ -28,4 +28,5 @@ gradle-app.setting
 
 *.db
 
-.idea
+.idea/
+
