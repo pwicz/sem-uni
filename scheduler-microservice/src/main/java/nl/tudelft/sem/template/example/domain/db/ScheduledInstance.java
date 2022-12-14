@@ -48,4 +48,32 @@ public class ScheduledInstance {
     public Long getId() {
         return id;
     }
+
+    public Long getJobId() {
+        return jobId;
+    }
+
+    public String getFaculty() {
+        return faculty;
+    }
+
+    public int getCpuUsage() {
+        return cpuUsage;
+    }
+
+    public int getGpuUsage() {
+        return gpuUsage;
+    }
+
+    public int getMemoryUsage() {
+        return memoryUsage;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
 }

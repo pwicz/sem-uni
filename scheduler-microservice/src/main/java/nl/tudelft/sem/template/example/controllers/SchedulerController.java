@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import commons.Job;
+import commons.ScheduleJob;
 import nl.tudelft.sem.template.example.domain.processing.ProcessingJobsService;
 import nl.tudelft.sem.template.example.domain.processing.RemovingJobsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +31,8 @@ public class SchedulerController {
      * @return confirmation that a job is now being processed
      */
     @PostMapping("/schedule")
-    public ResponseEntity<String> scheduleJob(@RequestBody Job job) {
-        // 1. Send the job to the processing queue
-        processingJobsService.addToQueue(job);
-
+    public ResponseEntity<String> scheduleJob(@RequestBody ScheduleJob job) {
+        processingJobsService.scheduleJob(job);
         return ResponseEntity.ok("Processing");
     }
 
