@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.example.domain;
 
 import commons.Node;
 import commons.Resource;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -68,6 +69,27 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
     @Query(
             nativeQuery = true,
             value = "UPDATE Node SET date = ?2, days = ?3 WHERE faculty = ?1")
-    void updateRelease(String facultyToUpdate, String newDate, int newDays);
+    void updateRelease(String facultyToUpdate, LocalDate newDate, int newDays);
+
+    /**
+     * Returns node with the id.
+     *
+     * @param  id of the node you want to return
+     */
+    @Query(
+            nativeQuery = true,
+            value = "SELECT Node WHERE id = ?1")
+    Optional<Node> getNodeById(long id);
+
+    /**
+     * flag the ndoe with id as deleted from tomorrow.
+     *
+     * @param  id of the node to delete
+     * @param  date deleted from tomorrow
+     */
+    @Query(
+            nativeQuery = true,
+            value = "UPDATE Node SET removedDate = ?2 WHERE id = ?1")
+    void setAsDeleted(long id, LocalDate date);
 
 }

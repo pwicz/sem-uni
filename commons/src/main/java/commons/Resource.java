@@ -1,26 +1,33 @@
 package commons;
 
 public class Resource {
-    private final int CPU;
-    private final int GPU;
-    private final int MEM;
+    private final int cpu;
+    private final int gpu;
+    private final int mem;
 
-    public Resource(int CPU, int GPU, int MEM){
-        this.CPU = CPU;
-        this.GPU = GPU;
-        this.MEM = MEM;
+    /**
+     * Constructor for Resource.
+     *
+     * @param cpu number of cpu resource
+     * @param gpu number of gpu resource
+     * @param mem number of memory resource
+     */
+    public Resource(int cpu, int gpu, int mem) {
+        this.cpu = cpu;
+        this.gpu = gpu;
+        this.mem = mem;
     }
 
-    public int getCPU() {
-        return this.CPU;
+    public int getCpu() {
+        return this.cpu;
     }
 
-    public int getGPU() {
-        return this.GPU;
+    public int getGpu() {
+        return this.gpu;
     }
 
-    public int getMEM() {
-        return this.MEM;
+    public int getMem() {
+        return this.mem;
     }
 
 }

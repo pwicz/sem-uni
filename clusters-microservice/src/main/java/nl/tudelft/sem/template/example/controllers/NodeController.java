@@ -10,6 +10,7 @@ import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.NodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,8 +23,8 @@ import org.springframework.web.client.RestTemplate;
 @RestController
 @RequestMapping("/cluster")
 public class NodeController {
-    private final RestTemplate restTemplate;
-    private final NodeRepository repo;
+    private final transient RestTemplate restTemplate;
+    private final transient NodeRepository repo;
     private final transient AuthManager authManager;
 
     /**
@@ -47,7 +48,7 @@ public class NodeController {
      */
     @GetMapping(path = {"/resources/{faculty}"})
     public ResponseEntity<Resource> getTotalResourcesForFaculty(@PathVariable("faculty") String faculty) {
-        if (authManager.getRole() != "Admin") {
+        if (!authManager.getRole().equals("Admin")) {
             return ResponseEntity.badRequest().build();
         }
 
@@ -56,9 +57,9 @@ public class NodeController {
         int gpu = 0;
         int mem = 0;
         for (Node n : facultyNodes) {
-            cpu += n.getResource().getCPU();
-            gpu += n.getResource().getGPU();
-            mem += n.getResource().getMEM();
+            cpu += n.getCpu();
+            gpu += n.getGpu();
+            mem += n.getMemory();
         }
         Resource r = new Resource(cpu, gpu, mem);
         return ResponseEntity.ok(r);
@@ -70,7 +71,7 @@ public class NodeController {
      */
     @GetMapping(path = {"/resources"})
     public ResponseEntity<List<Node>> getAllNodes() {
-        if (authManager.getRole() != "Admin") {
+        if (!authManager.getRole().equals("Admin")) {
             return ResponseEntity.badRequest().build();
         }
         List<Node> nodes = repo.getAllNodes().get();
@@ -102,12 +103,13 @@ public class NodeController {
     public ResponseEntity<Node> addNode(@RequestBody Node node) {
 
         //check for if url looks like url later
-        if (node.getName() == null || node.getUrl() == null || node.getFaculty() == null
-                || node.getToken() == null || node.getResource() == null) {
+        if (node.getName() == null || node.getUrl() == null
+                || node.getFaculty() == null
+                || node.getToken() == null) {
             return ResponseEntity.badRequest().build();
         }
-        if (node.getResource().getCPU() < node.getResource().getGPU()
-                || node.getResource().getCPU() < node.getResource().getMEM()) {
+        if (node.getCpu() < node.getGpu()
+                || node.getCpu() < node.getMemory()) {
             return ResponseEntity.badRequest().build();
         }
         if (!node.getName().equals(authManager.getNetId())) {
@@ -138,7 +140,7 @@ public class NodeController {
     @PostMapping("/releaseFaculty?faculty={faculty}&date={date}&days={days}")
     public ResponseEntity<String> releaseFaculty(@PathVariable("faculty") String faculty,
                                                  @PathVariable("date") LocalDate date, @PathVariable("days") int days) {
-        if (authManager.getRole() != "FacultyAccount") {
+        if (!authManager.getRole().equals("FacultyAccount")) {
             return ResponseEntity.badRequest().build();
         }
         if (!getFaculty(authManager.getNetId()).contains(faculty)) {
@@ -147,7 +149,7 @@ public class NodeController {
         if (date == null || faculty == null || date.isBefore(LocalDate.now()) || days < 1) {
             return ResponseEntity.badRequest().build();
         }
-        repo.updateRelease(faculty, date.toString(), days);
+        repo.updateRelease(faculty, date, days);
         return ResponseEntity.ok("Released");
     }
 
@@ -165,18 +167,28 @@ public class NodeController {
     }
 
 
-    //TODO:
-    //@DeleteMapping("/delete/{id}")
-    //hella complicated
-
-    //    public Question getRandomQuestion() {
-    //        return ClientBuilder.newClient(new ClientConfig()) //
-    //                .target(serverURL).path("api/questions/random")
-    //                  //the URL path which we HTTP GET for comparative questions
-    //                .request(APPLICATION_JSON) //
-    //                .accept(APPLICATION_JSON) //
-    //                .get(new GenericType<>() {
-    //                });
-
+    /**
+     * Marks Node with the id as deleted.
+     * Later when databse clearner is called it will actually delete from database.
+     *
+     * @param id id of the node you want to delete
+     * @param token token of access
+     */
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteNode(@PathVariable("id") long id, @RequestBody String token) {
+        //Node n = repo.getNodeById(id).get();
+        if (token == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        if (!getFaculty(authManager.getNetId()).contains(repo.getNodeById(id).get().getFaculty())) {
+            return ResponseEntity.badRequest().build();
+        }
+        if (!token.equals(repo.getNodeById(id).get().getToken())) {
+            return ResponseEntity.badRequest().build();
+        }
+        repo.setAsDeleted(id, LocalDate.now().plusDays(1L));
+        Node n = repo.getNodeById(id).get();
+        return ResponseEntity.ok(n.getRemovedDate().toString());
+    }
 }
 

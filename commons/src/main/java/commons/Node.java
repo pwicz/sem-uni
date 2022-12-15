@@ -1,25 +1,54 @@
 package commons;
 
 import java.time.LocalDate;
+import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import lombok.NoArgsConstructor;
 
 
 @Entity
+@Table(name = "nodes")
+@NoArgsConstructor
 public class Node implements Comparable {
     @Id
+    @Column(name = "id", nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.AUTO)
     //@Getter @Setter, does this work still?
     private long id;
+
+    @Column(name = "netId", nullable = false)
     private String name; //netId?
+
+    @Column(name = "url", nullable = false)
     private String url;
+
+    @Column(name = "faculty", nullable = false)
     private String faculty;
+
+    @Column(name = "token", nullable = false)
     private String token; //user auth token?
-    private Resource resource; // this should just be cpu, gpu, mem
+
+    @Column(name = "cpu", nullable = false)
+    private int cpu;
+
+    @Column(name = "gpu", nullable = false)
+    private int gpu;
+
+    @Column(name = "mem", nullable = false)
+    private int mem;
+
+    @Column(name = "realeasedStart", nullable = true)
     private LocalDate released = null;
+
+    @Column(name = "realeasedEnd", nullable = true)
     private LocalDate releaseEnd = null;
+    @Column(name = "removedDate", nullable = true)
+    private LocalDate removedDate = null;
 
     /**
      * Constructor for the Node class, represent the nodes in the culster.
@@ -36,7 +65,9 @@ public class Node implements Comparable {
         this.url = url;
         this.faculty = faculty;
         this.token = token;
-        this.resource = resource;
+        this.cpu = cpuUsage;
+        this.gpu  = gpuUsage;
+        this.mem = memUsage;
     }
 
     public long getId() {
@@ -67,8 +98,16 @@ public class Node implements Comparable {
         this.token = token;
     }
 
-    public Resource getResource() {
-        return resource;
+    public int getCpu() {
+        return cpu;
+    }
+
+    public int getGpu() {
+        return gpu;
+    }
+
+    public int getMemory() {
+        return mem;
     }
 
     public LocalDate getReleased() {
@@ -85,6 +124,14 @@ public class Node implements Comparable {
 
     public void setReleaseTime(LocalDate releasEnd) {
         this.releaseEnd = releaseEnd;
+    }
+
+    public LocalDate getRemovedDate() {
+        return removedDate;
+    }
+
+    public void setRemovedDate(LocalDate removedDate) {
+        this.removedDate = removedDate;
     }
 
     /**
