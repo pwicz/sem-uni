@@ -1,5 +1,6 @@
 package commons;
 
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -8,8 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.NoArgsConstructor;
-
-import java.util.Objects;
 
 @Entity
 @Table(name = "jobs")
@@ -129,10 +128,16 @@ public class Job {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Job job = (Job) o;
-        return jobId == job.jobId && cpuUsage == job.cpuUsage && gpuUsage == job.gpuUsage && memoryUsage == job.memoryUsage && Objects.equals(netId, job.netId) && Objects.equals(resourceType, job.resourceType) && Objects.equals(status, job.status);
+        return jobId == job.jobId && cpuUsage == job.cpuUsage && gpuUsage == job.gpuUsage && memoryUsage == job.memoryUsage
+                && Objects.equals(netId, job.netId) && Objects.equals(resourceType, job.resourceType)
+                && Objects.equals(status, job.status);
     }
 
     @Override
