@@ -1,5 +1,9 @@
-package server;
+package nl.tudelft.sem.template.example.controllers;
+
+import commons.Node;
+import commons.Resource;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
+import nl.tudelft.sem.template.example.domain.NodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -129,3 +133,4 @@ public class NodeController {
 //                });
 
 }
+

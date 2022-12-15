@@ -1,4 +1,4 @@
-package server;
+package commons;
 
 public class Resource {
     private int CPU;
@@ -24,3 +24,4 @@ public class Resource {
     }
 
 }
+

@@ -1,5 +1,8 @@
-package server;
+package nl.tudelft.sem.template.example.domain;
 
+
+import commons.Node;
+import commons.Resource;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
