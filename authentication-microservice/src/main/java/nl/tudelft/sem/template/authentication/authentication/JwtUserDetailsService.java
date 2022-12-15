@@ -1,9 +1,11 @@
 package nl.tudelft.sem.template.authentication.authentication;
 
+import commons.NetId;
 import java.util.ArrayList;
-import nl.tudelft.sem.template.authentication.domain.user.NetId;
+import java.util.List;
 import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -39,8 +41,9 @@ public class JwtUserDetailsService implements UserDetailsService {
         }
 
         var user = optionalUser.get();
-
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(user.getRole());
         return new User(user.getNetId().toString(), user.getPassword().toString(),
-                new ArrayList<>()); // no authorities/roles
+                authorities);
     }
 }

@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.when;
 
+import commons.Faculty;
+import commons.NetId;
+import java.util.ArrayList;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,11 +37,15 @@ public class RegistrationServiceTests {
         // Arrange
         final NetId testUser = new NetId("SomeUser");
         final Password testPassword = new Password("password123");
+        final Role role = new Role("employee");
+        final ArrayList<Faculty> faculties = new ArrayList<>();
+        faculties.add(new Faculty("EEMCS"));
+
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
 
         // Act
-        registrationService.registerUser(testUser, testPassword);
+        registrationService.registerUser(testUser, testPassword, role, faculties);
 
         // Assert
         AppUser savedUser = userRepository.findByNetId(testUser).orElseThrow();
@@ -53,12 +60,16 @@ public class RegistrationServiceTests {
         final NetId testUser = new NetId("SomeUser");
         final HashedPassword existingTestPassword = new HashedPassword("password123");
         final Password newTestPassword = new Password("password456");
+        final Role role = new Role("employee");
+        final ArrayList<Faculty> faculties = new ArrayList<>();
+        final Faculty faculty = new Faculty("EEMCS");
+        faculties.add(faculty);
 
-        AppUser existingAppUser = new AppUser(testUser, existingTestPassword);
+        AppUser existingAppUser = new AppUser(testUser, existingTestPassword, role, faculties);
         userRepository.save(existingAppUser);
 
         // Act
-        ThrowingCallable action = () -> registrationService.registerUser(testUser, newTestPassword);
+        ThrowingCallable action = () -> registrationService.registerUser(testUser, newTestPassword, role, faculties);
 
         // Assert
         assertThatExceptionOfType(Exception.class)
@@ -69,4 +80,30 @@ public class RegistrationServiceTests {
         assertThat(savedUser.getNetId()).isEqualTo(testUser);
         assertThat(savedUser.getPassword()).isEqualTo(existingTestPassword);
     }
+
+    @Test
+    public void createUser_withMultipleFaculties_worksCorrectly() throws Exception {
+        // Arrange
+        final NetId testUser = new NetId("SomeUser");
+        final Password testPassword = new Password("password123");
+        final Role role = new Role("employee");
+        final ArrayList<Faculty> faculties = new ArrayList<>();
+        faculties.add(new Faculty("EEMCS"));
+        faculties.add(new Faculty("3ME"));
+        faculties.add(new Faculty("CG"));
+
+        final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
+        when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
+
+        // Act
+        registrationService.registerUser(testUser, testPassword, role, faculties);
+
+        // Assert
+        AppUser savedUser = userRepository.findByNetId(testUser).orElseThrow();
+
+        assertThat(savedUser.getNetId()).isEqualTo(testUser);
+        assertThat(savedUser.getPassword()).isEqualTo(testHashedPassword);
+        assertThat(savedUser.getFaculty()).isEqualTo(faculties);
+    }
+
 }

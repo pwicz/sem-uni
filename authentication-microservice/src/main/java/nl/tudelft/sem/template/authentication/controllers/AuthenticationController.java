@@ -1,12 +1,19 @@
 package nl.tudelft.sem.template.authentication.controllers;
 
+import commons.Faculty;
+import commons.NetId;
+import java.util.ArrayList;
 import nl.tudelft.sem.template.authentication.authentication.JwtTokenGenerator;
 import nl.tudelft.sem.template.authentication.authentication.JwtUserDetailsService;
-import nl.tudelft.sem.template.authentication.domain.user.NetId;
+import nl.tudelft.sem.template.authentication.domain.user.GetFacultyService;
 import nl.tudelft.sem.template.authentication.domain.user.Password;
 import nl.tudelft.sem.template.authentication.domain.user.RegistrationService;
+import nl.tudelft.sem.template.authentication.domain.user.Role;
+import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import nl.tudelft.sem.template.authentication.models.AuthenticationRequestModel;
 import nl.tudelft.sem.template.authentication.models.AuthenticationResponseModel;
+import nl.tudelft.sem.template.authentication.models.FacultyRequestModel;
+import nl.tudelft.sem.template.authentication.models.FacultyResponseModel;
 import nl.tudelft.sem.template.authentication.models.RegistrationRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +39,10 @@ public class AuthenticationController {
 
     private final transient RegistrationService registrationService;
 
+    private final transient GetFacultyService getFacultyService;
+
+    private final transient UserRepository userRepository;
+
     /**
      * Instantiates a new UsersController.
      *
@@ -39,16 +50,22 @@ public class AuthenticationController {
      * @param jwtTokenGenerator     the token generator
      * @param jwtUserDetailsService the user service
      * @param registrationService   the registration service
+     * @param getFacultyService     the getFaculty service
+     * @param userRepository        the user repository
      */
     @Autowired
     public AuthenticationController(AuthenticationManager authenticationManager,
                                     JwtTokenGenerator jwtTokenGenerator,
                                     JwtUserDetailsService jwtUserDetailsService,
-                                    RegistrationService registrationService) {
+                                    RegistrationService registrationService,
+                                    GetFacultyService getFacultyService,
+                                    UserRepository userRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenGenerator = jwtTokenGenerator;
         this.jwtUserDetailsService = jwtUserDetailsService;
         this.registrationService = registrationService;
+        this.getFacultyService = getFacultyService;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -91,11 +108,34 @@ public class AuthenticationController {
         try {
             NetId netId = new NetId(request.getNetId());
             Password password = new Password(request.getPassword());
-            registrationService.registerUser(netId, password);
+            Role role = new Role(request.getRole());
+            ArrayList<Faculty> faculties = new ArrayList<>();
+            for (String f : request.getFaculty().split(";")) {
+                faculties.add(new Faculty(f));
+            }
+            registrationService.registerUser(netId, password, role, faculties);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
 
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Endpoint for retrieving the faculty of a user.
+     *
+     * @param request The registration model
+     * @return 200 OK if the registration is successful
+     * @throws Exception if a user with this netid already exists
+     */
+    @PostMapping("/faculty")
+    public ResponseEntity<FacultyResponseModel> retrieveFaculty(@RequestBody FacultyRequestModel request) throws Exception {
+        try {
+            NetId netId = new NetId(request.getNetId());
+            ArrayList<Faculty> faculty = getFacultyService.getFaculty(netId);
+            return ResponseEntity.ok(new FacultyResponseModel(faculty.toString()));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 }

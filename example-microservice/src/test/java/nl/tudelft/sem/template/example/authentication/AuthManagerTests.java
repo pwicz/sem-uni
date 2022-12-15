@@ -20,9 +20,10 @@ public class AuthManagerTests {
     public void getNetidTest() {
         // Arrange
         String expected = "user123";
+        String role = "employee";
         var authenticationToken = new UsernamePasswordAuthenticationToken(
                 expected,
-                null, List.of() // no credentials and no authorities
+                role, List.of() // no credentials and no authorities
         );
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 

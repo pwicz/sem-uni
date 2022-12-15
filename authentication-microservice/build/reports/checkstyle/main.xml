@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="8.37">
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\Application.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\application\user\UserWasCreatedListener.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\authentication\JwtTokenGenerator.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\authentication\JwtUserDetailsService.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\config\H2Config.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\config\WebSecurityConfig.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\controllers\AuthenticationController.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\domain\HasEvents.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\domain\providers\TimeProvider.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\domain\providers\implementations\CurrentTimeProvider.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\domain\user\AppUser.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\domain\user\HashedPassword.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\domain\user\HashedPasswordAttributeConverter.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\domain\user\NetId.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\domain\user\NetIdAlreadyInUseException.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\domain\user\NetIdAttributeConverter.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\domain\user\Password.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\domain\user\PasswordHashingService.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\domain\user\PasswordWasChangedEvent.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\domain\user\RegistrationService.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\domain\user\UserRepository.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\domain\user\UserWasCreatedEvent.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\models\AuthenticationRequestModel.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\models\AuthenticationResponseModel.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\authentication-microservice\src\main\java\nl\tudelft\sem\template\authentication\models\RegistrationRequestModel.java">
+</file>
+</checkstyle>

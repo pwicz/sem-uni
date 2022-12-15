@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="8.37">
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\example-microservice\src\test\java\nl\tudelft\sem\template\example\authentication\AuthManagerTests.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\example-microservice\src\test\java\nl\tudelft\sem\template\example\authentication\JwtAuthenticationEntryPointTests.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\example-microservice\src\test\java\nl\tudelft\sem\template\example\authentication\JwtRequestFilterTests.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\example-microservice\src\test\java\nl\tudelft\sem\template\example\authentication\JwtTokenVerifierTests.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\example-microservice\src\test\java\nl\tudelft\sem\template\example\integration\ExampleTest.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\example-microservice\src\test\java\nl\tudelft\sem\template\example\profiles\MockAuthenticationManagerProfile.java">
+</file>
+<file name="C:\Users\filip\Desktop\TUDelft\SEM\SEM09b\example-microservice\src\test\java\nl\tudelft\sem\template\example\profiles\MockTokenVerifierProfile.java">
+</file>
+</checkstyle>
