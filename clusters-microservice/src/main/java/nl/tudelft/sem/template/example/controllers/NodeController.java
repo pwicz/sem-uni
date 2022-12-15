@@ -78,7 +78,7 @@ public class NodeController {
         if (!node.getName().equals(authManager.getNetId())){
             return ResponseEntity.badRequest().build();
         }
-        if (!getFaculty(token).contains(node.getFaculty())){
+        if (!getFaculty(authManager.getNetId()).contains(node.getFaculty())){
             return ResponseEntity.badRequest().build();
         }
         try {
@@ -96,7 +96,7 @@ public class NodeController {
         if (authManager.getRole() != "FacultyAccount") {
             return ResponseEntity.badRequest().build();
         }
-        if (!getFaculty(token).contains(faculty)){
+        if (!getFaculty(authManager.getNetId()).contains(faculty)){
             return ResponseEntity.badRequest().build();
         }
         if (date == null || faculty == null || date.isBefore(LocalDate.now()) || days<1){
@@ -107,7 +107,7 @@ public class NodeController {
     }
 
     private List<String> getFaculty(String token) {
-        String usersUrl = "http://localhost:8082";
+        String usersUrl = "http://localhost:8082"; //faculty request model
 
         ResponseEntity<String[]> facultyType = restTemplate.getForEntity(usersUrl
                 + "/faculty", String[].class);
