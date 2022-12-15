@@ -18,6 +18,15 @@ public class JobService {
 
     private static final String nullValue = "null";
 
+    private String url = "http://localhost:8083";
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     private final transient JobRepository jobRepository;
 
