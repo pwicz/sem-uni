@@ -5,25 +5,33 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import org.springframework.web.client.RestTemplate;
+
 
 @RestController
 @RequestMapping("/cluster")
 public class NodeController {
+    private final RestTemplate restTemplate;
     private final NodeRepository repo;
     private final transient AuthManager authManager;
 
     @Autowired
-    public NodeController(NodeRepository repo, AuthManager authManager){
+    public NodeController(NodeRepository repo, AuthManager authManager, RestTemplate restTemplate){
         this.repo = repo;
         this.authManager = authManager;
+        this.restTemplate = restTemplate;
     }
 
     @GetMapping(path = {"/resources/{faculty}"})
     public ResponseEntity<Resource> getTotalResourcesForFaculty(@PathVariable("faculty") String faculty){
-//        if (!repo.existsByFaculty(faculty)) {
-//            return ResponseEntity.badRequest().build();
-//        }
+        if (authManager.getRole() != "Admin") {
+            return ResponseEntity.badRequest().build();
+        }
+
         List<Node> facultyNodes = repo.getNodesByFaculty(faculty).get();
         int cpu = 0;
         int gpu = 0;
@@ -37,19 +45,25 @@ public class NodeController {
         return ResponseEntity.ok(r);
     }
 
+    @GetMapping(path = {"/resources"})
+    public ResponseEntity<List<Node>> getAllNodes(){
+        if (authManager.getRole() != "Admin") {
+            return ResponseEntity.badRequest().build();
+        }
+        List<Node> nodes = repo.getAllNodes().get();
+        return ResponseEntity.ok(nodes);
+    }
+
     @GetMapping(path = {"/resources?faculty={faculty}&day={date}"})
     public ResponseEntity<Resource> getFacultyAvailableResourcesForDay(@PathVariable("faculty") String faculty, @PathVariable("date") String date){
-//        if (!repo.existsByFaculty(faculty)) {
-//            return ResponseEntity.badRequest().build();
-//        }
         Resource facultyResources = repo.getFreeResources(faculty, date).get();
         return ResponseEntity.ok(facultyResources);
     }
 
     @PostMapping(path = {"/addNode"})
     public ResponseEntity<Node> addNode(@RequestBody Node node){
-        //check if role is valid
-        //check for if url looks like url
+
+        //check for if url looks like url later
         if (node.getName()==null || node.getUrl()==null || node.getFaculty()==null ||
                 node.getToken()==null || node.getResource() == null){
             return ResponseEntity.badRequest().build();
@@ -60,7 +74,11 @@ public class NodeController {
         if (!node.getName().equals(authManager.getNetId())){
             return ResponseEntity.badRequest().build();
         }
+        if (!getFaculty(token).contains(node.getFaculty())){
+            return ResponseEntity.badRequest().build();
+        }
         try {
+            //node.setToken(authManager.getToken()); // check if this works
             Node newNode = repo.save(node);
             return ResponseEntity.ok(newNode);
         } catch (Exception e){
@@ -71,12 +89,32 @@ public class NodeController {
 
     @PostMapping("/releaseFaculty?faculty={faculty}&date={date}&days={days}")
     public ResponseEntity<String> releaseFaculty(@PathVariable("faculty") String faculty, @PathVariable("date") LocalDate date, @PathVariable("days") int days){
+        if (authManager.getRole() != "FacultyAccount") {
+            return ResponseEntity.badRequest().build();
+        }
+        if (!getFaculty(token).contains(faculty)){
+            return ResponseEntity.badRequest().build();
+        }
         if (date == null || faculty == null || date.isBefore(LocalDate.now()) || days<1){
             return ResponseEntity.badRequest().build();
         }
         repo.updateRelease(faculty, date.toString(), days);
         return ResponseEntity.ok("Released");
     }
+
+    private List<String> getFaculty(String token) {
+        String usersUrl = "http://localhost:8082";
+
+        ResponseEntity<String[]> facultyType = restTemplate.getForEntity(usersUrl
+                + "/faculty", String[].class);
+
+        if (facultyType.getBody() == null) {
+            return new ArrayList<>();
+        }
+
+        return Arrays.asList(facultyType.getBody());
+    }
+
 
     //TODO:
     //@DeleteMapping("/delete/{id}")

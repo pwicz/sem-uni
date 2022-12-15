@@ -54,6 +54,10 @@ public class Node implements Comparable{
         return token;
     }
 
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     public Resource getResource() {
         return resource;
     }
