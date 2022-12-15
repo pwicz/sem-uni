@@ -1,9 +1,9 @@
 package commons;
 
 public class Resource {
-    private int CPU;
-    private int GPU;
-    private int MEM;
+    private final int CPU;
+    private final int GPU;
+    private final int MEM;
 
     public Resource(int CPU, int GPU, int MEM){
         this.CPU = CPU;
