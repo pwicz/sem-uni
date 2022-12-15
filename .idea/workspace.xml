@@ -72,6 +72,13 @@
       </state>
     </system>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JUnit5 Test Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -90,18 +97,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/filip/Desktop/TUDelft/SEM/SEM09b&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Global Libraries&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
+    "last_opened_file_path": "C:/Users/filip/Desktop/TUDelft/SEM/SEM09b",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2"
   }
-}</component>
-  <component name="RunManager" selected="Spring Boot.Application">
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="nl.tudelft.sem.template.example.domain" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JUnit.JobServiceTest">
     <configuration name="Unnamed" type="CompoundRunConfigurationType">
       <toRun name="SEM09b [bootRun]" type="GradleRunConfiguration" />
       <toRun name="SEM09b:example-microservice [bootRun]" type="GradleRunConfiguration" />
@@ -149,22 +166,6 @@
       <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
-    <configuration name="All in template.authentication-microservice.test (1)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="template.authentication-microservice.test" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="TEST_OBJECT" value="package" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="All in template.authentication-microservice.test (2)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="template.authentication-microservice.test" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="TEST_OBJECT" value="package" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="All in template.authentication-microservice.test (3)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="template.authentication-microservice.test" />
       <option name="PACKAGE_NAME" value="" />
@@ -173,18 +174,84 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="RegistrationServiceTests.createUser_withValidData_worksCorrectly" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="template.authentication-microservice.test" />
+    <configuration name="ExampleTest.helloWorld" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="jobs-microservice_test" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="nl.tudelft.sem.template.authentication.domain.user.*" />
+          <option name="PATTERN" value="nl.tudelft.sem.template.example.integration.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="nl.tudelft.sem.template.authentication.domain.user" />
-      <option name="MAIN_CLASS_NAME" value="nl.tudelft.sem.template.authentication.domain.user.RegistrationServiceTests" />
-      <option name="METHOD_NAME" value="createUser_withValidData_worksCorrectly" />
+      <option name="PACKAGE_NAME" value="nl.tudelft.sem.template.example.integration" />
+      <option name="MAIN_CLASS_NAME" value="nl.tudelft.sem.template.example.integration.ExampleTest" />
+      <option name="METHOD_NAME" value="helloWorld" />
       <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="JobServiceTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="jobs-microservice_test" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="nl.tudelft.sem.template.example.domain.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="nl.tudelft.sem.template.example.domain" />
+      <option name="MAIN_CLASS_NAME" value="nl.tudelft.sem.template.example.domain.JobServiceTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="JobServiceTest.createJob" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="jobs-microservice_test" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="nl.tudelft.sem.template.example.domain.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="nl.tudelft.sem.template.example.domain" />
+      <option name="MAIN_CLASS_NAME" value="nl.tudelft.sem.template.example.domain.JobServiceTest" />
+      <option name="METHOD_NAME" value="createJob" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Application (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="authentication-microservice_main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="nl.tudelft.sem.template.authentication.Application" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Application (2)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="clusters-microservice_main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="nl.tudelft.sem.template.example.Application" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Application (3)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="example-microservice_main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="nl.tudelft.sem.template.example.Application" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Application (4)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="jobs-microservice_main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="nl.tudelft.sem.template.example.Application" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Application (5)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="scheduler-microservice_main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="nl.tudelft.sem.template.example.Application" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -206,19 +273,24 @@
       <item itemvalue="Compound.Unnamed" />
       <item itemvalue="Gradle.SEM09b [bootRun]" />
       <item itemvalue="Gradle.SEM09b:example-microservice [bootRun]" />
-      <item itemvalue="JUnit.All in template.authentication-microservice.test (1)" />
-      <item itemvalue="JUnit.All in template.authentication-microservice.test (2)" />
+      <item itemvalue="JUnit.ExampleTest.helloWorld" />
+      <item itemvalue="JUnit.JobServiceTest" />
+      <item itemvalue="JUnit.JobServiceTest.createJob" />
       <item itemvalue="JUnit.All in template.authentication-microservice.test (3)" />
-      <item itemvalue="JUnit.RegistrationServiceTests.createUser_withValidData_worksCorrectly" />
+      <item itemvalue="Spring Boot.Application (1)" />
+      <item itemvalue="Spring Boot.Application (2)" />
+      <item itemvalue="Spring Boot.Application (3)" />
+      <item itemvalue="Spring Boot.Application (4)" />
+      <item itemvalue="Spring Boot.Application (5)" />
       <item itemvalue="Spring Boot.Application" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.JobServiceTest" />
+        <item itemvalue="JUnit.JobServiceTest.createJob" />
+        <item itemvalue="JUnit.ExampleTest.helloWorld" />
         <item itemvalue="Spring Boot.Application" />
         <item itemvalue="JUnit.All in template.authentication-microservice.test (3)" />
-        <item itemvalue="JUnit.RegistrationServiceTests.createUser_withValidData_worksCorrectly" />
-        <item itemvalue="JUnit.All in template.authentication-microservice.test (2)" />
-        <item itemvalue="JUnit.All in template.authentication-microservice.test (1)" />
       </list>
     </recent_temporary>
   </component>

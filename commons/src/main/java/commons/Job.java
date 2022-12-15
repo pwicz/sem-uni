@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "jobs")
 @NoArgsConstructor
@@ -53,6 +55,7 @@ public class Job {
         this.cpuUsage = cpuUsage;
         this.gpuUsage = gpuUsage;
         this.memoryUsage = memoryUsage;
+        this.status = "pending";
     }
 
     /**
@@ -122,5 +125,18 @@ public class Job {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Job job = (Job) o;
+        return jobId == job.jobId && cpuUsage == job.cpuUsage && gpuUsage == job.gpuUsage && memoryUsage == job.memoryUsage && Objects.equals(netId, job.netId) && Objects.equals(resourceType, job.resourceType) && Objects.equals(status, job.status);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(jobId, netId, resourceType, cpuUsage, gpuUsage, memoryUsage, status);
     }
 }

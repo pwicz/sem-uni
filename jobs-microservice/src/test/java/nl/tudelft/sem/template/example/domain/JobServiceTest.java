@@ -12,6 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -40,6 +42,21 @@ class JobServiceTest {
 
     @Test
     void createJob() {
+        NetId netId = new NetId("test");
+        String resourceType = "CPU";
+        int cpuUsage = 1;
+        int gpuUsage = 2;
+        int memoryUsage = 3;
+        try {
+            Job created = jobService.createJob(netId, netId, resourceType, cpuUsage, gpuUsage, memoryUsage, "employee");
+            jobRepository.save(created);
+            Optional<Job> jobOptional = jobRepository.findById(created.getJobId());
+            assertFalse(jobOptional.isEmpty());
+            assertEquals(jobOptional.get(), created);
+        } catch (Exception e) {
+            System.out.println("exception");
+        }
+
     }
 
     @Test
