@@ -26,6 +26,11 @@ public class JwtTokenVerifier {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
+    public String getRole(String token) {
+        Claims claims = getClaims(token);
+        return claims.get("role").toString();
+    }
+
     public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
     }
