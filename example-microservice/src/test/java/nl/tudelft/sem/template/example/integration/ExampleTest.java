@@ -55,10 +55,5 @@ public class ExampleTest {
 
         // Assert
         result.andExpect(status().isOk());
-
-//        String response = result.andReturn().getResponse().getContentAsString();
-//
-//        assertThat(response).isEqualTo("Hello ExampleUser");
-
     }
 }
