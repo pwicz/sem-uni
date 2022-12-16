@@ -1,9 +1,11 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import commons.FacultyResource;
 import commons.Job;
 import commons.ScheduleJob;
 import nl.tudelft.sem.template.example.domain.processing.ProcessingJobsService;
 import nl.tudelft.sem.template.example.domain.processing.RemovingJobsService;
+import nl.tudelft.sem.template.example.domain.processing.UpdatingJobsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,12 +18,22 @@ public class SchedulerController {
 
     private final transient ProcessingJobsService processingJobsService;
     private final transient RemovingJobsService removingJobsService;
+    private final transient UpdatingJobsService updatingJobsService;
 
+    /**
+     * Constructor for the controller.
+     *
+     * @param processingJobsService .
+     * @param removingJobsService .
+     * @param updatingJobsService .
+     */
     @Autowired
     public SchedulerController(ProcessingJobsService processingJobsService,
-                               RemovingJobsService removingJobsService) {
+                               RemovingJobsService removingJobsService,
+                               UpdatingJobsService updatingJobsService) {
         this.processingJobsService = processingJobsService;
         this.removingJobsService = removingJobsService;
+        this.updatingJobsService = updatingJobsService;
     }
 
     /**
@@ -50,5 +62,11 @@ public class SchedulerController {
         }
 
         return ResponseEntity.ok("Job was unscheduled.");
+    }
+
+    @PostMapping("/resource-update")
+    public ResponseEntity<String> updateScheduledJobs(@RequestBody FacultyResource facultyResource) {
+        updatingJobsService.updateSchedule(facultyResource);
+        return ResponseEntity.ok("Updated");
     }
 }
