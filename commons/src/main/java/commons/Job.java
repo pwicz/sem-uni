@@ -1,5 +1,7 @@
 package commons;
 
+import exceptions.InvalidNetIdException;
+import exceptions.InvalidResourcesException;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -8,9 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import exceptions.InvalidNetIdException;
-import exceptions.InvalidResourcesException;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -39,7 +38,7 @@ public class Job {
     private int memoryUsage;
 
     @Column(name = "status", nullable = false)
-    private String status;
+    private Status status;
 
 
     /**
@@ -51,7 +50,7 @@ public class Job {
      * @param gpuUsage the amount of gpu units needed
      * @param memoryUsage the amount of memory units needed
      */
-    public Job(NetId netId, String resourceType, int cpuUsage, int gpuUsage, int memoryUsage) throws Exception{
+    public Job(NetId netId, String resourceType, int cpuUsage, int gpuUsage, int memoryUsage) throws Exception {
         if (cpuUsage < 0 || gpuUsage < 0 || memoryUsage < 0) {
             throw new InvalidResourcesException(Math.min(cpuUsage, Math.min(gpuUsage, memoryUsage)));
         }
@@ -63,7 +62,7 @@ public class Job {
         this.cpuUsage = cpuUsage;
         this.gpuUsage = gpuUsage;
         this.memoryUsage = memoryUsage;
-        this.status = "pending";
+        this.status = Status.PENDING;
     }
 
     /**
@@ -75,7 +74,7 @@ public class Job {
         cpuUsage = 0;
         gpuUsage = 0;
         memoryUsage = 0;
-        this.status = "accept";
+        this.status = Status.ACCEPTED;
     }
 
 
@@ -127,11 +126,11 @@ public class Job {
         this.memoryUsage = memoryUsage;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

@@ -3,14 +3,15 @@ package nl.tudelft.sem.template.example.controllers;
 
 import commons.Job;
 import commons.NetId;
+import commons.Status;
 import commons.UpdateJob;
+import exceptions.InvalidIdException;
+import exceptions.InvalidNetIdException;
+import exceptions.InvalidResourcesException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
-import exceptions.InvalidIdException;
-import exceptions.InvalidNetIdException;
-import exceptions.InvalidResourcesException;
 import nl.tudelft.sem.template.example.domain.JobRepository;
 import nl.tudelft.sem.template.example.domain.JobService;
 import nl.tudelft.sem.template.example.models.IdRequestModel;
@@ -43,6 +44,7 @@ public class JobController {
      * Constructor of the Job controller.
      *
      * @param repository  the job database
+     * @param jobService  the service which handles the communication with the database
      * @param authManager Spring Security component used to authenticate and authorize the user
      */
     @Autowired
@@ -98,7 +100,7 @@ public class JobController {
         try {
             NetId authNetId = new NetId(authManager.getNetId());
             long jobId = request.getId();
-            String status = this.jobService.getJobStatus(authNetId, authNetId, jobId);
+            Status status = this.jobService.getJobStatus(authNetId, authNetId, jobId);
             StatusResponseModel statusResponseModel = new StatusResponseModel(status);
             return ResponseEntity.ok(statusResponseModel);
         } catch (InvalidNetIdException e) {
@@ -150,7 +152,7 @@ public class JobController {
             Job createdJob = this.jobService.createJob(jobNetId, authNetId, resourceType, cpuUsage,
                     gpuUsage, memoryUsage, role);
 
-            JobResponseModel jobResponseModel = new JobResponseModel(createdJob.getNetId().toString(), "pending approval");
+            JobResponseModel jobResponseModel = new JobResponseModel(createdJob.getNetId().toString(), Status.PENDING);
 
             return ResponseEntity.ok(jobResponseModel);
         } catch (InvalidNetIdException e) {
@@ -187,7 +189,7 @@ public class JobController {
     public ResponseEntity updateJob(@RequestBody UpdateJob request) throws Exception {
         try {
             long id = request.getId();
-            String status = request.getStatus();
+            Status status = Status.valueOf(request.getStatus());
             LocalDate localDate = request.getScheduleDate();
 
             this.jobService.updateJob(id, status, localDate);

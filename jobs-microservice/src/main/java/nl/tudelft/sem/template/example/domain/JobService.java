@@ -3,14 +3,14 @@ package nl.tudelft.sem.template.example.domain;
 
 import commons.Job;
 import commons.NetId;
+import commons.Status;
+import exceptions.InvalidIdException;
+import exceptions.InvalidNetIdException;
+import exceptions.InvalidResourcesException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import exceptions.InvalidIdException;
-import exceptions.InvalidNetIdException;
-import exceptions.InvalidResourcesException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
@@ -80,6 +80,7 @@ public class JobService {
 
     /**
      * Create a new job.
+     *
      * @param authNetId NetId of the authenticated user
      * @param job a job
      * @param role a role of a user who creates a job
@@ -88,7 +89,8 @@ public class JobService {
      */
     public Job createJob(NetId authNetId, Job job, String role) throws Exception {
         if (job.getCpuUsage() < 0 || job.getGpuUsage() < 0 || job.getMemoryUsage() < 0) {
-            throw new InvalidResourcesException(Math.min(job.getCpuUsage(), Math.min(job.getGpuUsage(), job.getMemoryUsage())));
+            throw new InvalidResourcesException(Math.min(job.getCpuUsage(),
+                    Math.min(job.getGpuUsage(), job.getMemoryUsage())));
         }
         if (job.getNetId() == null) {
             throw new InvalidNetIdException(nullValue);
@@ -147,7 +149,7 @@ public class JobService {
      * @return a String with the status of the Job
      * @throws Exception if the NetId is invalid or the NetId does not have permission to access the requested job.
      */
-    public String getJobStatus(NetId netId, NetId authNetId, long jobId) throws Exception {
+    public Status getJobStatus(NetId netId, NetId authNetId, long jobId) throws Exception {
         if (netId == null) {
             throw new InvalidNetIdException(nullValue);
         }
@@ -204,7 +206,7 @@ public class JobService {
         if (!role.equals("admin")) {
             throw new BadCredentialsException(role);
         }
-        return jobRepository.findAll().stream().filter(j -> j.getStatus().equals("scheduled")).collect(Collectors.toList());
+        return jobRepository.findAll().stream().filter(j -> j.getStatus() == Status.ACCEPTED).collect(Collectors.toList());
     }
 
     /**
@@ -215,7 +217,7 @@ public class JobService {
      * @param localDate the time the Job is scheduled to start
      * @throws Exception if the id does not exist in the database
      */
-    public void updateJob(long id, String status, LocalDate localDate) throws Exception {
+    public void updateJob(long id, Status status, LocalDate localDate) throws Exception {
         Optional<Job> jobOptional = jobRepository.findById(id);
         if (jobOptional.isEmpty()) {
             throw new InvalidIdException(id);

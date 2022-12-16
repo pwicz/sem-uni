@@ -21,6 +21,4 @@ public interface JobRepository extends JpaRepository<Job, Long> {
      * @return Optional list of jobs
      */
     Optional<List<Job>> findAllByNetId(NetId netId);
-//    @Query("SELECT j FROM Jobs s WHERE j.status =:status")
-//    List<Job> findByStatus(@Param("status") String status);
 }
