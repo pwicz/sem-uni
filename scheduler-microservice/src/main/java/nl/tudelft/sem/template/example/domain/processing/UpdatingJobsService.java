@@ -73,7 +73,7 @@ public class UpdatingJobsService {
     }
 
     private void reduceExcess(List<ScheduledInstance> jobs, int cpu, int gpu, int memory) {
-        jobs.sort((o1, o2) -> o2.getDate().compareTo(o1.getDate()));
+        jobs.sort((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()));
 
         for (ScheduledInstance instance : jobs) {
             if (!(cpu > 0 || gpu > 0 || memory > 0)) {
