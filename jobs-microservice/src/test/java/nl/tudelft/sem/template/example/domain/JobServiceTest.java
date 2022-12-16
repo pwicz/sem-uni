@@ -29,9 +29,9 @@ class JobServiceTest {
 
     @BeforeEach
     void setUp() {
-        Job job1 = new Job(new NetId("mlica"), "CPU", 10, 10, 10);
+        Job job1 = new Job(new NetId("mlica"), 10, 10, 10);
         jobRepository.save(job1);
-        Job job2 = new Job(new NetId("ppolitowicz"), "GPU", 1, 2, 3);
+        Job job2 = new Job(new NetId("ppolitowicz"), 1, 2, 3);
         jobRepository.save(job2);
     }
 
@@ -48,7 +48,7 @@ class JobServiceTest {
         int gpuUsage = 2;
         int memoryUsage = 3;
         try {
-            Job created = jobService.createJob(netId, netId, resourceType, cpuUsage, gpuUsage, memoryUsage, "employee");
+            Job created = jobService.createJob(netId, netId, cpuUsage, gpuUsage, memoryUsage, "employee");
             jobRepository.save(created);
             Optional<Job> jobOptional = jobRepository.findById(created.getJobId());
             assertFalse(jobOptional.isEmpty());

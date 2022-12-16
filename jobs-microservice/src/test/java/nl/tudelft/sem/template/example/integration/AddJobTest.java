@@ -76,8 +76,8 @@ public class AddJobTest {
 
         u1 = new NetId("User");
         u2 = new NetId("User2");
-        j1 = new Job(u1, "memory", 10, 10, 10);
-        j2 = new Job(u2, "cpu", 12, 10, 10);
+        j1 = new Job(u1, 10, 10, 10);
+        j2 = new Job(u2, 12, 10, 10);
 
     }
 
@@ -89,7 +89,7 @@ public class AddJobTest {
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
 
-        jobService.createJob(u1, u1, "memory", 10, 10, 10, "employee");
+        jobService.createJob(u1, u1, 10, 10, 10, "employee");
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
 
@@ -106,8 +106,8 @@ public class AddJobTest {
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
 
-        jobService.createJob(u1, u1, "memory", 10, 10, 10, "employee");
-        jobService.createJob(new NetId("Tmp"), new NetId("Tmp"), "cpu", 12, 10, 10, "employee");
+        jobService.createJob(u1, u1, 10, 10, 10, "employee");
+        jobService.createJob(new NetId("Tmp"), new NetId("Tmp"), 12, 10, 10, "employee");
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
 
@@ -124,8 +124,8 @@ public class AddJobTest {
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
 
-        jobService.createJob(u1, u1, "memory", 10, 10, 10, "employee");
-        jobService.createJob(u2, u2, "cpu", 12, 10, 10, "employee");
+        jobService.createJob(u1, u1, 10, 10, 10, "employee");
+        jobService.createJob(u2, u2, 12, 10, 10, "employee");
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
 
