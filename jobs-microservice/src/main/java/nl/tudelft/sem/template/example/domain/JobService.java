@@ -86,28 +86,6 @@ public class JobService {
     }
 
     /**
-     * Get the job from the database with the given jobId.
-     *
-     * @param netId the netId of the person requesting the job
-     * @param authNetId the netId to verify the authentication
-     * @return the requested Job
-     * @throws Exception if authentication fails or the Job does not exist.
-     */
-    public Job getJob(long jobId, NetId netId, NetId authNetId) throws Exception {
-        if (netId == null) {
-            throw new InvalidNetIdException(nullValue);
-        }
-        if (!netId.toString().equals(authNetId.toString())) {
-            throw new InvalidNetIdException(netId.toString());
-        }
-        Optional<Job> optionalJob = jobRepository.findById(jobId);
-        if (optionalJob.isEmpty()) {
-            throw new InvalidIdException(jobId);
-        }
-        return optionalJob.get();
-    }
-
-    /**
      * Collect all the jobs in the database created by a specific user.
      *
      * @param netId NetId of the request creator
