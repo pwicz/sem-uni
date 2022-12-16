@@ -46,28 +46,29 @@ public class UpdatingJobsService {
             List<ScheduledInstance> instancesInDb =
                     scheduledInstanceRepository.findByDateAndFaculty(currentDate, resource.getFaculty());
 
-            if (instancesInDb.isEmpty()) {
-                ScheduledInstance next =
-                        scheduledInstanceRepository.findFirstByFacultyEqualsAndDateIsGreaterThanEqualOrderByDateAsc(
-                                resource.getFaculty(), currentDate);
+            if (!instancesInDb.isEmpty()) {
+                int cpuUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getCpuUsage).sum();
+                int gpuUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getGpuUsage).sum();
+                int memoryUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getMemoryUsage).sum();
 
-                if (next == null) {
-                    // nothing else to process
-                    break;
+                int cpuExcess = Math.max(cpuUsageSum - resource.getCpuUsage(), 0);
+                int gpuExcess = Math.max(gpuUsageSum - resource.getGpuUsage(), 0);
+                int memoryExcess = Math.max(memoryUsageSum - resource.getMemoryUsage(), 0);
+
+                if (cpuExcess > 0 || gpuExcess > 0 || memoryExcess > 0) {
+                    reduceExcess(instancesInDb, cpuExcess, gpuExcess, memoryExcess);
                 }
-                currentDate = next.getDate();
-                continue;
             }
 
-            int cpuUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getCpuUsage).sum();
-            int gpuUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getGpuUsage).sum();
-            int memoryUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getMemoryUsage).sum();
+            ScheduledInstance next =
+                    scheduledInstanceRepository.findFirstByFacultyEqualsAndDateIsGreaterThanEqualOrderByDateAsc(
+                            resource.getFaculty(), currentDate);
 
-            int cpuExcess = Math.max(cpuUsageSum - resource.getCpuUsage(), 0);
-            int gpuExcess = Math.max(gpuUsageSum - resource.getGpuUsage(), 0);
-            int memoryExcess = Math.max(memoryUsageSum - resource.getMemoryUsage(), 0);
-            reduceExcess(instancesInDb, cpuExcess, gpuExcess, memoryExcess);
-
+            if (next == null) {
+                // nothing else to process
+                break;
+            }
+            currentDate = next.getDate().plusDays(1);
         }
     }
 
@@ -88,6 +89,7 @@ public class UpdatingJobsService {
             ScheduleJob job = recreateScheduleJobFromScheduledInstances(instance.getJobId());
             if (job == null || !removingJobsService.removeJob(instance.getJobId())) {
                 // something went wrong...
+                // TODO: proper error handling with exceptions
                 continue;
             }
 
