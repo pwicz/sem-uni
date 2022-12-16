@@ -13,11 +13,7 @@ import nl.tudelft.sem.template.example.domain.InvalidNetIdException;
 import nl.tudelft.sem.template.example.domain.InvalidResourcesException;
 import nl.tudelft.sem.template.example.domain.JobRepository;
 import nl.tudelft.sem.template.example.domain.JobService;
-import nl.tudelft.sem.template.example.models.IdRequestModel;
-import nl.tudelft.sem.template.example.models.JobRequestModel;
-import nl.tudelft.sem.template.example.models.JobResponseModel;
-import nl.tudelft.sem.template.example.models.NetIdRequestModel;
-import nl.tudelft.sem.template.example.models.StatusResponseModel;
+import nl.tudelft.sem.template.example.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -141,13 +137,12 @@ public class JobController {
         try {
             NetId jobNetId = new NetId(request.getNetId());
             NetId authNetId = new NetId(authManager.getNetId());
-            String resourceType = request.getResourceType();
             int cpuUsage = request.getCpuUsage();
             int gpuUsage = request.getGpuUsage();
             int memoryUsage = request.getMemoryUsage();
             String role = (String) authManager.getRole();
             System.out.println(role);
-            Job createdJob = this.jobService.createJob(jobNetId, authNetId, resourceType, cpuUsage,
+            Job createdJob = this.jobService.createJob(jobNetId, authNetId, cpuUsage,
                     gpuUsage, memoryUsage, role);
 
             JobResponseModel jobResponseModel = new JobResponseModel(createdJob.getNetId().toString(), "pending approval");
@@ -195,6 +190,30 @@ public class JobController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, invalidId, e);
         }
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * The api GET endpoint to notify the User about the Job status and schedule date.
+     *
+     * @return list of Jobs to be scheduled
+     */
+    @GetMapping(path = "/getJobNotification")
+    public ResponseEntity<List<JobNotificationResponseModel>> getJobNotification() throws Exception {
+        try {
+            NetId netId = new NetId(authManager.getNetId());
+            NetId authNetId = new NetId(authManager.getNetId());
+
+            List<Job> jobs = this.jobService.collectJobsByNetId(netId, authNetId);
+            List<JobNotificationResponseModel> responseModels = jobs.stream()
+                    .map(x -> new JobNotificationResponseModel(x.getJobId(),
+                            x.getStatus(), x.getScheduleDate())).collect(Collectors.toList());
+
+            return ResponseEntity.ok(responseModels);
+        } catch (InvalidNetIdException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, invalidId, e);
+        } catch (BadCredentialsException e) {
+            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "BAD_CREDENTIALS", e);
+        }
     }
 
 

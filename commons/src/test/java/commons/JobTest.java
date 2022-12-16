@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+
 class JobTest {
 
     NetId netId1;
@@ -13,7 +15,7 @@ class JobTest {
     @BeforeEach
     void setUp() {
         netId1 = new NetId("ageist");
-        job1 = new Job(netId1, "GPU", 3, 2, 1);
+        job1 = new Job(netId1, 3, 2, 1);
     }
 
     @Test
@@ -71,4 +73,16 @@ class JobTest {
         job1.setMemoryUsage(2);
         assertThat(job1.getMemoryUsage()).isEqualTo(2);
     }
+
+    @Test
+    void getScheduleDate() {
+        assertThat(job1.getScheduleDate()).isNull();
+    }
+
+    @Test
+    void setScheduleDate() {
+        job1.setScheduleDate(LocalDate.now().plusDays(3));
+        assertThat(job1.getScheduleDate()).isEqualTo(LocalDate.now().plusDays(3));
+    }
+
 }

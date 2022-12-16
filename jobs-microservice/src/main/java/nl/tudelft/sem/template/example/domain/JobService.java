@@ -44,15 +44,14 @@ public class JobService {
      *
      * @param netId NetId of the job creator
      * @param authNetId NetId of the authenticated user
-     * @param resourceType resource type
      * @param cpuUsage CPU usage
      * @param gpuUsage GPU usage
      * @param memoryUsage memory usage
      * @return a new Job
      * @throws Exception if the resources of NetId are invalid
      */
-    public Job createJob(NetId netId, NetId authNetId,
-                         String resourceType, int cpuUsage, int gpuUsage, int memoryUsage, String role) throws Exception {
+    public Job createJob(NetId netId, NetId authNetId, int cpuUsage, int gpuUsage,
+                         int memoryUsage, String role) throws Exception {
         if (cpuUsage < 0 || gpuUsage < 0 || memoryUsage < 0) {
             throw new InvalidResourcesException(Math.min(cpuUsage, Math.min(gpuUsage, memoryUsage)));
         }
@@ -67,7 +66,7 @@ public class JobService {
             throw new BadCredentialsException(role);
         }
 
-        Job newJob = new Job(netId, resourceType, cpuUsage, gpuUsage, memoryUsage);
+        Job newJob = new Job(netId, cpuUsage, gpuUsage, memoryUsage);
         jobRepository.save(newJob);
 
         return newJob;
@@ -84,6 +83,28 @@ public class JobService {
             throw new InvalidIdException(id);
         }
         jobRepository.deleteById(id);
+    }
+
+    /**
+     * Get the job from the database with the given jobId.
+     *
+     * @param netId the netId of the person requesting the job
+     * @param authNetId the netId to verify the authentication
+     * @return the requested Job
+     * @throws Exception if authentication fails or the Job does not exist.
+     */
+    public Job getJob(long jobId, NetId netId, NetId authNetId) throws Exception {
+        if (netId == null) {
+            throw new InvalidNetIdException(nullValue);
+        }
+        if (!netId.toString().equals(authNetId.toString())) {
+            throw new InvalidNetIdException(netId.toString());
+        }
+        Optional<Job> optionalJob = jobRepository.findById(jobId);
+        if (optionalJob.isEmpty()) {
+            throw new InvalidIdException(jobId);
+        }
+        return optionalJob.get();
     }
 
     /**
@@ -166,6 +187,7 @@ public class JobService {
         }
         Job job = jobOptional.get();
         job.setStatus(status);
+        job.setScheduleDate(localDate);
         jobRepository.save(job);
     }
 }
