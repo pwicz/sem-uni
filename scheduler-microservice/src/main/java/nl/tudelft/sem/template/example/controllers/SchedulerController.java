@@ -1,27 +1,34 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import commons.Job;
+import commons.NetId;
 import commons.ScheduleJob;
+import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.processing.ProcessingJobsService;
 import nl.tudelft.sem.template.example.domain.processing.RemovingJobsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class SchedulerController {
 
     private final transient ProcessingJobsService processingJobsService;
     private final transient RemovingJobsService removingJobsService;
+    private final transient AuthManager authManager;
 
     @Autowired
     public SchedulerController(ProcessingJobsService processingJobsService,
-                               RemovingJobsService removingJobsService) {
+                               RemovingJobsService removingJobsService, AuthManager authManager) {
         this.processingJobsService = processingJobsService;
         this.removingJobsService = removingJobsService;
+        this.authManager = authManager;
     }
 
     /**
@@ -51,4 +58,5 @@ public class SchedulerController {
 
         return ResponseEntity.ok("Job was unscheduled.");
     }
+
 }

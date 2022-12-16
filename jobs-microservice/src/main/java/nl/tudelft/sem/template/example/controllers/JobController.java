@@ -8,9 +8,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
-import nl.tudelft.sem.template.example.domain.InvalidIdException;
-import nl.tudelft.sem.template.example.domain.InvalidNetIdException;
-import nl.tudelft.sem.template.example.domain.InvalidResourcesException;
+import exceptions.InvalidIdException;
+import exceptions.InvalidNetIdException;
+import exceptions.InvalidResourcesException;
 import nl.tudelft.sem.template.example.domain.JobRepository;
 import nl.tudelft.sem.template.example.domain.JobService;
 import nl.tudelft.sem.template.example.models.IdRequestModel;
@@ -197,5 +197,26 @@ public class JobController {
         return ResponseEntity.ok().build();
     }
 
+
+    /**
+     * Allow sysadmin to see all scheduled jobs for all days.
+     *
+     * @return response indicating if the operation was successful
+     */
+    @GetMapping(path = "/getAllScheduledJobs")
+    public ResponseEntity<List<Job>> getAllScheduledJobs() throws Exception {
+        try {
+            NetId netId = new NetId(authManager.getNetId());
+            NetId authNetId = new NetId(authManager.getNetId());
+            String role = authManager.getRole().toString();
+
+            List<Job> jobs = this.jobService.getAllScheduledJobs(netId, authNetId, role);
+            return ResponseEntity.ok(jobs);
+        } catch (InvalidNetIdException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, invalidId, e);
+        } catch (BadCredentialsException e) {
+            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "BAD_CREDENTIALS", e);
+        }
+    }
 
 }

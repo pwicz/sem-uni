@@ -28,7 +28,7 @@ class JobServiceTest {
     private transient JobService jobService;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception{
         Job job1 = new Job(new NetId("mlica"), "CPU", 10, 10, 10);
         jobRepository.save(job1);
         Job job2 = new Job(new NetId("ppolitowicz"), "GPU", 1, 2, 3);

@@ -8,6 +8,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import exceptions.InvalidNetIdException;
+import exceptions.InvalidResourcesException;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -48,7 +51,13 @@ public class Job {
      * @param gpuUsage the amount of gpu units needed
      * @param memoryUsage the amount of memory units needed
      */
-    public Job(NetId netId, String resourceType, int cpuUsage, int gpuUsage, int memoryUsage) {
+    public Job(NetId netId, String resourceType, int cpuUsage, int gpuUsage, int memoryUsage) throws Exception{
+        if (cpuUsage < 0 || gpuUsage < 0 || memoryUsage < 0) {
+            throw new InvalidResourcesException(Math.min(cpuUsage, Math.min(gpuUsage, memoryUsage)));
+        }
+        if (netId == null) {
+            throw new InvalidNetIdException(null);
+        }
         this.netId = netId;
         this.resourceType = resourceType;
         this.cpuUsage = cpuUsage;

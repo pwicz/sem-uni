@@ -6,6 +6,11 @@ import commons.NetId;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import exceptions.InvalidIdException;
+import exceptions.InvalidNetIdException;
+import exceptions.InvalidResourcesException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
@@ -71,6 +76,34 @@ public class JobService {
         jobRepository.save(newJob);
 
         return newJob;
+    }
+
+    /**
+     * Create a new job.
+     * @param authNetId NetId of the authenticated user
+     * @param job a job
+     * @param role a role of a user who creates a job
+     * @return a new Job
+     * @throws Exception if the resources of NetId are invalid
+     */
+    public Job createJob(NetId authNetId, Job job, String role) throws Exception {
+        if (job.getCpuUsage() < 0 || job.getGpuUsage() < 0 || job.getMemoryUsage() < 0) {
+            throw new InvalidResourcesException(Math.min(job.getCpuUsage(), Math.min(job.getGpuUsage(), job.getMemoryUsage())));
+        }
+        if (job.getNetId() == null) {
+            throw new InvalidNetIdException(nullValue);
+        }
+        if (!job.getNetId().toString().equals(authNetId.toString())) {
+            throw new InvalidNetIdException(job.getNetId().toString());
+        }
+        if (!role.equals("employee")) {
+            System.out.println(role);
+            throw new BadCredentialsException(role);
+        }
+
+        jobRepository.save(job);
+
+        return job;
     }
 
     /**
@@ -149,6 +182,29 @@ public class JobService {
             throw new BadCredentialsException(role);
         }
         return jobRepository.findAll();
+    }
+
+
+    /**
+     * Retrieve all the Job entities from the database.
+     *
+     * @param netId NetId of the request creator
+     * @param authNetId NetId of the authenticated user
+     * @param role role of the request creator
+     * @return a list of Job entities containing all jobs in the database.
+     * @throws Exception if the NetId is invalid or the creator of the request does not have the admin role.
+     */
+    public List<Job> getAllScheduledJobs(NetId netId, NetId authNetId, String role) throws Exception {
+        if (netId == null) {
+            throw new InvalidNetIdException(nullValue);
+        }
+        if (!netId.toString().equals(authNetId.toString())) {
+            throw new InvalidNetIdException(netId.toString());
+        }
+        if (!role.equals("admin")) {
+            throw new BadCredentialsException(role);
+        }
+        return jobRepository.findAll().stream().filter(j -> j.getStatus().equals("scheduled")).collect(Collectors.toList());
     }
 
     /**

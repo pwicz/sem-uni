@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.domain;
+package exceptions;
 
 /**
  * Exception to indicate that the provided NetId is invalid. The netId can be invalid if it is null,

@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.domain;
+package exceptions;
 
 /**
  * Exception to indicate the provided id does not exist in the database.

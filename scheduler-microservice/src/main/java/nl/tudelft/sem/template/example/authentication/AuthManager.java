@@ -16,4 +16,14 @@ public class AuthManager {
     public String getNetId() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
+
+    /**
+     * Interfaces with spring security to get the role of the user in the current context.
+     *
+     * @return The role of the user.
+     */
+    public Object getRole() {
+        return SecurityContextHolder.getContext().getAuthentication().getCredentials();
+    }
+
 }
