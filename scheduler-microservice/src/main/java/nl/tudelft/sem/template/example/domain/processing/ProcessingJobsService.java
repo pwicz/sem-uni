@@ -1,8 +1,10 @@
 package nl.tudelft.sem.template.example.domain.processing;
 
 import commons.FacultyResource;
+import commons.NetId;
 import commons.ScheduleJob;
 import commons.UpdateJob;
+import exceptions.InvalidNetIdException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,7 +12,10 @@ import java.util.List;
 import lombok.Synchronized;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstance;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstanceRepository;
+import nl.tudelft.sem.template.example.models.FacultyRequestModel;
+import nl.tudelft.sem.template.example.models.FacultyResponseModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,6 +28,7 @@ public class ProcessingJobsService {
 
     private String resourcesUrl = "http://localhost:8085";
     private String jobsUrl = "http://localhost:8083";
+    private String authUrl = "http://localhost:8081";
 
     public void setResources_url(String resourcesUrl) {
         this.resourcesUrl = resourcesUrl;
@@ -125,6 +131,7 @@ public class ProcessingJobsService {
     }
 
     private List<FacultyResource> getAvailableResources(String faculty, LocalDate date) {
+
         ResponseEntity<FacultyResource[]> facultyResourcesResponse = restTemplate.getForEntity(resourcesUrl
                 + "/facultyResources?faculty=" + faculty + "&day=" + date.toString(), FacultyResource[].class);
 
@@ -133,5 +140,32 @@ public class ProcessingJobsService {
         }
 
         return Arrays.asList(facultyResourcesResponse.getBody());
+    }
+
+    public List<FacultyResource> getAvailableResourcesNextDay(NetId netId, String role) throws Exception {
+        if (netId == null) {
+            throw new InvalidNetIdException(null);
+        }
+        if (!role.equals("employee") && !role.equals("admin") && !role.equals("fac_acc")) {
+            throw new BadCredentialsException(role);
+        }
+
+        FacultyRequestModel requestModel = new FacultyRequestModel(netId.toString());
+        ResponseEntity<FacultyResponseModel> facultiesResponse = restTemplate.postForEntity(authUrl + "/faculty",
+                requestModel, FacultyResponseModel.class);
+
+        String[] faculties = facultiesResponse.getBody().getFaculties().split(";");
+
+        ArrayList<String> fac = new ArrayList<>();
+        for (String f : faculties) {
+            fac.add(f);
+        }
+        List<FacultyResource> resources = new ArrayList<>();
+        for (String f : fac) {
+            resources.add(getAvailableResources(f, LocalDate.now().plusDays(1)).get(0));
+            System.out.println(getAvailableResources(f, LocalDate.now().plusDays(1)).get(0));
+        }
+
+        return resources;
     }
 }

@@ -1,15 +1,22 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import commons.FacultyResource;
+import commons.NetId;
 import commons.ScheduleJob;
+import exceptions.InvalidNetIdException;
+import java.util.List;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.processing.ProcessingJobsService;
 import nl.tudelft.sem.template.example.domain.processing.RemovingJobsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 public class SchedulerController {
@@ -61,4 +68,47 @@ public class SchedulerController {
         return ResponseEntity.ok("Job was unscheduled.");
     }
 
+//    /**
+//     * The api GET endpoint to get list of reserved resources
+//     *
+//     * @return list of resources that are reserved
+//     */
+//    @GetMapping(path = "/getReservedResources")
+//    public ResponseEntity<List<FacultyResource>> getAllJobs() throws Exception {
+//        try {
+//            NetId netId = new NetId(authManager.getNetId());
+//            NetId authNetId = new NetId(authManager.getNetId());
+//            String role = authManager.getRole().toString();
+//
+//            List<Job> jobs = this.jobService.getAllJobs(netId, authNetId, role);
+//            List<JobResponseModel> responseModels = jobs.stream()
+//                    .map(x -> new JobResponseModel(x.getNetId().toString(), x.getStatus())).collect(Collectors.toList());
+//            return ResponseEntity.ok(responseModels);
+//        } catch (InvalidNetIdException e) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, invalidId, e);
+//        } catch (BadCredentialsException e) {
+//            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "BAD_CREDENTIALS", e);
+//        }
+//    }
+
+    /**
+     * The api GET endpoint to get all Jobs in the database.
+     *
+     * @return list of Jobs to be scheduled
+     */
+    @GetMapping(path = "/getAllResourcesNextDay")
+    public ResponseEntity<List<FacultyResource>> getAllResourcesNextDay() throws Exception {
+        try {
+            NetId netId = new NetId(authManager.getNetId());
+            NetId authNetId = new NetId(authManager.getNetId());
+            String role = authManager.getRole().toString();
+
+            List<FacultyResource> resources = this.processingJobsService.getAvailableResourcesNextDay(netId, role);
+            return ResponseEntity.ok(resources);
+        } catch (InvalidNetIdException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "invalidId", e);
+        } catch (BadCredentialsException e) {
+            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "BAD_CREDENTIALS", e);
+        }
+    }
 }

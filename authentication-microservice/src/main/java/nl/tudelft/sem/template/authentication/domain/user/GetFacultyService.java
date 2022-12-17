@@ -32,7 +32,7 @@ public class GetFacultyService {
     public ArrayList<Faculty> getFaculty(NetId netId) throws NetIdDoesNotExistException {
         if (checkNetIdExists(netId)) {
             Optional<AppUser> user = userRepository.findByNetId(netId);
-
+            System.out.println(user.get());
             if (user.isPresent()) {
                 return user.get().getFaculty();
             }
