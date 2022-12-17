@@ -14,6 +14,7 @@ import nl.tudelft.sem.template.example.domain.InvalidIdException;
 import nl.tudelft.sem.template.example.domain.InvalidNetIdException;
 import nl.tudelft.sem.template.example.domain.JobRepository;
 import nl.tudelft.sem.template.example.domain.JobService;
+import nl.tudelft.sem.template.example.domain.ResourceBiggerThanCpuException;
 import nl.tudelft.sem.template.example.models.JobRequestModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -147,5 +148,21 @@ public class AddJobTest {
         assertThrows(InvalidNetIdException.class, () -> {
             jobService.getJobStatus(null, u1, 1);
         });
+    }
+
+    @Test
+    public void addJobWithGpuGreaterThanCpu_throwsException() {
+        Exception e = assertThrows(ResourceBiggerThanCpuException.class, () -> {
+            jobService.createJob(u1, u1, "???", 1, 2, 0, "employee");
+        });
+        assertThat(e.getMessage()).isEqualTo("GPU usage cannot be greater than the CPU usage.");
+    }
+
+    @Test
+    public void addJobWithMemoryGreaterThanCpu_throwsException() {
+        Exception e = assertThrows(ResourceBiggerThanCpuException.class, () -> {
+            jobService.createJob(u1, u1, "???", 1, 0, 2, "employee");
+        });
+        assertThat(e.getMessage()).isEqualTo("Memory usage cannot be greater than the CPU usage.");
     }
 }
