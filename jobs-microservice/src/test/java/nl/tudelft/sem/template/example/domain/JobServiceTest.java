@@ -95,10 +95,22 @@ class JobServiceTest {
 
     @Test
     void getJobStatus() {
+        NetId netId = new NetId("mlica");
+        Optional<List<Job>> query = jobRepository.findAllByNetId(netId);
+        Job j = null;
+        if (query.isPresent()) j = query.get().get(0);
+        try {
+            assert j != null;
+            String status = jobService.getJobStatus(netId, netId, j.getJobId());
+            assertEquals(status, "pending");
+        } catch (Exception e) {
+            fail();
+        }
     }
 
     @Test
     void getAllJobs() {
+        
     }
 
     @Test
