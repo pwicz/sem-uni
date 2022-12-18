@@ -1,10 +1,8 @@
 package nl.tudelft.sem.template.example.domain;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
 import commons.Job;
 import commons.NetId;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest
@@ -31,6 +31,8 @@ class JobServiceTest {
     void setUp() {
         Job job1 = new Job(new NetId("mlica"), "CPU", 10, 10, 10);
         jobRepository.save(job1);
+        Job job3 = new Job(new NetId("mlica"), "GPU", 20, 10, 1);
+        jobRepository.save(job3);
         Job job2 = new Job(new NetId("ppolitowicz"), "GPU", 1, 2, 3);
         jobRepository.save(job2);
     }
@@ -61,10 +63,23 @@ class JobServiceTest {
 
     @Test
     void deleteJob() {
+        NetId netId = new NetId("mlica");
+        Optional<List<Job>> query = jobRepository.findAllByNetId(netId);
+        Job j = null;
+        if (query.isPresent()) j = query.get().get(0);
+        try {
+            assert j != null;
+            jobService.deleteJob(j.getJobId());
+            assertFalse(jobRepository.existsById(j.getJobId()));
+        } catch (Exception e) {
+            System.out.println("exception");
+        }
     }
 
     @Test
     void collectJobsByNetId() {
+        NetId netid = new NetId("mlica");
+
     }
 
     @Test
