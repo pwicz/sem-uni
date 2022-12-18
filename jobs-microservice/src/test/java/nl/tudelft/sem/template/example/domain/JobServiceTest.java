@@ -2,6 +2,8 @@ package nl.tudelft.sem.template.example.domain;
 
 import commons.Job;
 import commons.NetId;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
@@ -110,10 +112,31 @@ class JobServiceTest {
 
     @Test
     void getAllJobs() {
-        
+        NetId netId = new NetId("administrator");
+        try {
+            List<Job> jobs = jobService.getAllJobs(netId, netId, "admin");
+            assertEquals(jobs.size(), 3);
+        } catch (Exception e) {
+            fail();
+        }
+
     }
 
     @Test
     void updateJob() {
+        NetId netId = new NetId("mlica");
+        Optional<List<Job>> query = jobRepository.findAllByNetId(netId);
+        Job j = null;
+        if (query.isPresent()) j = query.get().get(0);
+        try {
+            assert j != null;
+            String status = "finished";
+            jobService.updateJob(j.getJobId(), status, LocalDate.now());
+            Optional<Job> updatedJob = jobRepository.findById(j.getJobId());
+            assertFalse(updatedJob.isEmpty());
+            assertEquals(updatedJob.get().getStatus(), status);
+        } catch (Exception e) {
+            fail();
+        }
     }
 }
