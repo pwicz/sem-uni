@@ -77,7 +77,7 @@ public class ProcessingJobsService {
         System.out.println("saved!");
     }
 
-    private List<ScheduledInstance> trySchedulingBetween(ScheduleJob job, LocalDate start, LocalDate end) {
+    protected List<ScheduledInstance> trySchedulingBetween(ScheduleJob job, LocalDate start, LocalDate end) {
         LocalDate currentDate = start;
         while (currentDate.isBefore(end)) {
             // 1. Make a request to Clusters microservice to check available resources for a given day
@@ -108,7 +108,7 @@ public class ProcessingJobsService {
                 cpuToSchedule -= providedCpu;
                 gpuToSchedule -= providedGpu;
                 memoryToSchedule -= providedMemory;
-                scheduledInstances.add(new ScheduledInstance(job.getJobId(), r.getFaculty(),
+                scheduledInstances.add(new ScheduledInstance(job.getJobId(), job.getFaculty(), r.getFaculty(),
                         providedCpu, providedGpu, providedMemory, currentDate));
             }
 
