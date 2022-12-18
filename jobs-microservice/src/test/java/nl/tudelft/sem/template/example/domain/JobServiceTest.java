@@ -1,8 +1,11 @@
 package nl.tudelft.sem.template.example.domain;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import commons.Job;
 import commons.NetId;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -14,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest
@@ -68,7 +69,9 @@ class JobServiceTest {
         NetId netId = new NetId("mlica");
         Optional<List<Job>> query = jobRepository.findAllByNetId(netId);
         Job j = null;
-        if (query.isPresent()) j = query.get().get(0);
+        if (query.isPresent()) {
+            j = query.get().get(0);
+        }
         try {
             assert j != null;
             jobService.deleteJob(j.getJobId());
@@ -100,7 +103,9 @@ class JobServiceTest {
         NetId netId = new NetId("mlica");
         Optional<List<Job>> query = jobRepository.findAllByNetId(netId);
         Job j = null;
-        if (query.isPresent()) j = query.get().get(0);
+        if (query.isPresent()) {
+            j = query.get().get(0);
+        }
         try {
             assert j != null;
             String status = jobService.getJobStatus(netId, netId, j.getJobId());
@@ -127,7 +132,9 @@ class JobServiceTest {
         NetId netId = new NetId("mlica");
         Optional<List<Job>> query = jobRepository.findAllByNetId(netId);
         Job j = null;
-        if (query.isPresent()) j = query.get().get(0);
+        if (query.isPresent()) {
+            j = query.get().get(0);
+        }
         try {
             assert j != null;
             String status = "finished";
