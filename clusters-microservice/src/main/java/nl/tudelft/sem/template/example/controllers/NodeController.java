@@ -1,11 +1,15 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import commons.FacultyResource;
+import commons.NetId;
 import commons.Node;
 import commons.Resource;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.NodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +30,8 @@ public class NodeController {
     private final transient RestTemplate restTemplate;
     private final transient NodeRepository repo;
     private final transient AuthManager authManager;
+
+    private final transient String usersUrl = "http://localhost:8081";
 
     /**
      * Constructor for the NodeController.
@@ -154,8 +160,6 @@ public class NodeController {
     }
 
     private List<String> getFaculty(String token) {
-        String usersUrl = "http://localhost:8082"; //faculty request model
-
         ResponseEntity<String[]> facultyType = restTemplate.getForEntity(usersUrl
                 + "/faculty", String[].class);
 
@@ -189,6 +193,33 @@ public class NodeController {
         repo.setAsDeleted(id, LocalDate.now().plusDays(1L));
         Node n = repo.getNodeById(id).get();
         return ResponseEntity.ok(n.getRemovedDate().toString());
+    }
+
+    /**
+     * The api GET endpoint to get all Jobs in the database.
+     *
+     * @return list of Jobs to be scheduled
+     */
+    @GetMapping(path = "/resourcesNextDay")
+    public ResponseEntity<Map<String, Resource>> getAllResourcesNextDay() throws Exception {
+        String role = authManager.getRole().toString();
+        if (!role.equals("employee") || !role.equals("admin") || !role.equals("fac_acc")) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        ResponseEntity<String[]> facultyType = restTemplate.postForEntity(usersUrl
+                + "/faculty", new NetId(authManager.getNetId()), String[].class);
+
+        List<String> faculties = Arrays.asList(facultyType.getBody());
+        System.out.println(faculties);
+
+        Map<String, Resource> res = new HashMap<>();
+
+        for (String f : faculties) {
+            Resource facultyResources = repo.getFreeResources(f, LocalDate.now().plusDays(1).toString()).get();
+            res.put(f, facultyResources);
+        }
+        return ResponseEntity.ok(res);
     }
 }
 

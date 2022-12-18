@@ -142,6 +142,13 @@ public class ProcessingJobsService {
         return Arrays.asList(facultyResourcesResponse.getBody());
     }
 
+    /**
+     *  Method get all available resources for the next day.
+     *
+     * @param netId of the user
+     * @param role of the user
+     * @return list of resources
+     */
     public List<FacultyResource> getAvailableResourcesNextDay(NetId netId, String role) throws Exception {
         if (netId == null) {
             throw new InvalidNetIdException(null);

@@ -131,15 +131,9 @@ public class AuthenticationController {
     @PostMapping("/faculty")
     public ResponseEntity<FacultyResponseModel> retrieveFaculty(@RequestBody FacultyRequestModel request) throws Exception {
         try {
-            System.out.println(request);
             NetId netId = new NetId(request.getNetId());
             ArrayList<Faculty> faculties = getFacultyService.getFaculty(netId);
-            String res = "";
-            for (Faculty f : faculties) {
-                res += f.toString() + ";";
-            }
-
-            return ResponseEntity.ok(new FacultyResponseModel(res));
+            return ResponseEntity.ok(new FacultyResponseModel(faculties.toString()));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }

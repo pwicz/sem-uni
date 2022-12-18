@@ -204,36 +204,6 @@ public class ProcessingJobsServiceTest {
         assertThat(fromDb.size()).isEqualTo(0);
     }
 
-    @Test
-    public void getAvailableResourcesTest() throws Exception {
-        String facultyConstant = "EEMCS";
-        String facultyConstant2 = "3ME";
-        LocalDate dateConstant = LocalDate.now().plusDays(1);
-
-        ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(2),
-                50, 10, 2);
-
-        //CHECKSTYLE.OFF: Indentation
-        FacultyResource[] dayOne = {
-                new FacultyResource(facultyConstant, dateConstant, 2, 1, 0),
-                new FacultyResource(facultyConstant2, dateConstant, 10, 10, 10)};
-        //CHECKSTYLE.ON: Indentation
-        FacultyResource[] dayTwo = {new FacultyResource(facultyConstant, dateConstant.plusDays(1), 5, 2, 2)};
-
-        String url = processingJobsService.getResourcesUrl() + "/facultyResources?faculty="
-                + facultyConstant + "&day=";
-
-        processingJobsService.getAvailableResourcesNextDay(new NetId("filip3"), "employee");
-
-        processingJobsService.scheduleJob(scheduleJob);
-
-        Mockito.verify(restTemplate).postForEntity(processingJobsService.getJobsUrl() + "/updateStatus",
-                new UpdateJob(1, "unscheduled", null), Void.class);
-
-        List<ScheduledInstance> fromDb = scheduledInstanceRepository.findAllByJobId(1L);
-        assertThat(fromDb.size()).isEqualTo(0);
-    }
-
     private boolean compareScheduledInstances(ScheduledInstance a, ScheduledInstance b) {
         return a.getJobId().equals(b.getJobId())
                 && a.getFaculty().equals(b.getFaculty())
