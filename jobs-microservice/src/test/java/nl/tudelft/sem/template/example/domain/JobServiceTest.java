@@ -56,7 +56,7 @@ class JobServiceTest {
             assertFalse(jobOptional.isEmpty());
             assertEquals(jobOptional.get(), created);
         } catch (Exception e) {
-            System.out.println("exception");
+            fail();
         }
 
     }
@@ -72,14 +72,25 @@ class JobServiceTest {
             jobService.deleteJob(j.getJobId());
             assertFalse(jobRepository.existsById(j.getJobId()));
         } catch (Exception e) {
-            System.out.println("exception");
+            fail();
         }
     }
 
     @Test
     void collectJobsByNetId() {
-        NetId netid = new NetId("mlica");
-
+        NetId netId = new NetId("mlica");
+        Job expected1 = new Job(new NetId("mlica"), "CPU", 10, 10, 10);
+        Job expected2 = new Job(new NetId("mlica"), "GPU", 20, 10, 1);
+        try {
+            List<Job> jobs = jobService.collectJobsByNetId(netId, netId);
+            expected1.setJobId(jobs.get(0).getJobId());
+            expected2.setJobId(jobs.get(1).getJobId());
+            assertEquals(jobs.size(), 2);
+            assertEquals(jobs.get(0), expected1);
+            assertEquals(jobs.get(1), expected2);
+        } catch (Exception e) {
+            fail();
+        }
     }
 
     @Test
