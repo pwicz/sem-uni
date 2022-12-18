@@ -1,6 +1,7 @@
 package commons;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Optional;
 import javax.persistence.Column;
@@ -11,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "jobs")
@@ -39,7 +41,7 @@ public class Job {
     private String status;
 
     @Column(name = "scheduleDate", nullable = false)
-    private Optional<LocalDate> optionalScheduleDate;
+    private String scheduleDate;
 
 
     /**
@@ -56,7 +58,7 @@ public class Job {
         this.gpuUsage = gpuUsage;
         this.memoryUsage = memoryUsage;
         this.status = "pending";
-        this.optionalScheduleDate = Optional.empty();
+        this.scheduleDate = "";
     }
 
     /**
@@ -68,7 +70,7 @@ public class Job {
         gpuUsage = 0;
         memoryUsage = 0;
         this.status = "accept";
-        this.optionalScheduleDate = Optional.of(LocalDate.now().plusDays(3));
+        this.scheduleDate = LocalDate.now().plusDays(3).toString();
     }
 
 
@@ -121,11 +123,15 @@ public class Job {
     }
 
     public LocalDate getScheduleDate() {
-        return optionalScheduleDate.orElse(null);
+        if (scheduleDate.equals("")) {
+            return null;
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(scheduleDate, formatter);
     }
 
     public void setScheduleDate(LocalDate scheduleDate) {
-        this.optionalScheduleDate = Optional.of(scheduleDate);
+        this.scheduleDate = scheduleDate.toString();
     }
 
     @Override
@@ -139,7 +145,7 @@ public class Job {
         Job job = (Job) o;
         return jobId == job.jobId && cpuUsage == job.cpuUsage && gpuUsage == job.gpuUsage && memoryUsage == job.memoryUsage
                 && Objects.equals(netId, job.netId) && Objects.equals(status, job.status)
-                && Objects.equals(optionalScheduleDate, job.optionalScheduleDate);
+                && Objects.equals(scheduleDate, job.scheduleDate);
     }
 
     @Override
