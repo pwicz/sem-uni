@@ -32,11 +32,11 @@ class JobServiceTest {
 
     @BeforeEach
     void setUp() {
-        Job job1 = new Job(new NetId("mlica"), "CPU", 10, 10, 10);
+        Job job1 = new Job(new NetId("mlica"), 10, 10, 10);
         jobRepository.save(job1);
-        Job job3 = new Job(new NetId("mlica"), "GPU", 20, 10, 1);
+        Job job3 = new Job(new NetId("mlica"), 20, 10, 1);
         jobRepository.save(job3);
-        Job job2 = new Job(new NetId("ppolitowicz"), "GPU", 1, 2, 3);
+        Job job2 = new Job(new NetId("ppolitowicz"), 1, 2, 3);
         jobRepository.save(job2);
     }
 
@@ -53,7 +53,7 @@ class JobServiceTest {
         int gpuUsage = 2;
         int memoryUsage = 3;
         try {
-            Job created = jobService.createJob(netId, netId, resourceType, cpuUsage, gpuUsage, memoryUsage, "employee");
+            Job created = jobService.createJob(netId, netId, cpuUsage, gpuUsage, memoryUsage, "employee");
             jobRepository.save(created);
             Optional<Job> jobOptional = jobRepository.findById(created.getJobId());
             assertFalse(jobOptional.isEmpty());
@@ -84,8 +84,8 @@ class JobServiceTest {
     @Test
     void collectJobsByNetId() {
         NetId netId = new NetId("mlica");
-        Job expected1 = new Job(new NetId("mlica"), "CPU", 10, 10, 10);
-        Job expected2 = new Job(new NetId("mlica"), "GPU", 20, 10, 1);
+        Job expected1 = new Job(new NetId("mlica"), 10, 10, 10);
+        Job expected2 = new Job(new NetId("mlica"), 20, 10, 1);
         try {
             List<Job> jobs = jobService.collectJobsByNetId(netId, netId);
             expected1.setJobId(jobs.get(0).getJobId());
