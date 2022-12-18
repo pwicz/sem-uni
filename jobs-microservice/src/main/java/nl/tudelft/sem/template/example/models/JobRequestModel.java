@@ -24,7 +24,7 @@ public class JobRequestModel {
      * @param gpuUsage GPU usage of the job.
      * @param memoryUsage memory usage of the job.
      */
-    public JobRequestModel(String netId, String resourceType, int cpuUsage, int gpuUsage, int memoryUsage) {
+    public JobRequestModel(String netId, int cpuUsage, int gpuUsage, int memoryUsage) {
         this.netId = netId;
         this.cpuUsage = cpuUsage;
         this.gpuUsage = gpuUsage;

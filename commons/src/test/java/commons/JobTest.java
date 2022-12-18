@@ -1,11 +1,12 @@
 package commons;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class JobTest {
 
@@ -83,6 +84,29 @@ class JobTest {
     void setScheduleDate() {
         job1.setScheduleDate(LocalDate.now().plusDays(3));
         assertThat(job1.getScheduleDate()).isEqualTo(LocalDate.now().plusDays(3));
+    }
+
+    @Test
+    void equals() {
+        Job job2 = new Job(netId1, 3, 2, 1);
+        assertTrue(job1.equals(job2));
+
+        job2.setScheduleDate(LocalDate.now());
+        assertFalse(job1.equals(job2));
+
+        Job job3 = null;
+        assertFalse(job1.equals(job3));
+
+        Job job4 = new Job(netId1, 2, 2, 1);
+        assertFalse(job1.equals(job4));
+
+        Job job5 = new Job(netId1, 1, 2, 1);
+        assertFalse(job1.equals(job4));
+
+        Job job6 = job1;
+        assertTrue(job1.equals(job6));
+
+
     }
 
 }

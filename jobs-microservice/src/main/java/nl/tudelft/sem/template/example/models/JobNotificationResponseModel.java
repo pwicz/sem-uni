@@ -1,9 +1,7 @@
 package nl.tudelft.sem.template.example.models;
 
-
-import lombok.Data;
-
 import java.time.LocalDate;
+import lombok.Data;
 
 /**
  * Response Entity model to notify the User about the Job status.
@@ -15,6 +13,13 @@ public class JobNotificationResponseModel {
     private String status;
     private LocalDate scheduleDate;
 
+    /**
+     * Response Entity model for the Notification of a Job.
+     *
+     * @param jobId the id of the Job
+     * @param status the status of the Job
+     * @param scheduleDate the date of executing the Job
+     */
     public JobNotificationResponseModel(long jobId, String status, LocalDate scheduleDate) {
         this.jobId = jobId;
         this.status = status;
@@ -24,16 +29,11 @@ public class JobNotificationResponseModel {
     @Override
     public String toString() {
         //TODO: need to be updated!
-        boolean accepted = status.equals("ACCEPTED");
-        boolean canceled = status.equals("CANCELED");
-        boolean pending = status.equals("PENDING");
-        boolean rescheduled = status.equals("RESCHEDULED");
-
         String text = "Job with job id " + jobId
                 + " is " + status + ".";
-        if (accepted || rescheduled) {
+        if (status.equals("ACCEPTED") || status.equals("RESCHEDULED")) {
             text += " The Job will be executed on the " + scheduleDate.toString();
-        } else if (pending) {
+        } else if (status.equals("PENDING")) {
             text += " Please check at another time, if the Job has been scheduled!";
         }
 

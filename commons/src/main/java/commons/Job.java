@@ -21,6 +21,7 @@ public class Job {
     @Column(name = "job_id", nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long jobId;
+
     @Column(name = "net_id", nullable = false)
     @Convert(converter = NetIdAttributeConverter.class)
     private NetId netId;
@@ -37,8 +38,8 @@ public class Job {
     @Column(name = "status", nullable = false)
     private String status;
 
-    @Column(name = "scheduleDate", nullable = true)
-    private LocalDate scheduleDate;
+    @Column(name = "scheduleDate", nullable = false)
+    private Optional<LocalDate> optionalScheduleDate;
 
 
     /**
@@ -55,7 +56,7 @@ public class Job {
         this.gpuUsage = gpuUsage;
         this.memoryUsage = memoryUsage;
         this.status = "pending";
-        this.scheduleDate = null;
+        this.optionalScheduleDate = Optional.empty();
     }
 
     /**
@@ -67,7 +68,7 @@ public class Job {
         gpuUsage = 0;
         memoryUsage = 0;
         this.status = "accept";
-        this.scheduleDate = LocalDate.now().plusDays(3);
+        this.optionalScheduleDate = Optional.of(LocalDate.now().plusDays(3));
     }
 
 
@@ -120,11 +121,11 @@ public class Job {
     }
 
     public LocalDate getScheduleDate() {
-        return scheduleDate;
+        return optionalScheduleDate.orElse(null);
     }
 
     public void setScheduleDate(LocalDate scheduleDate) {
-        this.scheduleDate = scheduleDate;
+        this.optionalScheduleDate = Optional.of(scheduleDate);
     }
 
     @Override
@@ -138,7 +139,7 @@ public class Job {
         Job job = (Job) o;
         return jobId == job.jobId && cpuUsage == job.cpuUsage && gpuUsage == job.gpuUsage && memoryUsage == job.memoryUsage
                 && Objects.equals(netId, job.netId) && Objects.equals(status, job.status)
-                && Objects.equals(scheduleDate, job.scheduleDate);
+                && Objects.equals(optionalScheduleDate, job.optionalScheduleDate);
     }
 
     @Override
