@@ -34,9 +34,9 @@ class JobServiceTest {
     void setUp() {
         Job job1 = new Job(new NetId("mlica"), 10, 10, 10);
         jobRepository.save(job1);
-        Job job3 = new Job(new NetId("mlica"), "GPU", 20, 10, 1);
+        Job job3 = new Job(new NetId("mlica"), 20, 10, 1);
         jobRepository.save(job3);
-        Job job2 = new Job(new NetId("ppolitowicz"), "GPU", 1, 2, 3);
+        Job job2 = new Job(new NetId("ppolitowicz"), 1, 2, 3);
         jobRepository.save(job2);
     }
 
@@ -84,8 +84,8 @@ class JobServiceTest {
     @Test
     void collectJobsByNetId() {
         NetId netId = new NetId("mlica");
-        Job expected1 = new Job(new NetId("mlica"), "CPU", 10, 10, 10);
-        Job expected2 = new Job(new NetId("mlica"), "GPU", 20, 10, 1);
+        Job expected1 = new Job(new NetId("mlica"), 10, 10, 10);
+        Job expected2 = new Job(new NetId("mlica"), 20, 10, 1);
         try {
             List<Job> jobs = jobService.collectJobsByNetId(netId, netId);
             expected1.setJobId(jobs.get(0).getJobId());
