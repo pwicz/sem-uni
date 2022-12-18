@@ -122,6 +122,11 @@ public class Job {
         this.status = status;
     }
 
+    /**
+     * getter and converter of scheduleDate, from String to LocalDate.
+     *
+     * @return the scheduleDate as a LocalDate Object.
+     */
     public LocalDate getScheduleDate() {
         if (scheduleDate.equals("")) {
             return null;
