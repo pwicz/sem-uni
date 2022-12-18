@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="nl.tudelft.sem.template.example.authentication.AuthManagerTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2022-11-27T13:08:15" hostname="MSI-F1L0" time="0.056">
-  <properties/>
-  <testcase name="getNetidTest()" classname="nl.tudelft.sem.template.example.authentication.AuthManagerTests" time="0.056"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

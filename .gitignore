@@ -1,7 +1,13 @@
 ### Gradle ###
 
 .gradle
-\build\
+build/
+example-microservice/build/*
+authentication-microservice/build/*
+clusters-microservice/build/*
+scheduler-microservice/build/*
+jobs-microservice/build/*
+
 gradle-app.setting
 !gradle/wrapper/gradle-wrapper.jar
 **/build/
