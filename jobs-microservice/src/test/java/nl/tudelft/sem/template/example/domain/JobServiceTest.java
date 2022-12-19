@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -15,14 +16,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.RestTemplate;
 
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class JobServiceTest {
+
+    @MockBean
+    private RestTemplate restTemplate;
 
     @Autowired
     private transient JobRepository jobRepository;
@@ -43,6 +49,13 @@ class JobServiceTest {
     @AfterEach
     void after() {
         jobRepository.deleteAll();
+    }
+
+    @Test
+    void scheduleJob() {
+        Job job = new Job(new NetId("ageist"), 10, 10, 10);
+        String responseText = jobService.scheduleJob(job);
+        assertThat(responseText).isEqualTo("processing");
     }
 
     @Test

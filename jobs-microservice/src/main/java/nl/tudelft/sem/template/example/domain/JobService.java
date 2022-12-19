@@ -6,8 +6,13 @@ import commons.NetId;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+import commons.UpdateJob;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * A DDD service for handling jobs.
@@ -16,27 +21,56 @@ import org.springframework.stereotype.Service;
 @Service
 public class JobService {
 
+    private final transient JobRepository jobRepository;
+    private final RestTemplate restTemplate;
     private static final String nullValue = "null";
 
+    private String schedulerUrl = "http://localhost:8084";
     private String url = "http://localhost:8083";
 
+    public String getSchedulerUrl() {
+        return schedulerUrl;
+    }
+    public void setSchedulerUrl(String schedulerUrl) {
+        this.schedulerUrl = schedulerUrl;
+    }
     public String getUrl() {
         return url;
     }
-
     public void setUrl(String url) {
         this.url = url;
     }
 
-    private final transient JobRepository jobRepository;
 
     /**
      * Instantiates a new JobService.
      *
+     * @param restTemplate
      * @param jobRepository the job repository
      */
-    public JobService(JobRepository jobRepository) {
+    public JobService(JobRepository jobRepository, RestTemplate restTemplate) {
         this.jobRepository = jobRepository;
+        this.restTemplate = restTemplate;
+    }
+
+    /**
+     * Makes a POST request to the Scheduler, to schedule Jobs.
+     *
+     * @param scheduleJob the Job object to be scheduled
+     * @return the response message of the Scheduler
+     */
+    public String scheduleJob(Job scheduleJob) {
+        try {
+            ResponseEntity<String> response = restTemplate
+                    .postForEntity(schedulerUrl + "/schedule", scheduleJob, String.class);
+            if (response == null) {
+                //TODO: why is response null?
+                return "Problem: ResponseEntity was null!";
+            }
+            return response.getBody();
+        } catch (Exception e) {
+            return "A problem occurred while trying to schedule a job: " + e.getMessage();
+        }
     }
 
     /**
