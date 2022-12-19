@@ -2,11 +2,17 @@ package nl.tudelft.sem.template.example.domain;
 
 import commons.Job;
 import commons.NetId;
+import commons.Status;
+import commons.exceptions.ResourceBiggerThanCpuException;
+import exceptions.InvalidIdException;
+import exceptions.InvalidNetIdException;
+import exceptions.InvalidResourcesException;
 import commons.ScheduleJob;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
@@ -96,6 +102,10 @@ public class JobService {
         if (cpuUsage < 0 || gpuUsage < 0 || memoryUsage < 0) {
             throw new InvalidResourcesException(Math.min(cpuUsage, Math.min(gpuUsage, memoryUsage)));
         }
+        if (cpuUsage < Math.max(gpuUsage, memoryUsage)) {
+            String resource = gpuUsage > memoryUsage ? "GPU" : "Memory";
+            throw new ResourceBiggerThanCpuException(resource);
+        }
         if (netId == null) {
             throw new InvalidNetIdException(nullValue);
         }
@@ -111,6 +121,36 @@ public class JobService {
         jobRepository.save(newJob);
 
         return newJob;
+    }
+
+    /**
+     * Create a new job.
+     *
+     * @param authNetId NetId of the authenticated user
+     * @param job a job
+     * @param role a role of a user who creates a job
+     * @return a new Job
+     * @throws Exception if the resources of NetId are invalid
+     */
+    public Job createJob(NetId authNetId, Job job, String role) throws Exception {
+        if (job.getCpuUsage() < 0 || job.getGpuUsage() < 0 || job.getMemoryUsage() < 0) {
+            throw new InvalidResourcesException(Math.min(job.getCpuUsage(),
+                    Math.min(job.getGpuUsage(), job.getMemoryUsage())));
+        }
+        if (job.getNetId() == null) {
+            throw new InvalidNetIdException(nullValue);
+        }
+        if (!job.getNetId().toString().equals(authNetId.toString())) {
+            throw new InvalidNetIdException(job.getNetId().toString());
+        }
+        if (!role.equals("employee")) {
+            System.out.println(role);
+            throw new BadCredentialsException(role);
+        }
+
+        jobRepository.save(job);
+
+        return job;
     }
 
     /**
@@ -154,7 +194,7 @@ public class JobService {
      * @return a String with the status of the Job
      * @throws Exception if the NetId is invalid or the NetId does not have permission to access the requested job.
      */
-    public String getJobStatus(NetId netId, NetId authNetId, long jobId) throws Exception {
+    public Status getJobStatus(NetId netId, NetId authNetId, long jobId) throws Exception {
         if (netId == null) {
             throw new InvalidNetIdException(nullValue);
         }
@@ -191,6 +231,29 @@ public class JobService {
         return jobRepository.findAll();
     }
 
+
+    /**
+     * Retrieve all the Job entities from the database.
+     *
+     * @param netId NetId of the request creator
+     * @param authNetId NetId of the authenticated user
+     * @param role role of the request creator
+     * @return a list of Job entities containing all jobs in the database.
+     * @throws Exception if the NetId is invalid or the creator of the request does not have the admin role.
+     */
+    public List<Job> getAllScheduledJobs(NetId netId, NetId authNetId, String role) throws Exception {
+        if (netId == null) {
+            throw new InvalidNetIdException(nullValue);
+        }
+        if (!netId.toString().equals(authNetId.toString())) {
+            throw new InvalidNetIdException(netId.toString());
+        }
+        if (!role.equals("admin")) {
+            throw new BadCredentialsException(role);
+        }
+        return jobRepository.findAll().stream().filter(j -> j.getStatus() == Status.ACCEPTED).collect(Collectors.toList());
+    }
+
     /**
      * Update information about the Job specified by a microservice.
      *
@@ -199,7 +262,7 @@ public class JobService {
      * @param localDate the time the Job is scheduled to start
      * @throws Exception if the id does not exist in the database
      */
-    public void updateJob(long id, String status, LocalDate localDate) throws Exception {
+    public void updateJob(long id, Status status, LocalDate localDate) throws Exception {
         Optional<Job> jobOptional = jobRepository.findById(id);
         if (jobOptional.isEmpty()) {
             throw new InvalidIdException(id);

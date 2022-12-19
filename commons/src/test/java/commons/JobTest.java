@@ -14,7 +14,7 @@ class JobTest {
     Job job1;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         netId1 = new NetId("ageist");
         job1 = new Job(netId1, 3, 2, 1);
     }

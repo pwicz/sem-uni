@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.authentication.controllers;
 import commons.Faculty;
 import commons.NetId;
 import java.util.ArrayList;
+import java.util.List;
 import nl.tudelft.sem.template.authentication.authentication.JwtTokenGenerator;
 import nl.tudelft.sem.template.authentication.authentication.JwtUserDetailsService;
 import nl.tudelft.sem.template.authentication.domain.user.GetFacultyService;
@@ -23,6 +24,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -132,10 +134,24 @@ public class AuthenticationController {
     public ResponseEntity<FacultyResponseModel> retrieveFaculty(@RequestBody FacultyRequestModel request) throws Exception {
         try {
             NetId netId = new NetId(request.getNetId());
-            ArrayList<Faculty> faculty = getFacultyService.getFaculty(netId);
-            return ResponseEntity.ok(new FacultyResponseModel(faculty.toString()));
+            List<Faculty> faculties = getFacultyService.getFaculty(netId);
+            return ResponseEntity.ok(new FacultyResponseModel(faculties.toString()));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
+
+    /**
+     * Endpoint for retrieving the faculty of a user.
+     *
+     * @return 200 OK if the registration is successful
+     * @throws Exception if a user with this netid already exists
+     */
+    @GetMapping("/faculties")
+    public ResponseEntity<FacultyResponseModel> retrieveFaculties() {
+        List<String> all = getFacultyService.getFaculties();
+
+        return ResponseEntity.ok(new FacultyResponseModel(all.toString()));
+    }
+
 }
