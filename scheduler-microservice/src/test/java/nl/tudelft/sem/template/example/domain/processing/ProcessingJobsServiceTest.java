@@ -1,10 +1,12 @@
 package nl.tudelft.sem.template.example.domain.processing;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import commons.FacultyResource;
 import commons.ScheduleJob;
 import commons.UpdateJob;
+import commons.exceptions.ResourceBiggerThanCpuException;
 import java.time.LocalDate;
 import java.util.List;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstance;
@@ -34,7 +36,7 @@ public class ProcessingJobsServiceTest {
     private transient ScheduledInstanceRepository scheduledInstanceRepository;
 
     @Test
-    public void scheduleJob_forNextDay_worksCorrectly() {
+    public void scheduleJob_forNextDay_worksCorrectly() throws ResourceBiggerThanCpuException {
         String facultyConstant = "EEMCS";
         LocalDate dateConstant = LocalDate.now().plusDays(1);
 
@@ -63,7 +65,7 @@ public class ProcessingJobsServiceTest {
     }
 
     @Test
-    public void scheduleJob_forOtherDay_worksCorrectly() {
+    public void scheduleJob_forOtherDay_worksCorrectly() throws ResourceBiggerThanCpuException {
         String facultyConstant = "EEMCS";
         LocalDate dateConstant = LocalDate.now().plusDays(1);
 
@@ -97,7 +99,7 @@ public class ProcessingJobsServiceTest {
     }
 
     @Test
-    public void scheduleJob_splitBetweenFaculties_worksCorrectly() {
+    public void scheduleJob_splitBetweenFaculties_worksCorrectly() throws ResourceBiggerThanCpuException {
         String facultyConstant = "EEMCS";
         String facultyConstant2 = "3ME";
         LocalDate dateConstant = LocalDate.now().plusDays(1);
@@ -135,7 +137,7 @@ public class ProcessingJobsServiceTest {
     }
 
     @Test
-    public void scheduleJob_notAbleToSchedule_worksCorrectly() {
+    public void scheduleJob_notAbleToSchedule_worksCorrectly() throws ResourceBiggerThanCpuException {
         String facultyConstant = "EEMCS";
         String facultyConstant2 = "3ME";
         LocalDate dateConstant = LocalDate.now().plusDays(1);
@@ -168,7 +170,7 @@ public class ProcessingJobsServiceTest {
     }
 
     @Test
-    public void scheduleJob_notAbleToSchedule_fullDay_worksCorrectly() {
+    public void scheduleJob_notAbleToSchedule_fullDay_worksCorrectly() throws ResourceBiggerThanCpuException {
         String facultyConstant = "EEMCS";
         String facultyConstant2 = "3ME";
         LocalDate dateConstant = LocalDate.now().plusDays(1);
@@ -201,6 +203,24 @@ public class ProcessingJobsServiceTest {
 
         List<ScheduledInstance> fromDb = scheduledInstanceRepository.findAllByJobId(1L);
         assertThat(fromDb.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void scheduleJob_withGpuGreaterThanCpu_throwsException() {
+        ScheduleJob scheduleJob = new ScheduleJob(1, "EEMCS", LocalDate.now().plusDays(1),
+                1, 2, 1);
+        Exception e = assertThrows(ResourceBiggerThanCpuException.class,
+                () -> processingJobsService.scheduleJob(scheduleJob));
+        assertThat(e.getMessage()).isEqualTo("GPU usage cannot be greater than the CPU usage.");
+    }
+
+    @Test
+    public void scheduleJob_withMemoryGreaterThanCpu_throwsException() {
+        ScheduleJob scheduleJob = new ScheduleJob(1, "EEMCS", LocalDate.now().plusDays(1),
+                1, 1, 2);
+        Exception e = assertThrows(ResourceBiggerThanCpuException.class,
+                () -> processingJobsService.scheduleJob(scheduleJob));
+        assertThat(e.getMessage()).isEqualTo("Memory usage cannot be greater than the CPU usage.");
     }
 
     private boolean compareScheduledInstances(ScheduledInstance a, ScheduledInstance b) {

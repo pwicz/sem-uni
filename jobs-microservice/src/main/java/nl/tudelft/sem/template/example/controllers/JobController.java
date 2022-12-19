@@ -158,10 +158,10 @@ public class JobController {
         } catch (InvalidResourcesException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "INVALID_RESOURCE_ALLOCATION", e);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "EXCEPTION", e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
-
+    
     /**
      * The api POST endpoint to delete a Job.
      *

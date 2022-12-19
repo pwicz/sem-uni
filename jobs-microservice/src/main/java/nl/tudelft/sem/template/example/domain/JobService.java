@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.example.domain;
 
 import commons.Job;
 import commons.NetId;
+import commons.exceptions.ResourceBiggerThanCpuException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -54,6 +55,10 @@ public class JobService {
                          int memoryUsage, String role) throws Exception {
         if (cpuUsage < 0 || gpuUsage < 0 || memoryUsage < 0) {
             throw new InvalidResourcesException(Math.min(cpuUsage, Math.min(gpuUsage, memoryUsage)));
+        }
+        if (cpuUsage < Math.max(gpuUsage, memoryUsage)) {
+            String resource = gpuUsage > memoryUsage ? "GPU" : "Memory";
+            throw new ResourceBiggerThanCpuException(resource);
         }
         if (netId == null) {
             throw new InvalidNetIdException(nullValue);
