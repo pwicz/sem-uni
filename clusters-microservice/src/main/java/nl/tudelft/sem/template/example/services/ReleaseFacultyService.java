@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+
+@SuppressWarnings("PMD")
 @Service
 public class ReleaseFacultyService {
     private final transient NodeRepository nodeRepository;
