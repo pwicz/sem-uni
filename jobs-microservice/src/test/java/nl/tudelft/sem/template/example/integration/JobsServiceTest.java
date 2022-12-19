@@ -87,7 +87,7 @@ public class JobsServiceTest {
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
-        Job j3 = new Job(u2, "memory", 10, 10, 10);
+        Job j3 = new Job(u2, 10, 10, 10);
 
         j1.setStatus(Status.ACCEPTED);
         j3.setStatus(Status.ACCEPTED);

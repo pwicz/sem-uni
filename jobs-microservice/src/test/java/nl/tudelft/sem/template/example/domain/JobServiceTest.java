@@ -110,7 +110,7 @@ class JobServiceTest {
         try {
             assert j != null;
             Status status = jobService.getJobStatus(netId, netId, j.getJobId());
-            assertEquals(status.toString(), "pending");
+            assertEquals(status, Status.PENDING);
         } catch (Exception e) {
             fail();
         }
