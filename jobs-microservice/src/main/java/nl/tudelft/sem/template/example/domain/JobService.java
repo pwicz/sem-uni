@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import commons.ScheduleJob;
 import commons.UpdateJob;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -59,18 +60,31 @@ public class JobService {
      * @param scheduleJob the Job object to be scheduled
      * @return the response message of the Scheduler
      */
-    public String scheduleJob(Job scheduleJob) {
-        try {
-            ResponseEntity<String> response = restTemplate
-                    .postForEntity(schedulerUrl + "/schedule", scheduleJob, String.class);
-            if (response == null) {
-                //TODO: why is response null?
-                return "Problem: ResponseEntity was null!";
-            }
-            return response.getBody();
-        } catch (Exception e) {
-            return "A problem occurred while trying to schedule a job: " + e.getMessage();
+    public String scheduleJob(ScheduleJob scheduleJob) throws InvalidScheduleJobException {
+    //        try {
+    //            ResponseEntity<String> response = restTemplate
+    //                    .postForEntity(schedulerUrl + "/schedule", scheduleJob, String.class);
+    //            if (response.getBody() == null) {
+    //                //TODO: why is response null?
+    //                return "Problem: ResponseEntity was null!";
+    //            }
+    //            return response.getBody();
+    //        } catch (Exception e) {
+    //            return "A problem occurred while trying to schedule a job: " + e.getMessage();
+    //        }
+        if (scheduleJob == null) {
+            throw new InvalidScheduleJobException(scheduleJob);
         }
+
+        ResponseEntity<String> response = restTemplate
+                            .postForEntity(schedulerUrl + "/schedule", scheduleJob, String.class);
+
+        if (response.getBody() == null) {
+            //TODO: why is response null?
+            return "Problem: ResponseEntity was null!";
+        }
+
+        return response.getBody();
     }
 
     /**
