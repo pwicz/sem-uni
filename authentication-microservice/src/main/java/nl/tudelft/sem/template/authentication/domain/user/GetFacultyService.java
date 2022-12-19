@@ -35,7 +35,6 @@ public class GetFacultyService {
     public List<Faculty> getFaculty(NetId netId) throws NetIdDoesNotExistException {
         if (checkNetIdExists(netId)) {
             Optional<AppUser> user = userRepository.findByNetId(netId);
-            System.out.println(user.get());
             if (user.isPresent()) {
                 return user.get().getFaculty();
             }
@@ -65,6 +64,34 @@ public class GetFacultyService {
         }
         return new ArrayList<>(set);
     }
+
+    /**
+     * Retrieves all the faculties in the system.
+     *
+     * @return the faculties or an empty arraylist
+     */
+    public AppUser changeFaculty(NetId netId, List<String> faculties) throws NetIdDoesNotExistException {
+        if (checkNetIdExists(netId)) {
+            Optional<AppUser> user = userRepository.findByNetId(netId);
+
+            List<Faculty> f = new ArrayList<>();
+            for (String s : faculties) {
+                f.add(new Faculty(s));
+            }
+
+            if (user.isPresent()) {
+                AppUser u = user.get();
+                u.setFaculty(f);
+                userRepository.save(u);
+                return u;
+            }
+
+            throw new NetIdDoesNotExistException(netId);
+        }
+
+        throw new NetIdDoesNotExistException(netId);
+    }
+
 
     public boolean checkNetIdExists(NetId netId) {
         return userRepository.existsByNetId(netId);
