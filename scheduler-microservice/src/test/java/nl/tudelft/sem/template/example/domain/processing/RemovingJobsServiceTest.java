@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example;
+package nl.tudelft.sem.template.example.domain.processing;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

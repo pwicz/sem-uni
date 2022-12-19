@@ -7,7 +7,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
+import nl.tudelft.sem.template.example.domain.AccountNotAuthorizedException;
+import nl.tudelft.sem.template.example.domain.FacultyCannotBeReleasedException;
 import nl.tudelft.sem.template.example.domain.NodeRepository;
+import nl.tudelft.sem.template.example.domain.ReleaseFacultyDto;
+import nl.tudelft.sem.template.example.domain.UserNotInThisFacultyException;
+import nl.tudelft.sem.template.example.services.ReleaseFacultyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,19 +31,23 @@ public class NodeController {
     private final transient RestTemplate restTemplate;
     private final transient NodeRepository repo;
     private final transient AuthManager authManager;
+    private final ReleaseFacultyService releaseFacultyService;
 
     /**
      * Constructor for the NodeController.
      *
-     * @param repo the repository interface
-     * @param authManager contains details about the user
-     * @param restTemplate RestTemplate to send requests
+     * @param repo                  the repository interface
+     * @param authManager           contains details about the user
+     * @param restTemplate          RestTemplate to send requests
+     * @param releaseFacultyService releaseFacultyService to update the faculty
      */
     @Autowired
-    public NodeController(NodeRepository repo, AuthManager authManager, RestTemplate restTemplate) {
+    public NodeController(NodeRepository repo, AuthManager authManager,
+                          RestTemplate restTemplate, ReleaseFacultyService releaseFacultyService) {
         this.repo = repo;
         this.authManager = authManager;
         this.restTemplate = restTemplate;
+        this.releaseFacultyService = releaseFacultyService;
     }
 
     /**
@@ -133,23 +142,20 @@ public class NodeController {
      * Only facculty accounts are allowed to do this.
      * Only sets the date its released from and till
      *
-     * @param faculty faculty of the release
-     * @param date date its released from
-     * @param days number days of days its released for
+     * @param releaseObject faculty of the release
      */
-    @PostMapping("/releaseFaculty?faculty={faculty}&date={date}&days={days}")
-    public ResponseEntity<String> releaseFaculty(@PathVariable("faculty") String faculty,
-                                                 @PathVariable("date") LocalDate date, @PathVariable("days") int days) {
-        if (!authManager.getRole().equals("FacultyAccount")) {
-            return ResponseEntity.badRequest().build();
+    @PostMapping("/releaseFaculty")
+    public ResponseEntity<String> releaseFaculty(@RequestBody ReleaseFacultyDto releaseObject) {
+        try {
+            releaseFacultyService.releaseFaculty(releaseObject);
+        } catch (FacultyCannotBeReleasedException e) {
+            throw new RuntimeException(e);
+        } catch (AccountNotAuthorizedException e) {
+            throw new RuntimeException(e);
+        } catch (UserNotInThisFacultyException e) {
+            throw new RuntimeException(e);
         }
-        if (!getFaculty(authManager.getNetId()).contains(faculty)) {
-            return ResponseEntity.badRequest().build();
-        }
-        if (date == null || faculty == null || date.isBefore(LocalDate.now()) || days < 1) {
-            return ResponseEntity.badRequest().build();
-        }
-        repo.updateRelease(faculty, date, days);
+
         return ResponseEntity.ok("Released");
     }
 

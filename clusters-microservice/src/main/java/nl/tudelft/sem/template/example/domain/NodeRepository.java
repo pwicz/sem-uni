@@ -91,5 +91,4 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
             nativeQuery = true,
             value = "UPDATE Node SET removedDate = ?2 WHERE id = ?1")
     void setAsDeleted(long id, LocalDate date);
-
 }
