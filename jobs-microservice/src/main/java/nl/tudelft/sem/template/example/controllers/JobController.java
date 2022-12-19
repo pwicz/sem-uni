@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
 
+import commons.Account;
 import commons.Job;
 import commons.NetId;
 import commons.UpdateJob;
@@ -145,7 +146,7 @@ public class JobController {
             int cpuUsage = request.getCpuUsage();
             int gpuUsage = request.getGpuUsage();
             int memoryUsage = request.getMemoryUsage();
-            String role = (String) authManager.getRole();
+            Account role = (Account) authManager.getRole();
             System.out.println(role);
             Job createdJob = this.jobService.createJob(jobNetId, authNetId, resourceType, cpuUsage,
                     gpuUsage, memoryUsage, role);

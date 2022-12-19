@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.domain;
 
 
+import commons.Account;
 import commons.Job;
 import commons.NetId;
 import java.time.LocalDate;
@@ -52,7 +53,7 @@ public class JobService {
      * @throws Exception if the resources of NetId are invalid
      */
     public Job createJob(NetId netId, NetId authNetId,
-                         String resourceType, int cpuUsage, int gpuUsage, int memoryUsage, String role) throws Exception {
+                         String resourceType, int cpuUsage, int gpuUsage, int memoryUsage, Account role) throws Exception {
         if (cpuUsage < 0 || gpuUsage < 0 || memoryUsage < 0) {
             throw new InvalidResourcesException(Math.min(cpuUsage, Math.min(gpuUsage, memoryUsage)));
         }
@@ -62,9 +63,9 @@ public class JobService {
         if (!netId.toString().equals(authNetId.toString())) {
             throw new InvalidNetIdException(netId.toString());
         }
-        if (!role.equals("employee")) {
+        if (!role.equals(Account.Employee)) {
             System.out.println(role);
-            throw new BadCredentialsException(role);
+            throw new BadCredentialsException(role.toString());
         }
 
         Job newJob = new Job(netId, resourceType, cpuUsage, gpuUsage, memoryUsage);
