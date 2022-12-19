@@ -24,14 +24,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-@SuppressWarnings("PMD")
 @RestController
 @RequestMapping("/cluster")
 public class NodeController {
     private final transient RestTemplate restTemplate;
     private final transient NodeRepository repo;
     private final transient AuthManager authManager;
-    private final ReleaseFacultyService releaseFacultyService;
+    private final transient ReleaseFacultyService releaseFacultyService;
 
     /**
      * Constructor for the NodeController.
