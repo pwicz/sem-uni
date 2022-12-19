@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.chain;
 
 import commons.Job;
+import nl.tudelft.sem.template.example.models.JobChainModel;
 
 public abstract class BaseValidator implements Validator {
 
@@ -19,14 +20,14 @@ public abstract class BaseValidator implements Validator {
      * Check if there is any handlers left in the chain of responsibility.
      * If there is a next handler, continue the chain of responsibility, otherwise the chain is finished and return true.
      *
-     * @param job the Job that is passed through the chain of responsibility.
+     * @param jobChainModel the Job model that is passed through the chain of responsibility.
      * @return if the job passed all the checks or not.
      * @throws JobRejectedException if the job does not adhere to the requirements of the chain
      */
-    protected boolean checkNext(Job job) throws JobRejectedException {
+    protected boolean checkNext(JobChainModel jobChainModel) throws JobRejectedException {
         if (next == null) {
             return true;
         }
-        return next.handle(job);
+        return next.handle(jobChainModel);
     }
 }

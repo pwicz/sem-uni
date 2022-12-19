@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.authentication.models;
+package commons;
 
 import lombok.Data;
 
@@ -8,4 +8,8 @@ import lombok.Data;
 @Data
 public class FacultyRequestModel {
     private String netId;
+
+    public FacultyRequestModel(String netId) {
+        this.netId = netId;
+    }
 }
