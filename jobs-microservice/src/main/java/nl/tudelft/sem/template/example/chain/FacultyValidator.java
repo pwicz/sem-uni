@@ -31,6 +31,9 @@ public class FacultyValidator extends BaseValidator {
         if (!responseModel.getFaculty().equals(faculty) || !role.equals(Account.Faculty)) {
             throw new JobRejectedException("BAD_CREDENTIALS");
         }
+        if (jobChainModel.getDirectiveJob().equals(DirectiveJob.Reject)) {
+            return false;
+        }
         return super.checkNext(jobChainModel);
     }
 }

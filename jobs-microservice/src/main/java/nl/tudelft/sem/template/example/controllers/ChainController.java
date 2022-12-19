@@ -9,6 +9,7 @@ import nl.tudelft.sem.template.example.domain.InvalidIdException;
 import nl.tudelft.sem.template.example.domain.InvalidNetIdException;
 import nl.tudelft.sem.template.example.models.ApproveRequestModel;
 import nl.tudelft.sem.template.example.models.JobResponseModel;
+import nl.tudelft.sem.template.example.models.RejectRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +47,32 @@ public class ChainController {
             Job approvedJob = chainService.approveJob(netId, role, id);
             JobResponseModel jobResponseModel = new JobResponseModel(approvedJob.getNetId().toString(),
                     approvedJob.getStatus());
+            return ResponseEntity.ok(jobResponseModel);
+        } catch (InvalidIdException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "INVALID_ID", e);
+        } catch (InvalidNetIdException e) {
+            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "BAD_CREDENTIALS", e);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "BAD_REQUEST", e);
+        }
+    }
+
+    /**
+     * Reject the scheduling of a Job by a faculty account using Chain of Responsibility.
+     *
+     * @param request RejectRequestModel needed to identify a Job
+     * @return JobResponseModel with information about the rejected Job.
+     */
+    @PostMapping("/reject")
+    public ResponseEntity<JobResponseModel> rejectJob(@RequestBody RejectRequestModel request) {
+        try {
+            NetId netId = new NetId(authManager.getNetId());
+            Account role = (Account) authManager.getRole();
+            Long id = request.getId();
+
+            Job rejectedJob = chainService.rejectJob(netId, role, id);
+            JobResponseModel jobResponseModel = new JobResponseModel(rejectedJob.getNetId().toString(),
+                    rejectedJob.getStatus());
             return ResponseEntity.ok(jobResponseModel);
         } catch (InvalidIdException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "INVALID_ID", e);

@@ -33,12 +33,39 @@ public class ChainService {
      * Approve a Job from the database by updating the status.
      *
      * @param netId netId
-     * @param role role of the person trying to approve a job.
+     * @param role role of the person trying to approve a Job.
      * @param id id of the Job in the database
      * @return the approved Job
      * @throws Exception if the Job can not be scheduled or some parameters are not expected
      */
     public Job approveJob(NetId netId, Account role, Long id) throws Exception {
+        return handleJob(netId, role, id, DirectiveJob.Approve);
+    }
+
+    /**
+     * Reject a Job from the database by updating the status.
+     *
+     * @param netId netId
+     * @param role role of the person trying to reject a Job.
+     * @param id id of the Job in the database
+     * @return the rejected Job
+     * @throws Exception if the Job cannot be rejected or some parameters are not expected
+     */
+    public Job rejectJob(NetId netId, Account role, Long id) throws Exception {
+        return handleJob(netId, role, id, DirectiveJob.Reject);
+    }
+
+    /**
+     * Handle a Job from the database by updating the status using chain of responsibility.
+     *
+     * @param netId netId
+     * @param role role of the person trying to handle the Job.
+     * @param id id of the Job in the database
+     * @param directiveJob whether the person tries to approve or reject the Job
+     * @return the handled Job
+     * @throws Exception if the Job can not be handled or some parameters are not expected
+     */
+    private Job handleJob(NetId netId, Account role, Long id, DirectiveJob directiveJob) throws Exception {
         Optional<Job> jobOptional = jobRepository.findById(id);
         if (jobOptional.isEmpty()) {
             throw new InvalidIdException(id);
@@ -47,7 +74,7 @@ public class ChainService {
         String faculty = getFaculty(netId);
 
         // Chain Of Responsibility
-        JobChainModel jobChainModel = new JobChainModel(j, role, faculty); // TODO: add proper faculty
+        JobChainModel jobChainModel = new JobChainModel(j, role, faculty, directiveJob);
         Validator handler = new FacultyValidator();
         Validator handler2 = new FacultyResourceValidator();
         handler.setNext(handler2);
