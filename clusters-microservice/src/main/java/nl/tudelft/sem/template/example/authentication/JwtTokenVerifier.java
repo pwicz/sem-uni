@@ -25,6 +25,10 @@ public class JwtTokenVerifier {
     public String getNetIdFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
+    public String getRoleFromToken(String token) {
+        Claims claims = getClaims(token);
+        return claims.get("role").toString();
+    }
 
     public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);

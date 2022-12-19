@@ -64,9 +64,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 try {
                     if (jwtTokenVerifier.validateToken(token)) {
                         String netId = jwtTokenVerifier.getNetIdFromToken(token);
+                        String role = jwtTokenVerifier.getRoleFromToken(token);
+
                         var authenticationToken = new UsernamePasswordAuthenticationToken(
                                 netId,
-                                null, List.of() // no credentials and no authorities
+                                role, List.of() // no credentials and no authorities
                         );
                         authenticationToken.setDetails(new WebAuthenticationDetailsSource()
                                 .buildDetails(request));
@@ -74,7 +76,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         // After setting the Authentication in the context, we specify
                         // that the current user is authenticated. So it passes the
                         // Spring Security Configurations successfully.
+
                         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+//                        return;
                     }
 
                 } catch (ExpiredJwtException e) {

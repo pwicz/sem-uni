@@ -1,8 +1,9 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import commons.Faculty;
 import commons.FacultyResource;
 import commons.NetId;
-import commons.Node;
+import nl.tudelft.sem.template.example.domain.Node;
 import commons.Resource;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.Map;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.NodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 
 @RestController
@@ -92,9 +95,9 @@ public class NodeController {
      * @param date day you want to see the free resources for
      */
     @GetMapping(path = {"/resources?faculty={faculty}&day={date}"})
-    public ResponseEntity<Resource> getFacultyAvailableResourcesForDay(@PathVariable("faculty") String faculty,
-                                                                       @PathVariable("date") String date) {
-        Resource facultyResources = repo.getFreeResources(faculty, date).get();
+    public ResponseEntity<FacultyResource> getFacultyAvailableResourcesForDay(@PathVariable("faculty") String faculty,
+                                                                              @PathVariable("date") String date) {
+        FacultyResource facultyResources = repo.getFreeResources(faculty, date).get();
         return ResponseEntity.ok(facultyResources);
     }
 
@@ -108,6 +111,7 @@ public class NodeController {
     @PostMapping(path = {"/addNode"})
     public ResponseEntity<Node> addNode(@RequestBody Node node) {
 
+        System.out.println(node.getFaculty());
         //check for if url looks like url later
         if (node.getName() == null || node.getUrl() == null
                 || node.getFaculty() == null
@@ -127,6 +131,8 @@ public class NodeController {
         try {
             //node.setToken(authManager.getToken()); // check if this works
             Node newNode = repo.save(node);
+            System.out.println(authManager.getNetId());
+
             return ResponseEntity.ok(newNode);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -160,8 +166,8 @@ public class NodeController {
     }
 
     private List<String> getFaculty(String token) {
-        ResponseEntity<String[]> facultyType = restTemplate.getForEntity(usersUrl
-                + "/faculty", String[].class);
+        ResponseEntity<String[]> facultyType = restTemplate.postForEntity(usersUrl
+                + "/faculty", authManager.getNetId(), String[].class);
 
         if (facultyType.getBody() == null) {
             return new ArrayList<>();
@@ -169,7 +175,6 @@ public class NodeController {
 
         return Arrays.asList(facultyType.getBody());
     }
-
 
     /**
      * Marks Node with the id as deleted.
@@ -201,7 +206,7 @@ public class NodeController {
      * @return list of Jobs to be scheduled
      */
     @GetMapping(path = "/resourcesNextDay")
-    public ResponseEntity<Map<String, Resource>> getAllResourcesNextDay() throws Exception {
+    public ResponseEntity<List<FacultyResource>> getResourcesNextDay() throws Exception {
         String role = authManager.getRole().toString();
         if (!role.equals("employee") || !role.equals("admin") || !role.equals("fac_acc")) {
             return ResponseEntity.badRequest().build();
@@ -213,11 +218,11 @@ public class NodeController {
         List<String> faculties = Arrays.asList(facultyType.getBody());
         System.out.println(faculties);
 
-        Map<String, Resource> res = new HashMap<>();
+        List<FacultyResource> res = new ArrayList<>();
 
         for (String f : faculties) {
-            Resource facultyResources = repo.getFreeResources(f, LocalDate.now().plusDays(1).toString()).get();
-            res.put(f, facultyResources);
+            FacultyResource facultyResources = repo.getFreeResources(f, LocalDate.now().plusDays(1).toString()).get();
+            res.add(facultyResources);
         }
         return ResponseEntity.ok(res);
     }

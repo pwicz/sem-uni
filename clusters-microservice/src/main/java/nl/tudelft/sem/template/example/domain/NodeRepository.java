@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.example.domain;
 
 
-import commons.Node;
+import commons.FacultyResource;
 import commons.Resource;
 import java.time.LocalDate;
 import java.util.List;
@@ -54,11 +54,17 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
      */
     @Query(
             nativeQuery = true,
+            value = "SELECT faculty, ?2, SUM(CPU), SUM(GPU), SUM(MEM) FROM Node "
+                    + "WHERE faculty = ?1 OR "
+                    + "(released <= ?2 AND releaseEND >= ?2)")
+    Optional<FacultyResource> getFreeResources(String faculty, String date);
+
+    @Query(
+            nativeQuery = true,
             value = "SELECT SUM(CPU), SUM(GPU), SUM(MEM) FROM Node "
                     + "WHERE faculty = ?1 OR "
                     + "(released <= ?2 AND releaseEND >= ?2)")
-    Optional<Resource> getFreeResources(String faculty, String date);
-
+    Optional<Resource> getReservedResources(String faculty, String date);
     /**
      * Meant to return in a FacultyResource model.
      *

@@ -133,7 +133,7 @@ public class ProcessingJobsService {
     private List<FacultyResource> getAvailableResources(String faculty, LocalDate date) {
 
         ResponseEntity<FacultyResource[]> facultyResourcesResponse = restTemplate.getForEntity(resourcesUrl
-                + "/facultyResources?faculty=" + faculty + "&day=" + date.toString(), FacultyResource[].class);
+                + "/resources?faculty=" + faculty + "&day=" + date.toString(), FacultyResource[].class);
 
         if (facultyResourcesResponse.getBody() == null) {
             return new ArrayList<>();
@@ -142,37 +142,38 @@ public class ProcessingJobsService {
         return Arrays.asList(facultyResourcesResponse.getBody());
     }
 
-    /**
-     *  Method get all available resources for the next day.
-     *
-     * @param netId of the user
-     * @param role of the user
-     * @return list of resources
-     */
-    public List<FacultyResource> getAvailableResourcesNextDay(NetId netId, String role) throws Exception {
-        if (netId == null) {
-            throw new InvalidNetIdException(null);
-        }
-        if (!role.equals("employee") && !role.equals("admin") && !role.equals("fac_acc")) {
-            throw new BadCredentialsException(role);
-        }
+    public List<FacultyResource> getAllResourcesNextDay() {
 
-        FacultyRequestModel requestModel = new FacultyRequestModel(netId.toString());
-        ResponseEntity<FacultyResponseModel> facultiesResponse = restTemplate.postForEntity(authUrl + "/faculty",
-                requestModel, FacultyResponseModel.class);
+        ResponseEntity<FacultyResponseModel> fac = restTemplate.getForEntity(authUrl
+                + "/faculties", FacultyResponseModel.class);
 
-        String[] faculties = facultiesResponse.getBody().getFaculties().split(";");
+        List<String> faculties = Arrays.asList(fac.getBody().getFaculties());
 
-        ArrayList<String> fac = new ArrayList<>();
-        for (String f : faculties) {
-            fac.add(f);
+        List<FacultyResource> res = new ArrayList<>();
+
+        LocalDate tmrw = LocalDate.now().plusDays(1);
+        for(String f : faculties){
+            ResponseEntity<FacultyResource> facultyResourcesResponse = restTemplate.getForEntity(resourcesUrl
+                    + "/resources?faculty=" + f + "&day=" + tmrw, FacultyResource.class);
+
+            FacultyResource total  = facultyResourcesResponse.getBody();
+            if (facultyResourcesResponse.getBody() == null) {
+                continue;
+            }
+            List<ScheduledInstance> instancesInDb =
+                    scheduledInstanceRepository.findByDateAndFaculty(tmrw, f);
+            int cpuUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getCpuUsage).sum();
+            int gpuUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getGpuUsage).sum();
+            int memoryUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getMemoryUsage).sum();
+
+            FacultyResource fr = new FacultyResource(f, tmrw,
+                    cpuUsageSum, gpuUsageSum, memoryUsageSum,
+                    total.getCpuUsageTotal(), total.getGpuUsageTotal(), total.getMemoryUsageTotal()
+            );
+            res.add(fr);
         }
-        List<FacultyResource> resources = new ArrayList<>();
-        for (String f : fac) {
-            resources.add(getAvailableResources(f, LocalDate.now().plusDays(1)).get(0));
-            System.out.println(getAvailableResources(f, LocalDate.now().plusDays(1)).get(0));
-        }
-
-        return resources;
+        return res;
     }
+
+
 }

@@ -3,6 +3,10 @@ package nl.tudelft.sem.template.authentication.controllers;
 import commons.Faculty;
 import commons.NetId;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import nl.tudelft.sem.template.authentication.authentication.JwtTokenGenerator;
 import nl.tudelft.sem.template.authentication.authentication.JwtUserDetailsService;
 import nl.tudelft.sem.template.authentication.domain.user.GetFacultyService;
@@ -23,6 +27,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,6 +47,8 @@ public class AuthenticationController {
     private final transient GetFacultyService getFacultyService;
 
     private final transient UserRepository userRepository;
+
+    private static Set<String> all_faculties;
 
     /**
      * Instantiates a new UsersController.
@@ -66,6 +73,7 @@ public class AuthenticationController {
         this.registrationService = registrationService;
         this.getFacultyService = getFacultyService;
         this.userRepository = userRepository;
+        this.all_faculties = new HashSet<>();
     }
 
     /**
@@ -112,6 +120,7 @@ public class AuthenticationController {
             ArrayList<Faculty> faculties = new ArrayList<>();
             for (String f : request.getFaculty().split(";")) {
                 faculties.add(new Faculty(f));
+                this.all_faculties.add(f);
             }
             registrationService.registerUser(netId, password, role, faculties);
         } catch (Exception e) {
@@ -138,4 +147,20 @@ public class AuthenticationController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
+
+    /**
+     * Endpoint for retrieving the faculty of a user.
+     *
+     * @return 200 OK if the registration is successful
+     * @throws Exception if a user with this netid already exists
+     */
+    @GetMapping("/faculties")
+    public ResponseEntity<FacultyResponseModel> retrieveFaculties() {
+        ArrayList<String> fac = new ArrayList<>();
+        for(String f : all_faculties){
+            fac.add(f);
+        }
+        return ResponseEntity.ok(new FacultyResponseModel(fac.toString()));
+    }
+
 }
