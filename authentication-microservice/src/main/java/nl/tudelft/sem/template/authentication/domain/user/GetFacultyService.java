@@ -75,8 +75,6 @@ public class GetFacultyService {
         if (checkNetIdExists(netId)) {
             Optional<AppUser> user = userRepository.findByNetId(netId);
 
-//            List<Faculty> f = faculties.stream().map(s -> new Faculty(s)).collect(Collectors.toList());
-
             if (user.isPresent()) {
                 AppUser u = user.get();
                 u.setFaculty(faculties);
