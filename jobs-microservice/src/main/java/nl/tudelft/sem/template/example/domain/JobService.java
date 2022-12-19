@@ -3,7 +3,11 @@ package nl.tudelft.sem.template.example.domain;
 
 import commons.Job;
 import commons.NetId;
+import commons.Status;
 import commons.exceptions.ResourceBiggerThanCpuException;
+import exceptions.InvalidIdException;
+import exceptions.InvalidNetIdException;
+import exceptions.InvalidResourcesException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
