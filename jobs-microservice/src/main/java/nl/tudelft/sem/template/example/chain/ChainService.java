@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.example.chain;
 import commons.Account;
 import commons.Job;
 import commons.NetId;
+import commons.Resource;
 import nl.tudelft.sem.template.example.domain.InvalidFacultyException;
 import nl.tudelft.sem.template.example.domain.InvalidIdException;
 import nl.tudelft.sem.template.example.domain.JobRepository;

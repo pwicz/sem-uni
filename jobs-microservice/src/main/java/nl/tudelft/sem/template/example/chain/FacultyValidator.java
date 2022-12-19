@@ -20,7 +20,7 @@ public class FacultyValidator extends BaseValidator {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<FacultyResponseModel> response = restTemplate
                 .getForEntity("/faculty", FacultyResponseModel.class, requestModel);
-        
+
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new JobRejectedException("BAD_REQUEST");
         }
