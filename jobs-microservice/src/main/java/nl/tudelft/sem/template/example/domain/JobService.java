@@ -2,12 +2,12 @@ package nl.tudelft.sem.template.example.domain;
 
 import commons.Job;
 import commons.NetId;
+import commons.ScheduleJob;
 import commons.Status;
 import commons.exceptions.ResourceBiggerThanCpuException;
 import exceptions.InvalidIdException;
 import exceptions.InvalidNetIdException;
 import exceptions.InvalidResourcesException;
-import commons.ScheduleJob;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -71,19 +71,14 @@ public class JobService {
             throw new InvalidScheduleJobException(scheduleJob);
         }
 
-        if (isFiveMinutesBeforeDayStarts()) {
-            //TODO: call scheduleJob function again when it is 00:01 am
-            return "TODO";
-        } else {
-            ResponseEntity<String> response = restTemplate
-                    .postForEntity(schedulerUrl + "/schedule", scheduleJob, String.class);
+        ResponseEntity<String> response = restTemplate
+                .postForEntity(schedulerUrl + "/schedule", scheduleJob, String.class);
 
-            if (response.getBody() == null) {
-                //TODO: why is response null?
-                return "Problem: ResponseEntity was null!";
-            }
-            return response.getBody();
+        if (response.getBody() == null) {
+            //TODO: why is response null?
+            return "Problem: ResponseEntity was null!";
         }
+        return response.getBody();
     }
 
     /**
@@ -271,18 +266,6 @@ public class JobService {
         job.setStatus(status);
         job.setScheduleDate(localDate);
         jobRepository.save(job);
-    }
-
-    /**
-     * Checks the if it is 5 minutes before a new day starts.
-     *
-     * @return true if the current time is between 25:55 and 00:00 (excluding)
-     */
-    private boolean isFiveMinutesBeforeDayStarts() {
-        LocalTime currentTime = LocalTime.now();
-        LocalTime startTime = LocalTime.of(23, 55);
-        LocalTime endTime = LocalTime.of(0, 0);
-        return currentTime.isAfter(startTime) && currentTime.isBefore(endTime);
     }
 
 }
