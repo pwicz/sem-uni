@@ -1,12 +1,12 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import commons.Node;
 import commons.Resource;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
+import nl.tudelft.sem.template.example.domain.Node;
 import nl.tudelft.sem.template.example.domain.NodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -154,7 +154,7 @@ public class NodeController {
     }
 
     private List<String> getFaculty(String token) {
-        String usersUrl = "http://localhost:8082"; //faculty request model
+        String usersUrl = "http://localhost:8081"; //authentication microservice
 
         ResponseEntity<String[]> facultyType = restTemplate.getForEntity(usersUrl
                 + "/faculty", String[].class);
@@ -188,7 +188,22 @@ public class NodeController {
         }
         repo.setAsDeleted(id, LocalDate.now().plusDays(1L));
         Node n = repo.getNodeById(id).get();
-        return ResponseEntity.ok(n.getRemovedDate().toString());
+        String response = notifySchedulerOfResourceChange(LocalDate.now().plusDays(1L), n.getFaculty());
+        return ResponseEntity.ok(response + " " + n.getRemovedDate().toString());
+    }
+
+    //the addresses need to match up in the future
+    private String notifySchedulerOfResourceChange(LocalDate date, String faculty) {
+        String schedulerUrl = "http://localhost:8084"; //scheduler microservice
+
+        ResponseEntity<String> facultyType = restTemplate.getForEntity(schedulerUrl
+                + "/receiveResourceChange?faculty=" + faculty + "&day=" + date.toString(), String.class);
+
+        if (facultyType.getBody() == null) {
+            return "Failed Notify";
+        }
+
+        return facultyType.getBody();
     }
 }
 
