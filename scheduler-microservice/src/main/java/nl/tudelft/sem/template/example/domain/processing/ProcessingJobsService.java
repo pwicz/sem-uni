@@ -142,6 +142,12 @@ public class ProcessingJobsService {
         return Arrays.asList(facultyResourcesResponse.getBody());
     }
 
+    /**
+     * Gets the number of available resources out of total resources for the next day. Only admin can access it.
+
+
+     * @return  List of faculty resource
+     */
     public List<FacultyResource> getAllResourcesNextDay() {
 
         ResponseEntity<FacultyResponseModel> fac = restTemplate.getForEntity(authUrl
@@ -152,7 +158,7 @@ public class ProcessingJobsService {
         List<FacultyResource> res = new ArrayList<>();
 
         LocalDate tmrw = LocalDate.now().plusDays(1);
-        for(String f : faculties){
+        for (String f : faculties) {
             ResponseEntity<FacultyResource> facultyResourcesResponse = restTemplate.getForEntity(resourcesUrl
                     + "/resources?faculty=" + f + "&day=" + tmrw, FacultyResource.class);
 

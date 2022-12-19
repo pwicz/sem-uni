@@ -57,7 +57,8 @@ public class FacultyResource {
      * @param gpuUsageT the number of gpu units overall
      * @param memoryUsageT the number of memory units overall
      */
-    public FacultyResource(String faculty, LocalDate date, int cpuUsage, int gpuUsage, int memoryUsage, int cpuUsageT, int gpuUsageT, int memoryUsageT) {
+    public FacultyResource(String faculty, LocalDate date, int cpuUsage, int gpuUsage, int memoryUsage,
+                           int cpuUsageT, int gpuUsageT, int memoryUsageT) {
         this.faculty = faculty;
         this.date = date;
         this.cpuUsage = cpuUsage;

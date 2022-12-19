@@ -1,26 +1,18 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import commons.FacultyResource;
-import commons.NetId;
-import commons.Resource;
 import commons.ScheduleJob;
-import exceptions.InvalidNetIdException;
-
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.processing.ProcessingJobsService;
 import nl.tudelft.sem.template.example.domain.processing.RemovingJobsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class SchedulerController {

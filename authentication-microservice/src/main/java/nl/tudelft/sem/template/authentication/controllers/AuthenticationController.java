@@ -3,10 +3,7 @@ package nl.tudelft.sem.template.authentication.controllers;
 import commons.Faculty;
 import commons.NetId;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import nl.tudelft.sem.template.authentication.authentication.JwtTokenGenerator;
 import nl.tudelft.sem.template.authentication.authentication.JwtUserDetailsService;
 import nl.tudelft.sem.template.authentication.domain.user.GetFacultyService;
@@ -137,7 +134,7 @@ public class AuthenticationController {
     public ResponseEntity<FacultyResponseModel> retrieveFaculty(@RequestBody FacultyRequestModel request) throws Exception {
         try {
             NetId netId = new NetId(request.getNetId());
-            ArrayList<Faculty> faculties = getFacultyService.getFaculty(netId);
+            List<Faculty> faculties = getFacultyService.getFaculty(netId);
             return ResponseEntity.ok(new FacultyResponseModel(faculties.toString()));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());

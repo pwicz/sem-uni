@@ -65,6 +65,7 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
                     + "WHERE faculty = ?1 OR "
                     + "(released <= ?2 AND releaseEND >= ?2)")
     Optional<Resource> getReservedResources(String faculty, String date);
+
     /**
      * Meant to return in a FacultyResource model.
      *

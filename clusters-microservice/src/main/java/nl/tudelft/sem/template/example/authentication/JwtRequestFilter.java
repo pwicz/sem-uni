@@ -78,7 +78,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         // Spring Security Configurations successfully.
 
                         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-//                        return;
                     }
 
                 } catch (ExpiredJwtException e) {

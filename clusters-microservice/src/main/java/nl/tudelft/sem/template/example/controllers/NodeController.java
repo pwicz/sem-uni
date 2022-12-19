@@ -1,20 +1,16 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import commons.Faculty;
 import commons.FacultyResource;
 import commons.NetId;
-import nl.tudelft.sem.template.example.domain.Node;
 import commons.Resource;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
+import nl.tudelft.sem.template.example.domain.Node;
 import nl.tudelft.sem.template.example.domain.NodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.server.ResponseStatusException;
+
 
 
 @RestController
@@ -110,8 +106,6 @@ public class NodeController {
      */
     @PostMapping(path = {"/addNode"})
     public ResponseEntity<Node> addNode(@RequestBody Node node) {
-
-        System.out.println(node.getFaculty());
         //check for if url looks like url later
         if (node.getName() == null || node.getUrl() == null
                 || node.getFaculty() == null
@@ -131,8 +125,6 @@ public class NodeController {
         try {
             //node.setToken(authManager.getToken()); // check if this works
             Node newNode = repo.save(node);
-            System.out.println(authManager.getNetId());
-
             return ResponseEntity.ok(newNode);
         } catch (Exception e) {
             System.out.println(e.getMessage());
