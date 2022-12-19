@@ -2,9 +2,9 @@ package nl.tudelft.sem.template.authentication.domain.user;
 
 import commons.Faculty;
 import commons.NetId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
+
 import org.springframework.stereotype.Service;
 
 /**
@@ -42,6 +42,26 @@ public class GetFacultyService {
         }
 
         throw new NetIdDoesNotExistException(netId);
+    }
+
+    /**
+     * Retrieves all the faculties in the system.
+     *
+     * @return the faculties or an empty arraylist
+     */
+    public List<String> getFaculties() {
+        List<AppUser> users = userRepository.findAll();
+
+        List<Faculty> faculties = new ArrayList<>();
+        Set<String> set = new HashSet<>();
+        for (AppUser u : users){
+            faculties.addAll(u.getFaculty());
+        }
+
+        for (Faculty f : faculties){
+            set.add(f.toString());
+        }
+        return new ArrayList<>(set);
     }
 
     public boolean checkNetIdExists(NetId netId) {

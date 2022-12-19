@@ -48,8 +48,6 @@ public class AuthenticationController {
 
     private final transient UserRepository userRepository;
 
-    private static Set<String> all_faculties;
-
     /**
      * Instantiates a new UsersController.
      *
@@ -73,7 +71,6 @@ public class AuthenticationController {
         this.registrationService = registrationService;
         this.getFacultyService = getFacultyService;
         this.userRepository = userRepository;
-        this.all_faculties = new HashSet<>();
     }
 
     /**
@@ -120,7 +117,6 @@ public class AuthenticationController {
             ArrayList<Faculty> faculties = new ArrayList<>();
             for (String f : request.getFaculty().split(";")) {
                 faculties.add(new Faculty(f));
-                this.all_faculties.add(f);
             }
             registrationService.registerUser(netId, password, role, faculties);
         } catch (Exception e) {
@@ -156,11 +152,9 @@ public class AuthenticationController {
      */
     @GetMapping("/faculties")
     public ResponseEntity<FacultyResponseModel> retrieveFaculties() {
-        ArrayList<String> fac = new ArrayList<>();
-        for(String f : all_faculties){
-            fac.add(f);
-        }
-        return ResponseEntity.ok(new FacultyResponseModel(fac.toString()));
+        List<String> all = getFacultyService.getFaculties();
+
+        return ResponseEntity.ok(new FacultyResponseModel(all.toString()));
     }
 
 }
