@@ -7,25 +7,28 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.web.client.RestTemplate;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReleaseFacultyServiceTest {
-    @MockBean
-    private RestTemplate restTemplate;
+    //    @MockBean
+    //    private RestTemplate restTemplate;
 
     @MockBean
     private AuthManager authManager;
 
-    @MockBean
-    private NodeRepository nodeRepository;
+    //    @MockBean
+    //    private NodeRepository nodeRepository;
+    //
+    @Autowired
+    private ReleaseFacultyService releaseFacultyService;
 
     @MockBean
-    private ReleaseFacultyService releaseFacultyService;
+    private ReleaseFacultyService releaseFacultyServiceMocked;
 
     String faculty;
     LocalDate date;
@@ -52,10 +55,38 @@ public class ReleaseFacultyServiceTest {
         Assertions.assertThrows(AccountNotAuthorizedException.class, () -> {
             releaseFacultyService.releaseFaculty(releaseFacultyDto);
         });
-
-        Mockito.verify(nodeRepository, Mockito.times(0)).updateRelease(releaseFacultyDto.getFaculty(),
-                releaseFacultyDto.getDate(), releaseFacultyDto.getDays());
     }
+
+    //    @Test
+    //    public void facultyNotPresent() {
+    //        Mockito.when(authManager.getRole()).thenReturn("FacultyAccount");
+    //        Mockito.when(authManager.getNetId()).thenReturn("NetId");
+    //
+    //        String[] facs = new String[3];
+    //        facs[0] = "EEMCS";
+    //        facs[1] = "3ME";
+    //        facs[2] = "Architecture";
+    //
+    //        Mockito.when(releaseFacultyServiceMocked.getFaculty("netId")).thenReturn(Arrays.asList(facs));
+    //
+    //        ReleaseFacultyDto dto = new ReleaseFacultyDto("Magic", LocalDate.now(), 2);
+    //
+    //        Assertions.assertThrows(UserNotInThisFacultyException.class, () -> {
+    //            releaseFacultyService.releaseFaculty(dto);
+    //        });
+    //    }
+
+    //    @Test
+    //    public void unauthorizedTest() {
+    //        Mockito.when(authManager.getRole()).thenReturn("Magician");
+    //
+    //        Assertions.assertThrows(AccountNotAuthorizedException.class, () -> {
+    //            releaseFacultyService.releaseFaculty(releaseFacultyDto);
+    //        });
+    //
+    //        Mockito.verify(nodeRepository, Mockito.times(0)).updateRelease(releaseFacultyDto.getFaculty(),
+    //                releaseFacultyDto.getDate(), releaseFacultyDto.getDays());
+    //    }
 
     //    @Test
     //    public void userNotInThisFacultyTest() {

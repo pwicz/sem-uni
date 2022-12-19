@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.example.services;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.AccountNotAuthorizedException;
@@ -47,6 +48,19 @@ public class ReleaseFacultyService {
         if (!authManager.getRole().equals("FacultyAccount")) {
             throw new AccountNotAuthorizedException(authManager);
         }
+
+        //        String usersUrl = "http://localhost:8081"; // authentication microservice
+        //
+        //        ResponseEntity<String[]> facultyType = restTemplate.getForEntity(usersUrl
+        //                + "/faculty", String[].class);
+        //
+        //        List<String> faculties = new LinkedList<>();
+        //
+        //        if (facultyType.getBody() == null) {
+        //            faculties = new ArrayList<>();
+        //        }
+        //
+        //        faculties =  Arrays.asList(facultyType.getBody());
 
         if (!getFaculty(authManager.getNetId()).contains(releaseFacultyDto.getFaculty())) {
             throw new UserNotInThisFacultyException(authManager);
