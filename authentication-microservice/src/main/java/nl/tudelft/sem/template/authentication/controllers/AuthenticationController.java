@@ -5,6 +5,7 @@ import commons.NetId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import nl.tudelft.sem.template.authentication.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.authentication.JwtTokenGenerator;
 import nl.tudelft.sem.template.authentication.authentication.JwtUserDetailsService;
@@ -178,8 +179,9 @@ public class AuthenticationController {
         }
         try {
             NetId netId = new NetId(request.getNetId());
-            List<String> faculties = Arrays.asList(request.getFaculty().split(";"));
-            AppUser user = getFacultyService.changeFaculty(netId, faculties);
+            List<Faculty> faculties =
+                Arrays.stream(request.getFaculty().split(";")).map(s -> new Faculty(s)).collect(Collectors.toList());
+            getFacultyService.changeFaculty(netId, faculties);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());

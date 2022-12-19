@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 /**
@@ -70,18 +71,15 @@ public class GetFacultyService {
      *
      * @return the faculties or an empty arraylist
      */
-    public AppUser changeFaculty(NetId netId, List<String> faculties) throws NetIdDoesNotExistException {
+    public AppUser changeFaculty(NetId netId, List<Faculty> faculties) throws NetIdDoesNotExistException {
         if (checkNetIdExists(netId)) {
             Optional<AppUser> user = userRepository.findByNetId(netId);
 
-            List<Faculty> f = new ArrayList<>();
-            for (String s : faculties) {
-                f.add(new Faculty(s));
-            }
+//            List<Faculty> f = faculties.stream().map(s -> new Faculty(s)).collect(Collectors.toList());
 
             if (user.isPresent()) {
                 AppUser u = user.get();
-                u.setFaculty(f);
+                u.setFaculty(faculties);
                 userRepository.save(u);
                 return u;
             }

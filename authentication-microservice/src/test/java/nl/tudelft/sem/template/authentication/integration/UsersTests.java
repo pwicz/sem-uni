@@ -219,7 +219,10 @@ public class UsersTests {
         model.setFaculty("3ME;CS;CG;");
 
         GetFacultyService getFacultyService = new GetFacultyService(userRepository);
-        getFacultyService.changeFaculty(testUser, Arrays.asList("3ME", "CS", "CG"));
+        getFacultyService.changeFaculty(testUser, Arrays.asList(
+            new Faculty("3ME"),
+            new Faculty("CS"),
+            new Faculty("CG")));
 
         AppUser savedUser = userRepository.findByNetId(testUser).orElseThrow();
 
