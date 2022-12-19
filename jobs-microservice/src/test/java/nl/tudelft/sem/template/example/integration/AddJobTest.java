@@ -6,12 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import commons.Job;
 import commons.NetId;
-import commons.Status;
-import exceptions.InvalidNetIdException;
+import commons.exceptions.ResourceBiggerThanCpuException;
 import java.time.LocalDate;
 import java.util.List;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.authentication.JwtTokenVerifier;
+import nl.tudelft.sem.template.example.domain.InvalidNetIdException;
 import nl.tudelft.sem.template.example.domain.JobRepository;
 import nl.tudelft.sem.template.example.domain.JobService;
 import org.junit.jupiter.api.BeforeEach;
@@ -144,5 +144,21 @@ public class AddJobTest {
         assertThrows(InvalidNetIdException.class, () -> {
             jobService.getJobStatus(null, u1, 1);
         });
+    }
+
+    @Test
+    public void addJobWithGpuGreaterThanCpu_throwsException() {
+        Exception e = assertThrows(ResourceBiggerThanCpuException.class, () -> {
+            jobService.createJob(u1, u1, "???", 1, 2, 0, "employee");
+        });
+        assertThat(e.getMessage()).isEqualTo("GPU usage cannot be greater than the CPU usage.");
+    }
+
+    @Test
+    public void addJobWithMemoryGreaterThanCpu_throwsException() {
+        Exception e = assertThrows(ResourceBiggerThanCpuException.class, () -> {
+            jobService.createJob(u1, u1, "???", 1, 0, 2, "employee");
+        });
+        assertThat(e.getMessage()).isEqualTo("Memory usage cannot be greater than the CPU usage.");
     }
 }

@@ -4,7 +4,7 @@ import commons.FacultyResource;
 import commons.NetId;
 import commons.ScheduleJob;
 import commons.UpdateJob;
-import exceptions.InvalidNetIdException;
+import commons.exceptions.ResourceBiggerThanCpuException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,7 +59,13 @@ public class ProcessingJobsService {
      * @param j a ScheduleJob DTO of a Job to be scheduled
      */
     @Synchronized
-    public void scheduleJob(ScheduleJob j) {
+    public void scheduleJob(ScheduleJob j) throws ResourceBiggerThanCpuException {
+        // verify the CPU >= Max(GPU, Memory) requirement
+        if (j.getCpuUsage() < Math.max(j.getGpuUsage(), j.getMemoryUsage())) {
+            String resource = j.getGpuUsage() > j.getMemoryUsage() ? "GPU" : "Memory";
+            throw new ResourceBiggerThanCpuException(resource);
+        }
+
         // start with the first possible day: tomorrow
         List<ScheduledInstance> scheduledInstances =
                 trySchedulingBetween(j, LocalDate.now().plusDays(1), j.getScheduleBefore());
