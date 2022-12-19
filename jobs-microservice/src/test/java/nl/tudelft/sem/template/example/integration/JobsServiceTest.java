@@ -75,8 +75,8 @@ public class JobsServiceTest {
 
         u1 = new NetId("User");
         u2 = new NetId("User2");
-        j1 = new Job(u1, "memory", 10, 10, 10);
-        j2 = new Job(u2, "cpu", 12, 10, 10);
+        j1 = new Job(u1, 10, 10, 10);
+        j2 = new Job(u2, 12, 10, 10);
 
     }
 
@@ -119,13 +119,13 @@ public class JobsServiceTest {
     public void updateJobTest_Ok() throws Exception {
         String url = jobService.getUrl() + "/addJob";
 
-        JobRequestModel model = new JobRequestModel(u1.toString(), "memory", 10, 10, 10);
+        JobRequestModel model = new JobRequestModel(u1.toString(), 10, 10, 10);
 
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
 
-        jobService.createJob(u1, u1, "memory", 10, 10, 10, "employee");
+        jobService.createJob(u1, u1, 10, 10, 10, "employee");
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(1);
@@ -145,8 +145,8 @@ public class JobsServiceTest {
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
 
-        jobService.createJob(u1, u1, "memory", 10, 10, 10, "employee");
-        jobService.createJob(u2, u2, "cpu", 12, 10, 10, "employee");
+        jobService.createJob(u1, u1, 10, 10, 10, "employee");
+        jobService.createJob(u2, u2, 12, 10, 10, "employee");
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(2);
@@ -167,7 +167,7 @@ public class JobsServiceTest {
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
 
-        jobService.createJob(u1, u1, "memory", 10, 10, 10, "employee");
+        jobService.createJob(u1, u1, 10, 10, 10, "employee");
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(1);
@@ -185,8 +185,8 @@ public class JobsServiceTest {
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
 
-        jobService.createJob(u1, u1, "memory", 10, 10, 10, "employee");
-        jobService.createJob(u2, u2, "cpu", 12, 10, 10, "employee");
+        jobService.createJob(u1, u1, 10, 10, 10, "employee");
+        jobService.createJob(u2, u2, 12, 10, 10, "employee");
 
 
 

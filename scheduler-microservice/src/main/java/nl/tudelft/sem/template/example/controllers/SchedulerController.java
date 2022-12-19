@@ -1,11 +1,13 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import commons.FacultyResource;
+import commons.Job;
 import commons.ScheduleJob;
 import java.util.List;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.processing.ProcessingJobsService;
 import nl.tudelft.sem.template.example.domain.processing.RemovingJobsService;
+import nl.tudelft.sem.template.example.domain.processing.UpdatingJobsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,19 +22,24 @@ public class SchedulerController {
     private final transient ProcessingJobsService processingJobsService;
     private final transient RemovingJobsService removingJobsService;
     private final transient AuthManager authManager;
+    private final transient UpdatingJobsService updatingJobsService;
 
     /**
-     * Constructor of the Job controller.
+     * Constructor for the controller.
      *
-     * @param processingJobsService  the service which handles processing jobs from the database
-     * @param removingJobsService  the service which handles the removing jobs from the database
+     * @param processingJobsService .
+     * @param removingJobsService .
+     * @param updatingJobsService .
      * @param authManager Spring Security component used to authenticate and authorize the user
      */
     @Autowired
     public SchedulerController(ProcessingJobsService processingJobsService,
-                               RemovingJobsService removingJobsService, AuthManager authManager) {
+                               RemovingJobsService removingJobsService,
+                               UpdatingJobsService updatingJobsService,
+                               AuthManager authManager) {
         this.processingJobsService = processingJobsService;
         this.removingJobsService = removingJobsService;
+        this.updatingJobsService = updatingJobsService;
         this.authManager = authManager;
     }
 
@@ -77,5 +84,11 @@ public class SchedulerController {
         }
         List<FacultyResource> res = processingJobsService.getAllResourcesNextDay();
         return ResponseEntity.ok(res);
+    }
+
+    @PostMapping("/resource-update")
+    public ResponseEntity<String> updateScheduledJobs(@RequestBody FacultyResource facultyResource) {
+        updatingJobsService.updateSchedule(facultyResource);
+        return ResponseEntity.ok("Updated");
     }
 }

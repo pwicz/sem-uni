@@ -15,6 +15,7 @@ import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.JobRepository;
 import nl.tudelft.sem.template.example.domain.JobService;
 import nl.tudelft.sem.template.example.models.IdRequestModel;
+import nl.tudelft.sem.template.example.models.JobNotificationResponseModel;
 import nl.tudelft.sem.template.example.models.JobRequestModel;
 import nl.tudelft.sem.template.example.models.JobResponseModel;
 import nl.tudelft.sem.template.example.models.NetIdRequestModel;
@@ -143,13 +144,12 @@ public class JobController {
         try {
             NetId jobNetId = new NetId(request.getNetId());
             NetId authNetId = new NetId(authManager.getNetId());
-            String resourceType = request.getResourceType();
             int cpuUsage = request.getCpuUsage();
             int gpuUsage = request.getGpuUsage();
             int memoryUsage = request.getMemoryUsage();
             String role = (String) authManager.getRole();
             System.out.println(role);
-            Job createdJob = this.jobService.createJob(jobNetId, authNetId, resourceType, cpuUsage,
+            Job createdJob = this.jobService.createJob(jobNetId, authNetId, cpuUsage,
                     gpuUsage, memoryUsage, role);
 
             JobResponseModel jobResponseModel = new JobResponseModel(createdJob.getNetId().toString(), Status.PENDING);

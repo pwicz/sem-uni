@@ -49,15 +49,14 @@ public class JobService {
      *
      * @param netId NetId of the job creator
      * @param authNetId NetId of the authenticated user
-     * @param resourceType resource type
      * @param cpuUsage CPU usage
      * @param gpuUsage GPU usage
      * @param memoryUsage memory usage
      * @return a new Job
      * @throws Exception if the resources of NetId are invalid
      */
-    public Job createJob(NetId netId, NetId authNetId,
-                         String resourceType, int cpuUsage, int gpuUsage, int memoryUsage, String role) throws Exception {
+    public Job createJob(NetId netId, NetId authNetId, int cpuUsage, int gpuUsage,
+                         int memoryUsage, String role) throws Exception {
         if (cpuUsage < 0 || gpuUsage < 0 || memoryUsage < 0) {
             throw new InvalidResourcesException(Math.min(cpuUsage, Math.min(gpuUsage, memoryUsage)));
         }
@@ -72,7 +71,7 @@ public class JobService {
             throw new BadCredentialsException(role);
         }
 
-        Job newJob = new Job(netId, resourceType, cpuUsage, gpuUsage, memoryUsage);
+        Job newJob = new Job(netId, cpuUsage, gpuUsage, memoryUsage);
         jobRepository.save(newJob);
 
         return newJob;
@@ -224,6 +223,7 @@ public class JobService {
         }
         Job job = jobOptional.get();
         job.setStatus(status);
+        job.setScheduleDate(localDate);
         jobRepository.save(job);
     }
 }
