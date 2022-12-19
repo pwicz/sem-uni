@@ -7,11 +7,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import commons.Job;
 import commons.NetId;
+import commons.ScheduleJob;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
-import commons.ScheduleJob;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

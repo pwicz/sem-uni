@@ -1,19 +1,15 @@
 package nl.tudelft.sem.template.example.domain;
 
-
 import commons.Job;
 import commons.NetId;
+import commons.ScheduleJob;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-
-import commons.ScheduleJob;
-import commons.UpdateJob;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -24,7 +20,7 @@ import org.springframework.web.client.RestTemplate;
 public class JobService {
 
     private final transient JobRepository jobRepository;
-    private final RestTemplate restTemplate;
+    private final transient RestTemplate restTemplate;
     private static final String nullValue = "null";
 
     private String schedulerUrl = "http://localhost:8084";
@@ -33,12 +29,15 @@ public class JobService {
     public String getSchedulerUrl() {
         return schedulerUrl;
     }
+
     public void setSchedulerUrl(String schedulerUrl) {
         this.schedulerUrl = schedulerUrl;
     }
+
     public String getUrl() {
         return url;
     }
+
     public void setUrl(String url) {
         this.url = url;
     }
@@ -47,7 +46,7 @@ public class JobService {
     /**
      * Instantiates a new JobService.
      *
-     * @param restTemplate
+     * @param restTemplate the template to make REST API calls
      * @param jobRepository the job repository
      */
     public JobService(JobRepository jobRepository, RestTemplate restTemplate) {
@@ -68,16 +67,17 @@ public class JobService {
 
         if (isFiveMinutesBeforeDayStarts()) {
             //TODO: call scheduleJob function again when it is 00:01 am
-        }
+            return "TODO";
+        } else {
+            ResponseEntity<String> response = restTemplate
+                    .postForEntity(schedulerUrl + "/schedule", scheduleJob, String.class);
 
-        ResponseEntity<String> response = restTemplate
-                            .postForEntity(schedulerUrl + "/schedule", scheduleJob, String.class);
-
-        if (response.getBody() == null) {
-            //TODO: why is response null?
-            return "Problem: ResponseEntity was null!";
+            if (response.getBody() == null) {
+                //TODO: why is response null?
+                return "Problem: ResponseEntity was null!";
+            }
+            return response.getBody();
         }
-        return response.getBody();
     }
 
     /**
