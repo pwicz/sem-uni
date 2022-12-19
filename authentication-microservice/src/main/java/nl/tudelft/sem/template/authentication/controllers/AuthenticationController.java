@@ -1,6 +1,8 @@
 package nl.tudelft.sem.template.authentication.controllers;
 
 import commons.Faculty;
+import commons.FacultyRequestModel;
+import commons.FacultyResponseModel;
 import commons.NetId;
 import java.util.ArrayList;
 import nl.tudelft.sem.template.authentication.authentication.JwtTokenGenerator;
@@ -12,8 +14,6 @@ import nl.tudelft.sem.template.authentication.domain.user.Role;
 import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import nl.tudelft.sem.template.authentication.models.AuthenticationRequestModel;
 import nl.tudelft.sem.template.authentication.models.AuthenticationResponseModel;
-import commons.FacultyRequestModel;
-import commons.FacultyResponseModel;
 import nl.tudelft.sem.template.authentication.models.RegistrationRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

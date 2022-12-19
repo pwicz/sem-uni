@@ -2,11 +2,10 @@ package nl.tudelft.sem.template.example.chain;
 
 import commons.Job;
 import commons.Resource;
+import java.time.LocalDate;
 import nl.tudelft.sem.template.example.models.JobChainModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-
-import java.time.LocalDate;
 
 public class FacultyResourceValidator extends BaseValidator {
 

@@ -30,6 +30,12 @@ public class ChainController {
         this.chainService = chainService;
     }
 
+    /**
+     * Approve the scheduling of a Job by a faculty account using Chain of Responsibility.
+     *
+     * @param request ApproveRequestModel needed to identify the Job
+     * @return JobResponseModel with information about the approved Job
+     */
     @PostMapping("/approve")
     public ResponseEntity<JobResponseModel> approveJob(@RequestBody ApproveRequestModel request) {
         try {
@@ -38,7 +44,9 @@ public class ChainController {
             Long id = request.getId();
 
             Job approvedJob = chainService.approveJob(netId, role, id);
-            return ResponseEntity.ok().build();
+            JobResponseModel jobResponseModel = new JobResponseModel(approvedJob.getNetId().toString(),
+                    approvedJob.getStatus());
+            return ResponseEntity.ok(jobResponseModel);
         } catch (InvalidIdException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "INVALID_ID", e);
         } catch (InvalidNetIdException e) {

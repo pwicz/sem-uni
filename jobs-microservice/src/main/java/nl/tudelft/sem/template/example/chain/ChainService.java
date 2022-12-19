@@ -3,13 +3,11 @@ package nl.tudelft.sem.template.example.chain;
 import commons.Account;
 import commons.Job;
 import commons.NetId;
-import commons.Resource;
+import java.util.Optional;
 import nl.tudelft.sem.template.example.domain.InvalidFacultyException;
 import nl.tudelft.sem.template.example.domain.InvalidIdException;
 import nl.tudelft.sem.template.example.domain.JobRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class ChainService {
@@ -26,6 +24,15 @@ public class ChainService {
         this.jobRepository = jobRepository;
     }
 
+    /**
+     * Approve a Job from the database by updating the status.
+     *
+     * @param netId netId
+     * @param role role of the person trying to approve a job.
+     * @param id id of the Job in the database
+     * @return the approved Job
+     * @throws Exception if the Job can not be scheduled or some parameters are not expected
+     */
     public Job approveJob(NetId netId, Account role, Long id) throws Exception {
         Optional<Job> jobOptional = jobRepository.findById(id);
         if (jobOptional.isEmpty()) {

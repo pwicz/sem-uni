@@ -49,7 +49,8 @@ class JobServiceTest {
         int gpuUsage = 2;
         int memoryUsage = 3;
         try {
-            Job created = jobService.createJob(netId, netId, resourceType, cpuUsage, gpuUsage, memoryUsage, Account.Employee);
+            Job created = jobService.createJob(netId, netId, resourceType, cpuUsage,
+                    gpuUsage, memoryUsage, Account.Employee);
             jobRepository.save(created);
             Optional<Job> jobOptional = jobRepository.findById(created.getJobId());
             assertFalse(jobOptional.isEmpty());

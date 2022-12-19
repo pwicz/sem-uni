@@ -22,5 +22,7 @@ public class Role implements GrantedAuthority {
         return role.toString();
     }
 
-    public Account getRole() {return role;}
+    public Account getRole() {
+        return role;
+    }
 }
