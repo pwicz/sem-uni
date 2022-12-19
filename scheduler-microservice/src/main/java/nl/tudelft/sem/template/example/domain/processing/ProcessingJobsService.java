@@ -135,7 +135,7 @@ public class ProcessingJobsService {
         ResponseEntity<FacultyResource[]> facultyResourcesResponse = restTemplate.getForEntity(resourcesUrl
                 + "/resources?faculty=" + faculty + "&day=" + date.toString(), FacultyResource[].class);
 
-        if (facultyResourcesResponse.getBody() == null) {
+        if (facultyResourcesResponse == null) {
             return new ArrayList<>();
         }
 
