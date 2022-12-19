@@ -1,7 +1,6 @@
 package nl.tudelft.sem.template.example.domain;
 
 
-import commons.Node;
 import commons.Resource;
 import java.time.LocalDate;
 import java.util.List;

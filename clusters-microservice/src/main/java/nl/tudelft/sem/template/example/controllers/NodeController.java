@@ -1,6 +1,5 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import commons.Node;
 import commons.Resource;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -9,6 +8,7 @@ import java.util.List;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.AccountNotAuthorizedException;
 import nl.tudelft.sem.template.example.domain.FacultyCannotBeReleasedException;
+import nl.tudelft.sem.template.example.domain.Node;
 import nl.tudelft.sem.template.example.domain.NodeRepository;
 import nl.tudelft.sem.template.example.domain.ReleaseFacultyDto;
 import nl.tudelft.sem.template.example.domain.UserNotInThisFacultyException;
@@ -159,7 +159,7 @@ public class NodeController {
     }
 
     private List<String> getFaculty(String token) {
-        String usersUrl = "http://localhost:8082"; //faculty request model
+        String usersUrl = "http://localhost:8081"; // authentication microservice
 
         ResponseEntity<String[]> facultyType = restTemplate.getForEntity(usersUrl
                 + "/faculty", String[].class);

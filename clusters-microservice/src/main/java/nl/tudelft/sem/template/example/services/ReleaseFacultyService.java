@@ -61,8 +61,14 @@ public class ReleaseFacultyService {
                 releaseFacultyDto.getDate(), releaseFacultyDto.getDays());
     }
 
-    private List<String> getFaculty(String token) {
-        String usersUrl = "http://localhost:8082"; //faculty request model
+    /**
+     * Returns the list of faculties a user is assigned to.
+     *
+     * @param token - the token of the user
+     * @return - the list of faculties
+     */
+    public List<String> getFaculty(String token) {
+        String usersUrl = "http://localhost:8081"; // authentication microservice
 
         ResponseEntity<String[]> facultyType = restTemplate.getForEntity(usersUrl
                 + "/faculty", String[].class);
