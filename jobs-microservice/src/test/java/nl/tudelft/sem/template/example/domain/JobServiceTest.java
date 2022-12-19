@@ -11,7 +11,6 @@ import commons.NetId;
 import commons.ScheduleJob;
 import commons.Status;
 import commons.exceptions.ResourceBiggerThanCpuException;
-import exceptions.InvalidResourcesException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -74,9 +73,9 @@ class JobServiceTest {
     void scheduleJobProblem() throws InvalidScheduleJobException {
         ScheduleJob job = new ScheduleJob(1L, "EEMCS", LocalDate.now(), 10, 10, 10);
         Mockito.when(restTemplate.postForEntity("http://localhost:8084/schedule", job, String.class))
-                .thenReturn(new ResponseEntity<String>((String) "processing", HttpStatus.OK));
+                .thenReturn(new ResponseEntity<String>((String) null, HttpStatus.OK));
         String responseText = jobService.scheduleJob(job);
-        assertThat(responseText).isEqualTo("processing");
+        assertThat(responseText).isEqualTo("Problem: ResponseEntity was null!");
     }
 
     @Test
