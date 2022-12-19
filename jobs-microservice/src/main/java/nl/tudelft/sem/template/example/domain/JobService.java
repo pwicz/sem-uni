@@ -4,6 +4,7 @@ package nl.tudelft.sem.template.example.domain;
 import commons.Job;
 import commons.NetId;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,19 +62,12 @@ public class JobService {
      * @return the response message of the Scheduler
      */
     public String scheduleJob(ScheduleJob scheduleJob) throws InvalidScheduleJobException {
-    //        try {
-    //            ResponseEntity<String> response = restTemplate
-    //                    .postForEntity(schedulerUrl + "/schedule", scheduleJob, String.class);
-    //            if (response.getBody() == null) {
-    //                //TODO: why is response null?
-    //                return "Problem: ResponseEntity was null!";
-    //            }
-    //            return response.getBody();
-    //        } catch (Exception e) {
-    //            return "A problem occurred while trying to schedule a job: " + e.getMessage();
-    //        }
         if (scheduleJob == null) {
             throw new InvalidScheduleJobException(scheduleJob);
+        }
+
+        if (isFiveMinutesBeforeDayStarts()) {
+            //TODO: call scheduleJob function again when it is 00:01 am
         }
 
         ResponseEntity<String> response = restTemplate
@@ -83,7 +77,6 @@ public class JobService {
             //TODO: why is response null?
             return "Problem: ResponseEntity was null!";
         }
-
         return response.getBody();
     }
 
@@ -216,4 +209,17 @@ public class JobService {
         job.setScheduleDate(localDate);
         jobRepository.save(job);
     }
+
+    /**
+     * Checks the if it is 5 minutes before a new day starts.
+     *
+     * @return true if the current time is between 25:55 and 00:00 (excluding)
+     */
+    private boolean isFiveMinutesBeforeDayStarts() {
+        LocalTime currentTime = LocalTime.now();
+        LocalTime startTime = LocalTime.of(23, 55);
+        LocalTime endTime = LocalTime.of(0, 0);
+        return currentTime.isAfter(startTime) && currentTime.isBefore(endTime);
+    }
+
 }
