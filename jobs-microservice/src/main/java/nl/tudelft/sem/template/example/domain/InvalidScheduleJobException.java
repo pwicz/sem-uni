@@ -7,6 +7,6 @@ public class InvalidScheduleJobException extends Exception {
     static final long serialVersionUID = -3387516993124229948L;
 
     public InvalidScheduleJobException(ScheduleJob scheduleJob) {
-        super();
+        super("There is a problem with the following Object: " + scheduleJob);
     }
 }
