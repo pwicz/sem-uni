@@ -1,5 +1,7 @@
 package commons;
 
+import exceptions.InvalidNetIdException;
+import exceptions.InvalidResourcesException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -38,7 +40,7 @@ public class Job {
     private int memoryUsage;
 
     @Column(name = "status", nullable = false)
-    private String status;
+    private Status status;
 
     @Column(name = "scheduleDate", nullable = false)
     private String scheduleDate;
@@ -57,7 +59,7 @@ public class Job {
         this.cpuUsage = cpuUsage;
         this.gpuUsage = gpuUsage;
         this.memoryUsage = memoryUsage;
-        this.status = "pending";
+        this.status = Status.PENDING;
         this.scheduleDate = "";
     }
 
@@ -69,7 +71,7 @@ public class Job {
         cpuUsage = 0;
         gpuUsage = 0;
         memoryUsage = 0;
-        this.status = "accept";
+        this.status = Status.ACCEPTED;
         this.scheduleDate = LocalDate.now().plusDays(3).toString();
     }
 
@@ -114,11 +116,11 @@ public class Job {
         this.memoryUsage = memoryUsage;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

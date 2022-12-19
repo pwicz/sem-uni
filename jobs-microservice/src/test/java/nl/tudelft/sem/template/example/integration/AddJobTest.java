@@ -6,12 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import commons.Job;
 import commons.NetId;
+import commons.Status;
 import commons.exceptions.ResourceBiggerThanCpuException;
+import exceptions.InvalidNetIdException;
 import java.time.LocalDate;
 import java.util.List;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.authentication.JwtTokenVerifier;
-import nl.tudelft.sem.template.example.domain.InvalidNetIdException;
 import nl.tudelft.sem.template.example.domain.JobRepository;
 import nl.tudelft.sem.template.example.domain.JobService;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,7 +66,7 @@ public class AddJobTest {
      * Set variables before each test and clear database.
      */
     @BeforeEach
-    public void before() {
+    public void before() throws Exception {
         jobRepository.deleteAll();
         jobRepository.flush();
         facultyConstant = "EEMCS";
@@ -129,8 +130,8 @@ public class AddJobTest {
         j2.setJobId(2);
         j1.setJobId(1);
         assertThat(fromDb.size()).isEqualTo(2);
-        assertTrue(jobService.getJobStatus(u1, u1, fromDb.get(0).getJobId()).equals("pending"));
-        assertTrue(jobService.getJobStatus(u2, u2, fromDb.get(1).getJobId()).equals("pending"));
+        assertTrue(jobService.getJobStatus(u1, u1, fromDb.get(0).getJobId()) == Status.PENDING);
+        assertTrue(jobService.getJobStatus(u2, u2, fromDb.get(1).getJobId()) == Status.PENDING);
     }
 
     @Test
@@ -149,7 +150,7 @@ public class AddJobTest {
     @Test
     public void addJobWithGpuGreaterThanCpu_throwsException() {
         Exception e = assertThrows(ResourceBiggerThanCpuException.class, () -> {
-            jobService.createJob(u1, u1, "???", 1, 2, 0, "employee");
+            jobService.createJob(u1, u1, 1, 2, 0, "employee");
         });
         assertThat(e.getMessage()).isEqualTo("GPU usage cannot be greater than the CPU usage.");
     }
@@ -157,7 +158,7 @@ public class AddJobTest {
     @Test
     public void addJobWithMemoryGreaterThanCpu_throwsException() {
         Exception e = assertThrows(ResourceBiggerThanCpuException.class, () -> {
-            jobService.createJob(u1, u1, "???", 1, 0, 2, "employee");
+            jobService.createJob(u1, u1, 1, 0, 2, "employee");
         });
         assertThat(e.getMessage()).isEqualTo("Memory usage cannot be greater than the CPU usage.");
     }

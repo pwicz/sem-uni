@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import commons.FacultyResource;
+import commons.NetId;
 import commons.ScheduleJob;
 import commons.UpdateJob;
 import commons.exceptions.ResourceBiggerThanCpuException;
@@ -45,7 +46,7 @@ public class ProcessingJobsServiceTest {
 
         FacultyResource[] s = {new FacultyResource(facultyConstant, dateConstant, 10, 10, 10)};
 
-        String url = processingJobsService.getResourcesUrl() + "/facultyResources?faculty="
+        String url = processingJobsService.getResourcesUrl() + "/resources?faculty="
                 + facultyConstant + "&day=" + dateConstant;
 
         Mockito.when(restTemplate.getForEntity(url, FacultyResource[].class))
@@ -78,7 +79,7 @@ public class ProcessingJobsServiceTest {
         FacultyResource[] dayOne = {new FacultyResource(facultyConstant, dateConstant, 10, 7, 7)};
         FacultyResource[] dayTwo = {new FacultyResource(facultyConstant, dateConstant.plusDays(1), 5, 2, 2)};
 
-        String url = processingJobsService.getResourcesUrl() + "/facultyResources?faculty="
+        String url = processingJobsService.getResourcesUrl() + "/resources?faculty="
                 + facultyConstant + "&day=";
 
         Mockito.when(restTemplate.getForEntity(url + dateConstant, FacultyResource[].class))
@@ -110,7 +111,7 @@ public class ProcessingJobsServiceTest {
         FacultyResource[] dayOne = {new FacultyResource(facultyConstant, dateConstant, 2, 1, 0),
             new FacultyResource(facultyConstant2, dateConstant, 10, 10, 10)};
 
-        String url = processingJobsService.getResourcesUrl() + "/facultyResources?faculty="
+        String url = processingJobsService.getResourcesUrl() + "/resources?faculty="
                 + facultyConstant + "&day=";
 
         Mockito.when(restTemplate.getForEntity(url + dateConstant, FacultyResource[].class))

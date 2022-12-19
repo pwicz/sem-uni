@@ -2,10 +2,14 @@ package nl.tudelft.sem.template.example.domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import commons.Job;
 import commons.NetId;
+import commons.Status;
+import commons.exceptions.ResourceBiggerThanCpuException;
+import exceptions.InvalidResourcesException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -48,20 +52,30 @@ class JobServiceTest {
     @Test
     void createJob() {
         NetId netId = new NetId("test");
-        String resourceType = "CPU";
-        int cpuUsage = 1;
+        int cpuUsage = 3;
         int gpuUsage = 2;
         int memoryUsage = 3;
         try {
             Job created = jobService.createJob(netId, netId, cpuUsage, gpuUsage, memoryUsage, "employee");
-            jobRepository.save(created);
-            Optional<Job> jobOptional = jobRepository.findById(created.getJobId());
+            Job saved = jobRepository.save(created);
+            Optional<Job> jobOptional = jobRepository.findById(saved.getJobId());
             assertFalse(jobOptional.isEmpty());
             assertEquals(jobOptional.get(), created);
         } catch (Exception e) {
             fail();
         }
+    }
 
+
+    @Test
+    void createJob_Exception() {
+        NetId netId = new NetId("test");
+        int cpuUsage = 1;
+        int gpuUsage = 2;
+        int memoryUsage = 3;
+        assertThrows(ResourceBiggerThanCpuException.class, () -> {
+            Job created = jobService.createJob(netId, netId, cpuUsage, gpuUsage, memoryUsage, "employee");
+        });
     }
 
     @Test
@@ -108,8 +122,8 @@ class JobServiceTest {
         }
         try {
             assert j != null;
-            String status = jobService.getJobStatus(netId, netId, j.getJobId());
-            assertEquals(status, "pending");
+            Status status = jobService.getJobStatus(netId, netId, j.getJobId());
+            assertEquals(status, Status.PENDING);
         } catch (Exception e) {
             fail();
         }
@@ -137,7 +151,7 @@ class JobServiceTest {
         }
         try {
             assert j != null;
-            String status = "finished";
+            Status status = Status.FINISHED;
             jobService.updateJob(j.getJobId(), status, LocalDate.now());
             Optional<Job> updatedJob = jobRepository.findById(j.getJobId());
             assertFalse(updatedJob.isEmpty());

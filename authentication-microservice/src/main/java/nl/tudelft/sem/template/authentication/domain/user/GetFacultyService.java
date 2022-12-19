@@ -3,7 +3,10 @@ package nl.tudelft.sem.template.authentication.domain.user;
 import commons.Faculty;
 import commons.NetId;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 
 /**
@@ -29,10 +32,10 @@ public class GetFacultyService {
      * @return the faculty of the user
      * @throws NetIdDoesNotExistException if the netID does not exist in the database
      */
-    public ArrayList<Faculty> getFaculty(NetId netId) throws NetIdDoesNotExistException {
+    public List<Faculty> getFaculty(NetId netId) throws NetIdDoesNotExistException {
         if (checkNetIdExists(netId)) {
             Optional<AppUser> user = userRepository.findByNetId(netId);
-
+            System.out.println(user.get());
             if (user.isPresent()) {
                 return user.get().getFaculty();
             }
@@ -41,6 +44,26 @@ public class GetFacultyService {
         }
 
         throw new NetIdDoesNotExistException(netId);
+    }
+
+    /**
+     * Retrieves all the faculties in the system.
+     *
+     * @return the faculties or an empty arraylist
+     */
+    public List<String> getFaculties() {
+        List<AppUser> users = userRepository.findAll();
+
+        List<Faculty> faculties = new ArrayList<>();
+        Set<String> set = new HashSet<>();
+        for (AppUser u : users) {
+            faculties.addAll(u.getFaculty());
+        }
+
+        for (Faculty f : faculties) {
+            set.add(f.toString());
+        }
+        return new ArrayList<>(set);
     }
 
     public boolean checkNetIdExists(NetId netId) {

@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.models;
 
+import commons.Status;
 import lombok.Data;
 
 /**
@@ -15,7 +16,7 @@ public class StatusResponseModel {
      *
      * @param status the status of the request Job
      */
-    public StatusResponseModel(String status) {
-        this.status = status;
+    public StatusResponseModel(Status status) {
+        this.status = status.toString();
     }
 }

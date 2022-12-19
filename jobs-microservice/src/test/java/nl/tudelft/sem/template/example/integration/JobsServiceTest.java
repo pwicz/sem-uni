@@ -6,11 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import commons.Job;
 import commons.NetId;
+import commons.Status;
+import exceptions.InvalidIdException;
 import java.time.LocalDate;
 import java.util.List;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.authentication.JwtTokenVerifier;
-import nl.tudelft.sem.template.example.domain.InvalidIdException;
 import nl.tudelft.sem.template.example.domain.JobRepository;
 import nl.tudelft.sem.template.example.domain.JobService;
 import nl.tudelft.sem.template.example.models.JobRequestModel;
@@ -66,7 +67,7 @@ public class JobsServiceTest {
      * Set variables before each test and clear database.
      */
     @BeforeEach
-    public void before() {
+    public void before() throws Exception {
         jobRepository.deleteAll();
         jobRepository.flush();
         facultyConstant = "EEMCS";
@@ -80,6 +81,28 @@ public class JobsServiceTest {
     }
 
     @Test
+    public void getAllScheduledJobsTest() throws Exception {
+        String url = jobService.getUrl() + "/addJob";
+
+        Mockito.when(restTemplate.getForEntity(url, Job.class))
+                .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
+
+        Job j3 = new Job(u2, 10, 10, 10);
+
+        j1.setStatus(Status.ACCEPTED);
+        j3.setStatus(Status.ACCEPTED);
+        jobService.createJob(u1, j1, "employee");
+        jobService.createJob(u2, j3, "employee");
+
+        jobService.createJob(u2, j2, "employee");
+
+        List<Job> fromDb = jobService.getAllScheduledJobs(u1, u1, "admin");
+        assertThat(fromDb.size()).isEqualTo(2);
+        assertTrue(fromDb.get(0).getStatus() == Status.ACCEPTED);
+        assertTrue(fromDb.get(1).getStatus() == Status.ACCEPTED);
+    }
+
+    @Test
     public void updateJobTest_Exception() throws Exception {
         String url = jobService.getUrl() + "/updateJob";
 
@@ -88,7 +111,7 @@ public class JobsServiceTest {
 
 
         assertThrows(InvalidIdException.class, () -> {
-            jobService.updateJob(1, "scheduled", dateConstant);
+            jobService.updateJob(1, Status.ACCEPTED, dateConstant);
         });
     }
 
@@ -106,12 +129,12 @@ public class JobsServiceTest {
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(1);
-        assertTrue(fromDb.get(0).getStatus().equals("pending"));
+        assertTrue(fromDb.get(0).getStatus() == Status.PENDING);
 
-        jobService.updateJob(fromDb.get(0).getJobId(), "scheduled", dateConstant);
+        jobService.updateJob(fromDb.get(0).getJobId(), Status.ACCEPTED, dateConstant);
         fromDb = jobService.getAllJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(1);
-        assertTrue(fromDb.get(0).getStatus().equals("scheduled"));
+        assertTrue(fromDb.get(0).getStatus() == Status.ACCEPTED);
     }
 
     @Test
