@@ -6,6 +6,7 @@ import nl.tudelft.sem.template.example.services.ReleaseFacultyService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,20 +16,11 @@ import org.springframework.test.annotation.DirtiesContext;
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReleaseFacultyServiceTest {
-    //    @MockBean
-    //    private RestTemplate restTemplate;
-
     @MockBean
     private AuthManager authManager;
 
-    //    @MockBean
-    //    private NodeRepository nodeRepository;
-    //
     @Autowired
     private ReleaseFacultyService releaseFacultyService;
-
-    @MockBean
-    private ReleaseFacultyService releaseFacultyServiceMocked;
 
     String faculty;
     LocalDate date;
@@ -51,6 +43,8 @@ public class ReleaseFacultyServiceTest {
     @Test
     public void unauthorizedTest() {
         Mockito.when(authManager.getRole()).thenReturn("Magician");
+
+        System.out.println(authManager.getRole());
 
         Assertions.assertThrows(AccountNotAuthorizedException.class, () -> {
             releaseFacultyService.releaseFaculty(releaseFacultyDto);
