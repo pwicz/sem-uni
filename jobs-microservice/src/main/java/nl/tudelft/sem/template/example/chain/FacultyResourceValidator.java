@@ -3,7 +3,6 @@ package nl.tudelft.sem.template.example.chain;
 import commons.Job;
 import commons.Resource;
 import nl.tudelft.sem.template.example.models.JobChainModel;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
