@@ -59,7 +59,8 @@ public class NodeController {
      */
     @GetMapping(path = {"/resources/{faculty}"})
     public ResponseEntity<Resource> getTotalResourcesForFaculty(@PathVariable("faculty") String faculty) {
-        if (!authManager.getRole().equals("Admin")) {
+        if (!authManager.getRole().toString().equals("admin")) {
+            System.out.println("Needed Admin permissions.Current: " + authManager.getRole().toString());
             return ResponseEntity.badRequest().build();
         }
 
@@ -85,7 +86,6 @@ public class NodeController {
             System.out.println("Admin privileges required. Current Role:" + authManager.getRole().toString());
             return ResponseEntity.badRequest().build();
         }
-        System.out.println("Role: admin");
         if (repo.getAllNodes().isEmpty()) {
             System.out.println("Db is empty");
             return ResponseEntity.ok(new ArrayList<Node>());
@@ -130,6 +130,7 @@ public class NodeController {
      */
     @PostMapping(path = {"/addNode"})
     public ResponseEntity<Node> addNode(@RequestBody Node node) throws JsonProcessingException {
+        System.out.println(node.getMemory());
         if (node.getName() == null || node.getUrl() == null
                 || node.getFaculty() == null
                 || node.getToken() == null) {
