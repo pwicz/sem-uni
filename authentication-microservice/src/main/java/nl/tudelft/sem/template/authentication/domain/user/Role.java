@@ -9,7 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
  */
 @EqualsAndHashCode
 public class Role implements GrantedAuthority {
-    private final transient RoleType roleValue;
+    private transient RoleType roleValue;
     private static final long serialVersionUID = 4L;
 
     public Role(RoleType role) {
@@ -33,9 +33,8 @@ public class Role implements GrantedAuthority {
         }
         if (role.equals("Faculty")) {
             this.roleValue = RoleType.Faculty;
-            return;
         }
-        this.roleValue = null;
+
     }
 
     @Override

@@ -18,8 +18,6 @@ public class FacultyValidator extends BaseValidator {
     @Override
     public boolean handle(JobChainModel jobChainModel) throws JobRejectedException {
         Job job = jobChainModel.getJob();
-        final RoleType role = jobChainModel.getAuthRole();
-        final List<Faculty> faculty = jobChainModel.getAuthFaculty();
 
         FacultyRequestModel requestModel = new FacultyRequestModel();
         requestModel.setNetId(job.getNetId().toString());
@@ -35,6 +33,9 @@ public class FacultyValidator extends BaseValidator {
         if (responseModel == null) {
             throw new JobRejectedException("INVALID_BODY");
         }
+
+        RoleType role = jobChainModel.getAuthRole();
+        List<Faculty> faculty = jobChainModel.getAuthFaculty();
 
         List<Faculty> userFaculty = responseModel.getFaculty().stream().map(Faculty::new).collect(Collectors.toList());
         Set<Faculty> commonFaculties = userFaculty.stream().distinct().filter(faculty::contains).collect(Collectors.toSet());

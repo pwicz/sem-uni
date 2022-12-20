@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Bean;
 @EntityScan(basePackages = {"commons"})
 public class Application {
 
-    private final JobRepository jobRepository;
+    private final transient JobRepository jobRepository;
 
     public Application(JobRepository jobRepository) {
         this.jobRepository = jobRepository;

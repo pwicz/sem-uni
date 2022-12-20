@@ -1,7 +1,6 @@
 package nl.tudelft.sem.template.example.domain;
 
-import commons.Job;
-import commons.NetId;
+import commons.Node;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -9,11 +8,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class DataLoader implements CommandLineRunner {
 
-    private final transient JobRepository jobRepository;
+    private final transient NodeRepository nodeRepository;
 
     @Autowired
-    public DataLoader(JobRepository jobRepository) {
-        this.jobRepository = jobRepository;
+    public DataLoader(NodeRepository nodeRepository) {
+        this.nodeRepository = nodeRepository;
     }
 
     @Override
@@ -22,8 +21,7 @@ public class DataLoader implements CommandLineRunner {
     }
 
     public void loadUsers() {
-        /*jobRepository.save(new Job(new NetId("mlica"), "CPU", 10, 10, 10));
-        jobRepository.save(new Job(new NetId("mlica"), "GPU", 100, 2000, 1));
-        jobRepository.save(new Job(new NetId("mlica"), "MEMORY", 100, 20, 200));*/
+        /*nodeRepository.save(new Node("node1", "node1", "EEMCS", "token", 1000, 1000, 1000));
+        nodeRepository.save(new Node("node2", "node2", "Pool", "token", 1000, 1000, 1000));*/
     }
 }

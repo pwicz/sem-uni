@@ -5,7 +5,7 @@ import nl.tudelft.sem.template.example.models.JobChainModel;
 
 public abstract class BaseValidator implements Validator {
 
-    private Validator next;
+    private transient Validator next;
 
     /**
      * Set the next handler in the chain of responsibility.

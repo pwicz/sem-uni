@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -95,15 +96,13 @@ public class JobsServiceTest {
 
     @Test
     public void updateJobTest_Ok() throws Exception {
-        String url = jobService.getUrl() + "/addJob";
-
         JobRequestModel model = new JobRequestModel();
         model.setNetId(u1.toString());
         model.setResourceType("memory");
         model.setCpuUsage(10);
         model.setGpuUsage(10);
         model.setMemoryUsage(10);
-
+        String url = jobService.getUrl() + "/addJob";
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
@@ -112,12 +111,12 @@ public class JobsServiceTest {
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(1);
-        assertTrue(fromDb.get(0).getStatus().equals("pending"));
+        assertEquals("pending", fromDb.get(0).getStatus());
 
         jobService.updateJob(fromDb.get(0).getJobId(), "scheduled", dateConstant);
         fromDb = jobService.getAllJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(1);
-        assertTrue(fromDb.get(0).getStatus().equals("scheduled"));
+        assertEquals("scheduled", fromDb.get(0).getStatus());
     }
 
     @Test
