@@ -60,7 +60,7 @@ public class JwtRequestFilterTests {
         when(mockRequest.getHeader("Authorization")).thenReturn("Bearer " + token);
         when(mockJwtTokenVerifier.validateToken(token)).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(token)).thenReturn(user);
-        when(mockJwtTokenVerifier.getRole(token)).thenReturn("Employee");
+        when(mockJwtTokenVerifier.getRoleFromToken(token)).thenReturn("Employee");
 
         // Act
         jwtRequestFilter.doFilterInternal(mockRequest, mockResponse, mockFilterChain);

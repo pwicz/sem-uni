@@ -1,16 +1,22 @@
 package nl.tudelft.sem.template.example.domain.processing;
 
 import commons.FacultyResource;
+import commons.NetId;
 import commons.ScheduleJob;
 import commons.UpdateJob;
+import commons.exceptions.ResourceBiggerThanCpuException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Synchronized;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstance;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstanceRepository;
+import nl.tudelft.sem.template.example.models.FacultyRequestModel;
+import nl.tudelft.sem.template.example.models.FacultyResponseModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,6 +29,7 @@ public class ProcessingJobsService {
 
     private String resourcesUrl = "http://localhost:8085";
     private String jobsUrl = "http://localhost:8083";
+    private String authUrl = "http://localhost:8081";
 
     public void setResources_url(String resourcesUrl) {
         this.resourcesUrl = resourcesUrl;
@@ -53,10 +60,19 @@ public class ProcessingJobsService {
      * @param j a ScheduleJob DTO of a Job to be scheduled
      */
     @Synchronized
-    public void scheduleJob(ScheduleJob j) {
-        // start with the first possible day: tomorrow
+    public void scheduleJob(ScheduleJob j) throws ResourceBiggerThanCpuException {
+        // verify the CPU >= Max(GPU, Memory) requirement
+        if (j.getCpuUsage() < Math.max(j.getGpuUsage(), j.getMemoryUsage())) {
+            String resource = j.getGpuUsage() > j.getMemoryUsage() ? "GPU" : "Memory";
+            throw new ResourceBiggerThanCpuException(resource);
+        }
+
+        // start with the first possible day: tomorrow or the day after tomorrow
+        int possibleInXdays = 1;
+        //TODO: calculate possible day
+
         List<ScheduledInstance> scheduledInstances =
-                trySchedulingBetween(j, LocalDate.now().plusDays(1), j.getScheduleBefore());
+                trySchedulingBetween(j, LocalDate.now().plusDays(possibleInXdays), j.getScheduleBefore());
 
         if (scheduledInstances.isEmpty()) {
             // inform the Job microservice that the job was not scheduled
@@ -77,7 +93,7 @@ public class ProcessingJobsService {
         System.out.println("saved!");
     }
 
-    private List<ScheduledInstance> trySchedulingBetween(ScheduleJob job, LocalDate start, LocalDate end) {
+    protected List<ScheduledInstance> trySchedulingBetween(ScheduleJob job, LocalDate start, LocalDate end) {
         LocalDate currentDate = start;
         while (currentDate.isBefore(end)) {
             // 1. Make a request to Clusters microservice to check available resources for a given day
@@ -108,7 +124,7 @@ public class ProcessingJobsService {
                 cpuToSchedule -= providedCpu;
                 gpuToSchedule -= providedGpu;
                 memoryToSchedule -= providedMemory;
-                scheduledInstances.add(new ScheduledInstance(job.getJobId(), r.getFaculty(),
+                scheduledInstances.add(new ScheduledInstance(job.getJobId(), job.getFaculty(), r.getFaculty(),
                         providedCpu, providedGpu, providedMemory, currentDate));
             }
 
@@ -125,13 +141,65 @@ public class ProcessingJobsService {
     }
 
     private List<FacultyResource> getAvailableResources(String faculty, LocalDate date) {
-        ResponseEntity<FacultyResource[]> facultyResourcesResponse = restTemplate.getForEntity(resourcesUrl
-                + "/facultyResources?faculty=" + faculty + "&day=" + date.toString(), FacultyResource[].class);
 
-        if (facultyResourcesResponse.getBody() == null) {
+        ResponseEntity<FacultyResource[]> facultyResourcesResponse = restTemplate.getForEntity(resourcesUrl
+                + "/resources?faculty=" + faculty + "&day=" + date.toString(), FacultyResource[].class);
+
+        if (facultyResourcesResponse == null) {
             return new ArrayList<>();
         }
 
         return Arrays.asList(facultyResourcesResponse.getBody());
+    }
+
+    /**
+     * Gets the number of available resources out of total resources for the next day. Only admin can access it.
+
+
+     * @return  List of faculty resource
+     */
+    public List<FacultyResource> getAllResourcesNextDay() {
+
+        ResponseEntity<FacultyResponseModel> fac = restTemplate.getForEntity(authUrl
+                + "/faculties", FacultyResponseModel.class);
+
+        List<String> faculties = Arrays.asList(fac.getBody().getFaculties());
+
+        List<FacultyResource> res = new ArrayList<>();
+
+        LocalDate tmrw = LocalDate.now().plusDays(1);
+        for (String f : faculties) {
+            ResponseEntity<FacultyResource> facultyResourcesResponse = restTemplate.getForEntity(resourcesUrl
+                    + "/resources?faculty=" + f + "&day=" + tmrw, FacultyResource.class);
+
+            FacultyResource total  = facultyResourcesResponse.getBody();
+            if (facultyResourcesResponse.getBody() == null) {
+                continue;
+            }
+            List<ScheduledInstance> instancesInDb =
+                    scheduledInstanceRepository.findByDateAndFaculty(tmrw, f);
+            int cpuUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getCpuUsage).sum();
+            int gpuUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getGpuUsage).sum();
+            int memoryUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getMemoryUsage).sum();
+
+            FacultyResource fr = new FacultyResource(f, tmrw,
+                    cpuUsageSum, gpuUsageSum, memoryUsageSum,
+                    total.getCpuUsageTotal(), total.getGpuUsageTotal(), total.getMemoryUsageTotal()
+            );
+            res.add(fr);
+        }
+        return res;
+    }
+
+    /**
+     * Checks if it is 5 minutes before a new day starts.
+     *
+     * @return true if the current time is between 25:55 and 00:00 (excluding)
+     */
+    private boolean isFiveMinutesBeforeDayStarts() {
+        LocalTime currentTime = LocalTime.now();
+        LocalTime startTime = LocalTime.of(23, 55);
+        LocalTime endTime = LocalTime.of(0, 0);
+        return currentTime.isAfter(startTime) && currentTime.isBefore(endTime);
     }
 }

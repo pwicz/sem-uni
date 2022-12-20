@@ -2,15 +2,16 @@ package nl.tudelft.sem.template.example.controllers;
 
 import commons.Job;
 import commons.NetId;
-import commons.RoleType;
+import commons.RoleValue;
+import commons.Status;
 import commons.UpdateJob;
+import exceptions.InvalidIdException;
+import exceptions.InvalidNetIdException;
+import exceptions.InvalidResourcesException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
-import nl.tudelft.sem.template.example.domain.InvalidIdException;
-import nl.tudelft.sem.template.example.domain.InvalidNetIdException;
-import nl.tudelft.sem.template.example.domain.InvalidResourcesException;
 import nl.tudelft.sem.template.example.domain.JobRepository;
 import nl.tudelft.sem.template.example.domain.JobService;
 import nl.tudelft.sem.template.example.models.IdRequestModel;
@@ -43,6 +44,7 @@ public class JobController {
      * Constructor of the Job controller.
      *
      * @param repository  the job database
+     * @param jobService  the service which handles the communication with the database
      * @param authManager Spring Security component used to authenticate and authorize the user
      */
     @Autowired
@@ -99,9 +101,9 @@ public class JobController {
         try {
             NetId authNetId = new NetId(authManager.getNetId());
             long jobId = request.getId();
-            String status = this.jobService.getJobStatus(authNetId, authNetId, jobId);
+            Status status = this.jobService.getJobStatus(authNetId, authNetId, jobId);
             StatusResponseModel statusResponseModel = new StatusResponseModel();
-            statusResponseModel.setStatus(status);
+            statusResponseModel.setStatus(status.toString());
             return ResponseEntity.ok(statusResponseModel);
         } catch (InvalidNetIdException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, invalidId, e);
@@ -144,28 +146,25 @@ public class JobController {
         try {
             NetId jobNetId = new NetId(request.getNetId());
             NetId authNetId = new NetId(authManager.getNetId());
-            String resourceType = request.getResourceType();
             int cpuUsage = request.getCpuUsage();
             int gpuUsage = request.getGpuUsage();
             int memoryUsage = request.getMemoryUsage();
-            RoleType role = (RoleType) authManager.getRole();
-            System.out.println(role);
-            Job createdJob = this.jobService.createJob(jobNetId, authNetId, resourceType, cpuUsage,
+            RoleValue role = (RoleValue) authManager.getRole();
+            Job createdJob = this.jobService.createJob(jobNetId, authNetId, cpuUsage,
                     gpuUsage, memoryUsage, role);
 
             JobResponseModel jobResponseModel = jobService.populateJobResponseModel(createdJob.getJobId(),
-                "pending", createdJob.getNetId().toString());
-
+                Status.PENDING, createdJob.getNetId().toString());
             return ResponseEntity.ok(jobResponseModel);
         } catch (InvalidNetIdException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, invalidId, e);
         } catch (InvalidResourcesException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "INVALID_RESOURCE_ALLOCATION", e);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "EXCEPTION", e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
-
+    
     /**
      * The api POST endpoint to delete a Job.
      *
@@ -191,7 +190,7 @@ public class JobController {
     public ResponseEntity updateJob(@RequestBody UpdateJob request) throws Exception {
         try {
             long id = request.getId();
-            String status = request.getStatus();
+            Status status = Status.valueOf(request.getStatus());
             LocalDate localDate = request.getScheduleDate();
 
             this.jobService.updateJob(id, status, localDate);
@@ -201,5 +200,26 @@ public class JobController {
         return ResponseEntity.ok().build();
     }
 
+
+    /**
+     * Allow sysadmin to see all scheduled jobs for all days.
+     *
+     * @return response indicating if the operation was successful
+     */
+    @GetMapping(path = "/getAllScheduledJobs")
+    public ResponseEntity<List<Job>> getAllScheduledJobs() throws Exception {
+        try {
+            NetId netId = new NetId(authManager.getNetId());
+            NetId authNetId = new NetId(authManager.getNetId());
+            String role = authManager.getRole().toString();
+
+            List<Job> jobs = this.jobService.getAllScheduledJobs(netId, authNetId, role);
+            return ResponseEntity.ok(jobs);
+        } catch (InvalidNetIdException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, invalidId, e);
+        } catch (BadCredentialsException e) {
+            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "BAD_CREDENTIALS", e);
+        }
+    }
 
 }

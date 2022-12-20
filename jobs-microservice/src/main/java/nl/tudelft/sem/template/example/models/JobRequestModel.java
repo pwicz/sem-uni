@@ -7,9 +7,7 @@ import lombok.Data;
  */
 @Data
 public class JobRequestModel {
-
     private String netId;
-    private String resourceType;
     private int cpuUsage;
     private int gpuUsage;
     private int memoryUsage;

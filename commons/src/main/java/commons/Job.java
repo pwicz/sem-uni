@@ -1,6 +1,11 @@
 package commons;
 
+import exceptions.InvalidNetIdException;
+import exceptions.InvalidResourcesException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.util.Optional;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -9,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "jobs")
@@ -19,12 +25,10 @@ public class Job {
     @Column(name = "job_id", nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long jobId;
+
     @Column(name = "net_id", nullable = false)
     @Convert(converter = NetIdAttributeConverter.class)
     private NetId netId;
-
-    @Column(name = "resourceType", nullable = false)
-    private String resourceType;
 
     @Column(name = "cpu_usage", nullable = false)
     private int cpuUsage;
@@ -36,25 +40,27 @@ public class Job {
     private int memoryUsage;
 
     @Column(name = "status", nullable = false)
-    private String status;
+    private Status status;
+
+    @Column(name = "scheduleDate", nullable = false)
+    private String scheduleDate;
 
 
     /**
      * Constructor for the Job class, which represents jobs that need to be done.
      *
      * @param netId the netId of the user creating the job
-     * @param resourceType the type of resource needed to execute the job
      * @param cpuUsage the amount of cpu units needed
      * @param gpuUsage the amount of gpu units needed
      * @param memoryUsage the amount of memory units needed
      */
-    public Job(NetId netId, String resourceType, int cpuUsage, int gpuUsage, int memoryUsage) {
+    public Job(NetId netId, int cpuUsage, int gpuUsage, int memoryUsage) {
         this.netId = netId;
-        this.resourceType = resourceType;
         this.cpuUsage = cpuUsage;
         this.gpuUsage = gpuUsage;
         this.memoryUsage = memoryUsage;
-        this.status = "pending";
+        this.status = Status.PENDING;
+        this.scheduleDate = "";
     }
 
     /**
@@ -62,11 +68,11 @@ public class Job {
      */
     public Job(int temp) {
         this.netId = new NetId("test");
-        this.resourceType = "TYPE";
         cpuUsage = 0;
         gpuUsage = 0;
         memoryUsage = 0;
-        this.status = "accept";
+        this.status = Status.ACCEPTED;
+        this.scheduleDate = LocalDate.now().plusDays(3).toString();
     }
 
 
@@ -84,14 +90,6 @@ public class Job {
 
     public void setNetId(NetId netId) {
         this.netId = netId;
-    }
-
-    public String getResourceType() {
-        return resourceType;
-    }
-
-    public void setResourceType(String resourceType) {
-        this.resourceType = resourceType;
     }
 
     public int getCpuUsage() {
@@ -118,12 +116,29 @@ public class Job {
         this.memoryUsage = memoryUsage;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
+    }
+
+    /**
+     * getter and converter of scheduleDate, from String to LocalDate.
+     *
+     * @return the scheduleDate as a LocalDate Object.
+     */
+    public LocalDate getScheduleDate() {
+        if (scheduleDate.equals("")) {
+            return null;
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(scheduleDate, formatter);
+    }
+
+    public void setScheduleDate(LocalDate scheduleDate) {
+        this.scheduleDate = scheduleDate.toString();
     }
 
     @Override
@@ -136,12 +151,12 @@ public class Job {
         }
         Job job = (Job) o;
         return jobId == job.jobId && cpuUsage == job.cpuUsage && gpuUsage == job.gpuUsage && memoryUsage == job.memoryUsage
-                && Objects.equals(netId, job.netId) && Objects.equals(resourceType, job.resourceType)
-                && Objects.equals(status, job.status);
+                && Objects.equals(netId, job.netId) && Objects.equals(status, job.status)
+                && Objects.equals(scheduleDate, job.scheduleDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(jobId, netId, resourceType, cpuUsage, gpuUsage, memoryUsage, status);
+        return Objects.hash(jobId, netId, cpuUsage, gpuUsage, memoryUsage, status);
     }
 }

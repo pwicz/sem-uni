@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import commons.Faculty;
 import commons.NetId;
+import commons.RoleValue;
 import java.util.ArrayList;
 import nl.tudelft.sem.template.authentication.authentication.JwtTokenGenerator;
 import nl.tudelft.sem.template.authentication.domain.user.AppUser;
@@ -67,7 +68,7 @@ public class UsersTests {
         final NetId testUser = new NetId("SomeUser");
         final Password testPassword = new Password("password123");
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
-        final Role role = new Role("Faculty");
+        final Role role = new Role(RoleValue.FAC_ACC);
         final Faculty faculty = new Faculty("EEMCS");
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
 
@@ -97,7 +98,7 @@ public class UsersTests {
         final NetId testUser = new NetId("SomeUser");
         final Password newTestPassword = new Password("password456");
         final HashedPassword existingTestPassword = new HashedPassword("password123");
-        final Role role = new Role("Employee");
+        final Role role = new Role(RoleValue.EMPLOYEE);
         final ArrayList<Faculty> faculties = new ArrayList<>();
         faculties.add(new Faculty("EEMCS"));
         //        final Set<Faculty> faculties = new HashSet<>();
@@ -130,7 +131,7 @@ public class UsersTests {
         final NetId testUser = new NetId("SomeUser");
         final Password testPassword = new Password("password123");
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
-        final Role role = new Role("Employee");
+        final Role role = new Role(RoleValue.EMPLOYEE);
         final ArrayList<Faculty> faculties = new ArrayList<>();
         final Faculty faculty = new Faculty("EEMCS");
         faculties.add(faculty);
@@ -220,13 +221,10 @@ public class UsersTests {
                     && wrongPassword.equals(authentication.getCredentials())
         ))).thenThrow(new BadCredentialsException("Invalid password"));
 
-        //        final Set<Faculty> faculties = new HashSet<>();
-        //        faculties.add(new Faculty("EEMCS"));
-
         final ArrayList<Faculty> faculties = new ArrayList<>();
         final Faculty faculty = new Faculty("EEMCS");
         faculties.add(faculty);
-        AppUser appUser = new AppUser(new NetId(testUser), testHashedPassword, new Role("Employee"), faculties);
+        AppUser appUser = new AppUser(new NetId(testUser), testHashedPassword, new Role(RoleValue.EMPLOYEE), faculties);
         userRepository.save(appUser);
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();

@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.models;
 
 
+import commons.Status;
 import lombok.Data;
 
 /**
@@ -10,6 +11,6 @@ import lombok.Data;
 public class JobResponseModel {
 
     private String netId;
-    private String status;
+    private Status status;
     private Long id;
 }

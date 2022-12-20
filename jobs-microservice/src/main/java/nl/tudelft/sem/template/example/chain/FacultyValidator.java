@@ -4,7 +4,7 @@ import commons.Faculty;
 import commons.FacultyRequestModel;
 import commons.FacultyResponseModel;
 import commons.Job;
-import commons.RoleType;
+import commons.RoleValue;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,13 +34,13 @@ public class FacultyValidator extends BaseValidator {
             throw new JobRejectedException("INVALID_BODY");
         }
 
-        RoleType role = jobChainModel.getAuthRole();
+        RoleValue role = jobChainModel.getAuthRole();
         List<Faculty> faculty = jobChainModel.getAuthFaculty();
 
         List<Faculty> userFaculty = responseModel.getFaculty().stream().map(Faculty::new).collect(Collectors.toList());
         Set<Faculty> commonFaculties = userFaculty.stream().distinct().filter(faculty::contains).collect(Collectors.toSet());
 
-        if (commonFaculties.isEmpty() || !role.equals(RoleType.Faculty)) {
+        if (commonFaculties.isEmpty() || !role.equals(RoleValue.FAC_ACC)) {
             throw new JobRejectedException("BAD_CREDENTIALS");
         }
         if (jobChainModel.getDirectiveJob().equals(DirectiveJob.Reject)) {

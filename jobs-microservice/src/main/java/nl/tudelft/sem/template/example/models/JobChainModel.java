@@ -2,7 +2,7 @@ package nl.tudelft.sem.template.example.models;
 
 import commons.Faculty;
 import commons.Job;
-import commons.RoleType;
+import commons.RoleValue;
 import java.util.List;
 import lombok.Data;
 import nl.tudelft.sem.template.example.chain.DirectiveJob;
@@ -13,7 +13,7 @@ import nl.tudelft.sem.template.example.chain.DirectiveJob;
 public class JobChainModel {
 
     private Job job;
-    private RoleType authRole;
+    private RoleValue authRole;
     private List<Faculty> authFaculty;
     private DirectiveJob directiveJob;
 

@@ -1,6 +1,6 @@
 package nl.tudelft.sem.template.example.domain;
 
-import commons.RoleType;
+import commons.RoleValue;
 
 /**
  * Exception to indicate the provided Faculty does not correspond to the required faculty.
@@ -14,7 +14,7 @@ public class InvalidFacultyException extends Exception {
      *
      * @param faculty faculty
      */
-    public InvalidFacultyException(RoleType faculty) {
+    public InvalidFacultyException(RoleValue faculty) {
         super(faculty.toString());
     }
 }

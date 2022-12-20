@@ -1,6 +1,6 @@
 package nl.tudelft.sem.template.authentication.domain.user;
 
-import commons.RoleType;
+import commons.RoleValue;
 import lombok.EqualsAndHashCode;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -9,10 +9,10 @@ import org.springframework.security.core.GrantedAuthority;
  */
 @EqualsAndHashCode
 public class Role implements GrantedAuthority {
-    private transient RoleType roleValue;
+    private transient RoleValue roleValue;
     private static final long serialVersionUID = 4L;
 
-    public Role(RoleType role) {
+    public Role(RoleValue role) {
         // validate NetID
         this.roleValue = role;
     }
@@ -23,16 +23,16 @@ public class Role implements GrantedAuthority {
      * @param role role
      */
     public Role(String role) {
-        if (role.equals("Admin")) {
-            this.roleValue = RoleType.Admin;
+        if (role.equals("ADMIN")) {
+            this.roleValue = RoleValue.ADMIN;
             return;
         }
-        if (role.equals("Employee")) {
-            this.roleValue = RoleType.Employee;
+        if (role.equals("EMPLOYEE")) {
+            this.roleValue = RoleValue.EMPLOYEE;
             return;
         }
-        if (role.equals("Faculty")) {
-            this.roleValue = RoleType.Faculty;
+        if (role.equals("FAC_ACC")) {
+            this.roleValue = RoleValue.FAC_ACC;
         }
 
     }

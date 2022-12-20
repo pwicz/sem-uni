@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import commons.Faculty;
 import commons.NetId;
+import commons.RoleValue;
 import java.util.ArrayList;
 import nl.tudelft.sem.template.authentication.profiles.MockPasswordEncoderProfile;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
@@ -25,8 +26,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class RegistrationServiceTests {
 
+
     @Autowired
     private transient RegistrationService registrationService;
+
+    @Autowired
+    private transient GetFacultyService facultyService;
 
     @Autowired
     private transient PasswordHashingService mockPasswordEncoder;
@@ -40,7 +45,7 @@ public class RegistrationServiceTests {
         // Arrange
         final NetId testUser = new NetId("SomeUser");
         final Password testPassword = new Password("password123");
-        final Role role = new Role("Employee");
+        final Role role = new Role(RoleValue.EMPLOYEE);
         final ArrayList<Faculty> faculties = new ArrayList<>();
         faculties.add(new Faculty("EEMCS"));
 
@@ -63,7 +68,7 @@ public class RegistrationServiceTests {
         final NetId testUser = new NetId("SomeUser");
         final HashedPassword existingTestPassword = new HashedPassword("password123");
         final Password newTestPassword = new Password("password456");
-        final Role role = new Role("Employee");
+        final Role role = new Role(RoleValue.EMPLOYEE);
         final ArrayList<Faculty> faculties = new ArrayList<>();
         final Faculty faculty = new Faculty("EEMCS");
         faculties.add(faculty);
@@ -89,7 +94,7 @@ public class RegistrationServiceTests {
         // Arrange
         final NetId testUser = new NetId("SomeUser");
         final Password testPassword = new Password("password123");
-        final Role role = new Role("Employee");
+        final Role role = new Role(RoleValue.EMPLOYEE);
         final ArrayList<Faculty> faculties = new ArrayList<>();
         faculties.add(new Faculty("EEMCS"));
         faculties.add(new Faculty("3ME"));
@@ -108,5 +113,4 @@ public class RegistrationServiceTests {
         assertThat(savedUser.getPassword()).isEqualTo(testHashedPassword);
         assertThat(savedUser.getFaculty()).isEqualTo(faculties);
     }
-
 }

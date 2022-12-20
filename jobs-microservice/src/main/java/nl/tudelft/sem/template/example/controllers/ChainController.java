@@ -2,11 +2,12 @@ package nl.tudelft.sem.template.example.controllers;
 
 import commons.Job;
 import commons.NetId;
-import commons.RoleType;
+import commons.Role;
+import commons.RoleValue;
+import exceptions.InvalidIdException;
+import exceptions.InvalidNetIdException;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.chain.ChainService;
-import nl.tudelft.sem.template.example.domain.InvalidIdException;
-import nl.tudelft.sem.template.example.domain.InvalidNetIdException;
 import nl.tudelft.sem.template.example.models.ApproveRequestModel;
 import nl.tudelft.sem.template.example.models.JobResponseModel;
 import nl.tudelft.sem.template.example.models.RejectRequestModel;
@@ -41,7 +42,7 @@ public class ChainController {
         System.out.println(request.getId());
         try {
             NetId netId = new NetId(authManager.getNetId());
-            RoleType role = (RoleType) authManager.getRole();
+            RoleValue role = (RoleValue) authManager.getRole();
             System.out.println(request.getId());
             Long id = request.getId();
             System.out.println("here I am");
@@ -70,7 +71,7 @@ public class ChainController {
     public ResponseEntity<JobResponseModel> rejectJob(@RequestBody RejectRequestModel request) {
         try {
             NetId netId = new NetId(authManager.getNetId());
-            RoleType role = (RoleType) authManager.getRole();
+            RoleValue role = (RoleValue) authManager.getRole();
             Long id = request.getId();
 
             Job rejectedJob = chainService.rejectJob(netId, role, id);

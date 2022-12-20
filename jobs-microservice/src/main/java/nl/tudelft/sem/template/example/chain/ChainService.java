@@ -5,13 +5,14 @@ import commons.FacultyRequestModel;
 import commons.FacultyResponseModel;
 import commons.Job;
 import commons.NetId;
-import commons.RoleType;
+import commons.RoleValue;
+import commons.Status;
+import exceptions.InvalidIdException;
+import exceptions.InvalidNetIdException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import nl.tudelft.sem.template.example.domain.InvalidIdException;
-import nl.tudelft.sem.template.example.domain.InvalidNetIdException;
 import nl.tudelft.sem.template.example.domain.JobRepository;
 import nl.tudelft.sem.template.example.models.JobChainModel;
 import org.springframework.http.HttpEntity;
@@ -51,7 +52,7 @@ public class ChainService {
      * @return the approved Job
      * @throws Exception if the Job can not be scheduled or some parameters are not expected
      */
-    public Job approveJob(NetId netId, RoleType role, Long id) throws Exception {
+    public Job approveJob(NetId netId, RoleValue role, Long id) throws Exception {
         return handleJob(netId, role, id, DirectiveJob.Approve);
     }
 
@@ -64,7 +65,7 @@ public class ChainService {
      * @return the rejected Job
      * @throws Exception if the Job cannot be rejected or some parameters are not expected
      */
-    public Job rejectJob(NetId netId, RoleType role, Long id) throws Exception {
+    public Job rejectJob(NetId netId, RoleValue role, Long id) throws Exception {
         return handleJob(netId, role, id, DirectiveJob.Reject);
     }
 
@@ -78,7 +79,7 @@ public class ChainService {
      * @return the handled Job
      * @throws Exception if the Job can not be handled or some parameters are not expected
      */
-    private Job handleJob(NetId netId, RoleType role, Long id, DirectiveJob directiveJob) throws Exception {
+    private Job handleJob(NetId netId, RoleValue role, Long id, DirectiveJob directiveJob) throws Exception {
         Optional<Job> jobOptional = jobRepository.findById(id);
         if (jobOptional.isEmpty()) {
             throw new InvalidIdException(id);
@@ -99,9 +100,9 @@ public class ChainService {
         try {
             boolean valid = handler.handle(jobChainModel);
             if (valid) {
-                j.setStatus("approved");
+                j.setStatus(Status.ACCEPTED);
             } else {
-                j.setStatus("rejected");
+                j.setStatus(Status.REJECTED);
             }
             return j;
         } catch (Exception e) {
