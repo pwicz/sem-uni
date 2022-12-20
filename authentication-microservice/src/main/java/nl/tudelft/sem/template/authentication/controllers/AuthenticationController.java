@@ -1,8 +1,11 @@
 package nl.tudelft.sem.template.authentication.controllers;
 
 import commons.Faculty;
+import commons.FacultyRequestModel;
+import commons.FacultyResponseModel;
 import commons.NetId;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 import nl.tudelft.sem.template.authentication.authentication.JwtTokenGenerator;
 import nl.tudelft.sem.template.authentication.authentication.JwtUserDetailsService;
 import nl.tudelft.sem.template.authentication.domain.user.GetFacultyService;
@@ -12,8 +15,6 @@ import nl.tudelft.sem.template.authentication.domain.user.Role;
 import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import nl.tudelft.sem.template.authentication.models.AuthenticationRequestModel;
 import nl.tudelft.sem.template.authentication.models.AuthenticationResponseModel;
-import nl.tudelft.sem.template.authentication.models.FacultyRequestModel;
-import nl.tudelft.sem.template.authentication.models.FacultyResponseModel;
 import nl.tudelft.sem.template.authentication.models.RegistrationRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -126,16 +127,19 @@ public class AuthenticationController {
      *
      * @param request The registration model
      * @return 200 OK if the registration is successful
-     * @throws Exception if a user with this netid already exists
+     * @throws Exception if a user with this netId already exists
      */
-    @PostMapping("/faculty")
+    @PostMapping ("/faculty")
     public ResponseEntity<FacultyResponseModel> retrieveFaculty(@RequestBody FacultyRequestModel request) throws Exception {
         try {
             NetId netId = new NetId(request.getNetId());
             ArrayList<Faculty> faculty = getFacultyService.getFaculty(netId);
-            return ResponseEntity.ok(new FacultyResponseModel(faculty.toString()));
+            FacultyResponseModel facultyResponseModel = new FacultyResponseModel();
+            facultyResponseModel.setFaculty(faculty.stream().map(Faculty::toString).collect(Collectors.toList()));
+            return ResponseEntity.ok(facultyResponseModel);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
+
 }

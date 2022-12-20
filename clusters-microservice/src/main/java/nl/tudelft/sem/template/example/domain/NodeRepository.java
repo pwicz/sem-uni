@@ -29,7 +29,7 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
      */
     @Query(
             nativeQuery = true,
-            value = "SELECT * FROM Node SORT BY faculty")
+            value = "SELECT * FROM Node ORDER BY faculty")
     Optional<List<Node>> getAllNodes();
 
     /**

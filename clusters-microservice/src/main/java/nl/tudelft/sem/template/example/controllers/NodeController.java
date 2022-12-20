@@ -1,5 +1,9 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import commons.Faculty;
+import commons.FacultyRequestModel;
+import commons.FacultyResponseModel;
 import commons.Resource;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -9,6 +13,9 @@ import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.Node;
 import nl.tudelft.sem.template.example.domain.NodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,19 +33,21 @@ public class NodeController {
     private final transient RestTemplate restTemplate;
     private final transient NodeRepository repo;
     private final transient AuthManager authManager;
+    private final transient JasonUtil jsonUtil;
 
     /**
      * Constructor for the NodeController.
      *
-     * @param repo the repository interface
-     * @param authManager contains details about the user
+     * @param repo         the repository interface
+     * @param authManager  contains details about the user
      * @param restTemplate RestTemplate to send requests
      */
     @Autowired
-    public NodeController(NodeRepository repo, AuthManager authManager, RestTemplate restTemplate) {
+    public NodeController(NodeRepository repo, AuthManager authManager, RestTemplate restTemplate, JasonUtil jsonUtil) {
         this.repo = repo;
         this.authManager = authManager;
         this.restTemplate = restTemplate;
+        this.jsonUtil = jsonUtil;
     }
 
     /**
@@ -67,15 +76,33 @@ public class NodeController {
 
     /**
      * Returns all the nodes available for admin to see.
-     *
      */
     @GetMapping(path = {"/resources"})
-    public ResponseEntity<List<Node>> getAllNodes() {
-        if (!authManager.getRole().equals("Admin")) {
+    public ResponseEntity<List<Node>> getAllNodes(@RequestBody String token) {
+        if (!authManager.getRole().toString().equals("admin")) {
+            System.out.println("Admin privileges required. Current Role:" + authManager.getRole().toString());
             return ResponseEntity.badRequest().build();
         }
+        System.out.println("Role: admin");
+        if (repo.getAllNodes().isEmpty()) {
+            System.out.println("Db is empty");
+            return ResponseEntity.ok(new ArrayList<Node>());
+        }
         List<Node> nodes = repo.getAllNodes().get();
+
         return ResponseEntity.ok(nodes);
+    }
+
+    /**
+     * Test to see what role you currently are.
+     */
+    @GetMapping(path = {"/role"})
+    public ResponseEntity<String> userRole() {
+        if (authManager.getRole() == null) {
+            System.out.println("user has null role");
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(authManager.getRole().toString());
     }
 
     /**
@@ -83,7 +110,7 @@ public class NodeController {
      * Only allowed to access if you belong to the faculty.
      *
      * @param faculty faculty you want resources from
-     * @param date day you want to see the free resources for
+     * @param date    day you want to see the free resources for
      */
     @GetMapping(path = {"/resources?faculty={faculty}&day={date}"})
     public ResponseEntity<Resource> getFacultyAvailableResourcesForDay(@PathVariable("faculty") String faculty,
@@ -100,7 +127,7 @@ public class NodeController {
      * @param node you want to add
      */
     @PostMapping(path = {"/addNode"})
-    public ResponseEntity<Node> addNode(@RequestBody Node node) {
+    public ResponseEntity<Node> addNode(@RequestBody Node node) throws JsonProcessingException {
 
         //check for if url looks like url later
         if (node.getName() == null || node.getUrl() == null
@@ -115,15 +142,19 @@ public class NodeController {
         if (!node.getName().equals(authManager.getNetId())) {
             return ResponseEntity.badRequest().build();
         }
-        if (!getFaculty(authManager.getNetId()).contains(node.getFaculty())) {
+        List<String> faculties = getFaculty(authManager.getNetId());
+        if (!(faculties.contains(node.getFaculty()))) {
+            System.out.println("failed after getfaculty");
             return ResponseEntity.badRequest().build();
+        } else if (authManager.getRole().toString().equals("admin")) {
+            node.setFaculty("FreePool");
         }
         try {
             //node.setToken(authManager.getToken()); // check if this works
             Node newNode = repo.save(node);
             return ResponseEntity.ok(newNode);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("failed to add node\n");
             return ResponseEntity.badRequest().build();
         }
     }
@@ -134,12 +165,13 @@ public class NodeController {
      * Only sets the date its released from and till
      *
      * @param faculty faculty of the release
-     * @param date date its released from
-     * @param days number days of days its released for
+     * @param date    date its released from
+     * @param days    number days of days its released for
      */
     @PostMapping("/releaseFaculty?faculty={faculty}&date={date}&days={days}")
     public ResponseEntity<String> releaseFaculty(@PathVariable("faculty") String faculty,
-                                                 @PathVariable("date") LocalDate date, @PathVariable("days") int days) {
+                                                 @PathVariable("date") LocalDate date, @PathVariable("days") int days)
+                                                throws JsonProcessingException {
         if (!authManager.getRole().equals("FacultyAccount")) {
             return ResponseEntity.badRequest().build();
         }
@@ -153,17 +185,22 @@ public class NodeController {
         return ResponseEntity.ok("Released");
     }
 
-    private List<String> getFaculty(String token) {
-        String usersUrl = "http://localhost:8081"; //authentication microservice
-
-        ResponseEntity<String[]> facultyType = restTemplate.getForEntity(usersUrl
-                + "/faculty", String[].class);
+    private List<String> getFaculty(String netId) throws JsonProcessingException {
+        String usersUrl = "http://localhost:8081/faculty"; //authentication microservice
+        HttpHeaders headers = new HttpHeaders();
+        //headers.setBearerAuth(authManager.getToken());
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        FacultyRequestModel f = new FacultyRequestModel();
+        f.setNetId(netId);
+        HttpEntity<FacultyRequestModel> requestEntity = new HttpEntity<>(f, headers);
+        ResponseEntity<FacultyResponseModel> facultyType = restTemplate.postForEntity(usersUrl,
+                requestEntity, FacultyResponseModel.class);
 
         if (facultyType.getBody() == null) {
             return new ArrayList<>();
         }
-
-        return Arrays.asList(facultyType.getBody());
+        //System.out.println("Faculty = " + facultyType.getBody().getFaculty().toString());
+        return facultyType.getBody().getFaculty();
     }
 
 
@@ -171,11 +208,12 @@ public class NodeController {
      * Marks Node with the id as deleted.
      * Later when databse clearner is called it will actually delete from database.
      *
-     * @param id id of the node you want to delete
+     * @param id    id of the node you want to delete
      * @param token token of access
      */
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteNode(@PathVariable("id") long id, @RequestBody String token) {
+    public ResponseEntity<String> deleteNode(@PathVariable("id") long id,
+                                             @RequestBody String token) throws JsonProcessingException {
         //Node n = repo.getNodeById(id).get();
         if (token == null) {
             return ResponseEntity.badRequest().build();
@@ -205,5 +243,7 @@ public class NodeController {
 
         return facultyType.getBody();
     }
+
+
 }
 

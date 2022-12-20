@@ -10,7 +10,7 @@ import javax.persistence.Table;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "nodes")
+@Table(name = "node")
 @NoArgsConstructor
 public class Node implements Comparable {
     @Id
@@ -86,6 +86,10 @@ public class Node implements Comparable {
 
     public String getFaculty() {
         return faculty;
+    }
+
+    public void setFaculty(String faculty) {
+        this.faculty = faculty;
     }
 
     public String getToken() {
