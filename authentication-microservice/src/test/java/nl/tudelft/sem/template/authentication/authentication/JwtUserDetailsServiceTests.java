@@ -23,8 +23,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-// activate profiles to have spring use mocks during auto-injection of certain beans.
-@ActiveProfiles({"test", "mockPasswordEncoder"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class JwtUserDetailsServiceTests {
 
@@ -39,7 +37,7 @@ public class JwtUserDetailsServiceTests {
         // Arrange
         final NetId testUser = new NetId("SomeUser");
         final HashedPassword testHashedPassword = new HashedPassword("password123Hash");
-        final Role role = new Role("employee");
+        final Role role = new Role("Employee");
         final ArrayList<Faculty> faculties = new ArrayList<>();
         faculties.add(new Faculty("EEMCS"));
         faculties.add(new Faculty("3ME"));
@@ -62,7 +60,7 @@ public class JwtUserDetailsServiceTests {
 
         final NetId testUser = new NetId("AnotherUser");
         final String testPasswordHash = "password123Hash";
-        final Role role = new Role("employee");
+        final Role role = new Role("Employee");
         final ArrayList<Faculty> faculties = new ArrayList<>();
         final Faculty faculty = new Faculty("EEMCS");
         faculties.add(faculty);

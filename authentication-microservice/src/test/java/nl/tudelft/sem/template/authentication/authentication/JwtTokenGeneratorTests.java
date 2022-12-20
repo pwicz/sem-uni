@@ -27,7 +27,7 @@ public class JwtTokenGeneratorTests {
     private final String secret = "testSecret123";
 
     private String netId = "andy";
-    private String role = "employee";
+    private String role = "Employee";
     private UserDetails user;
 
     /**
@@ -41,7 +41,7 @@ public class JwtTokenGeneratorTests {
         jwtTokenGenerator = new JwtTokenGenerator(timeProvider);
         this.injectSecret(secret);
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new Role("employee"));
+        authorities.add(new Role("Employee"));
         user = new User(netId, "someHash", authorities);
     }
 
