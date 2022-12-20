@@ -10,13 +10,13 @@ import javax.persistence.Table;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "node")
+@Table(name = "NODE")
 @NoArgsConstructor
 public class Node implements Comparable {
+
     @Id
-    @Column(name = "id", nullable = false, unique = true)
+    //@Column(name = "NODEID", nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.AUTO)
-    //@Getter @Setter, does this work still?
     private long id;
 
     @Column(name = "netId", nullable = false)
@@ -45,7 +45,7 @@ public class Node implements Comparable {
 
     @Column(name = "realeasedEnd", nullable = true)
     private LocalDate releaseEnd = null;
-    @Column(name = "removedDate", nullable = true)
+    @Column(name = "REMOVEDDATE", nullable = true)
     private LocalDate removedDate = null;
 
     /**

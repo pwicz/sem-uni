@@ -12,6 +12,7 @@ import java.util.List;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.Node;
 import nl.tudelft.sem.template.example.domain.NodeRepository;
+import nl.tudelft.sem.template.example.models.ToaRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -144,7 +145,7 @@ public class NodeController {
         }
         List<String> faculties = getFaculty(authManager.getNetId());
         if (!(faculties.contains(node.getFaculty()))) {
-            System.out.println("failed after getfaculty");
+            System.out.println("failed after get faculty");
             return ResponseEntity.badRequest().build();
         } else if (authManager.getRole().toString().equals("admin")) {
             node.setFaculty("FreePool");
@@ -213,21 +214,37 @@ public class NodeController {
      */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteNode(@PathVariable("id") long id,
-                                             @RequestBody String token) throws JsonProcessingException {
+                                             @RequestBody ToaRequestModel token) throws JsonProcessingException {
         //Node n = repo.getNodeById(id).get();
         if (token == null) {
             return ResponseEntity.badRequest().build();
         }
-        if (!getFaculty(authManager.getNetId()).contains(repo.getNodeById(id).get().getFaculty())) {
+        if (repo.findById(id).isEmpty()) {
+            System.out.println("Repo is empty");
             return ResponseEntity.badRequest().build();
         }
-        if (!token.equals(repo.getNodeById(id).get().getToken())) {
+        List<String> faculties = getFaculty(authManager.getNetId());
+        if (!authManager.getRole().equals("admin") && !faculties.contains(repo.findById(id).get().getFaculty())) {
+            System.out.println("Facultys dont match");
+            return ResponseEntity.badRequest().build();
+        }
+        if (!token.getToken().equals(repo.findById(id).get().getToken())) {
+            System.out.println("Tokens of access dont match");
+            System.out.println("Token provided: " + token);
+            System.out.println("Token required: " + repo.findById(id).get().getToken());
             return ResponseEntity.badRequest().build();
         }
         repo.setAsDeleted(id, LocalDate.now().plusDays(1L));
         Node n = repo.getNodeById(id).get();
-        String response = notifySchedulerOfResourceChange(LocalDate.now().plusDays(1L), n.getFaculty());
-        return ResponseEntity.ok(response + " " + n.getRemovedDate().toString());
+        System.out.println(n.getRemovedDate());
+        //n.setRemovedDate(LocalDate.now().plusDays(1L)); // not updated forever in the database
+        try {
+            String response = notifySchedulerOfResourceChange(LocalDate.now().plusDays(1L), n.getFaculty());
+            return ResponseEntity.ok(response + " " + n.getRemovedDate());
+        } catch (Exception e) {
+            System.out.println(e.getStackTrace());
+            return ResponseEntity.ok("Failed Notify: " + n.getRemovedDate().toString() + " updated remove date");
+        }
     }
 
     //the addresses need to match up in the future

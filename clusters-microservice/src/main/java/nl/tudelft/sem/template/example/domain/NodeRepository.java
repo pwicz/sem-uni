@@ -6,8 +6,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Repository
@@ -65,6 +67,7 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
      * @param  newDate date you want to free resouces on
      * @param  newDays how many days to want to free for
      */
+    @Modifying
     @Query(
             nativeQuery = true,
             value = "UPDATE Node SET date = ?2, days = ?3 WHERE faculty = ?1")
@@ -77,7 +80,7 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
      */
     @Query(
             nativeQuery = true,
-            value = "SELECT Node WHERE id = ?1")
+            value = "SELECT * FROM NODE WHERE id = ?1")
     Optional<Node> getNodeById(long id);
 
     /**
@@ -86,9 +89,11 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
      * @param  id of the node to delete
      * @param  date deleted from tomorrow
      */
+    @Transactional
+    @Modifying(clearAutomatically = true)
     @Query(
             nativeQuery = true,
-            value = "UPDATE Node SET removedDate = ?2 WHERE id = ?1")
+            value = "UPDATE NODE SET removedDate = ?2 WHERE id = ?1")
     void setAsDeleted(long id, LocalDate date);
 
 }
