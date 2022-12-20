@@ -1,9 +1,8 @@
 package nl.tudelft.sem.template.example.domain;
 
-
-import commons.RoleType;
 import commons.Job;
 import commons.NetId;
+import commons.RoleType;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;

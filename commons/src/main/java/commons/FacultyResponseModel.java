@@ -1,10 +1,7 @@
 package commons;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.List;
+import lombok.Data;
 
 /**
  * Model for retrieving the faculty of a user.

@@ -4,12 +4,9 @@ import commons.Faculty;
 import commons.Job;
 import commons.Resource;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-
 import nl.tudelft.sem.template.example.models.JobChainModel;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
+
 
 public class FacultyResourceValidator extends BaseResourceValidator {
 

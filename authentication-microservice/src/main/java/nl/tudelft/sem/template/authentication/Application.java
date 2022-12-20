@@ -1,17 +1,19 @@
 package nl.tudelft.sem.template.authentication;
 
-import commons.RoleType;
 import commons.Faculty;
 import commons.NetId;
-import nl.tudelft.sem.template.authentication.domain.user.*;
+import commons.RoleType;
+import java.util.ArrayList;
+import java.util.List;
+import nl.tudelft.sem.template.authentication.domain.user.AppUser;
+import nl.tudelft.sem.template.authentication.domain.user.Password;
+import nl.tudelft.sem.template.authentication.domain.user.PasswordHashingService;
+import nl.tudelft.sem.template.authentication.domain.user.Role;
+import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @SpringBootApplication()
 public class Application {
@@ -31,9 +33,15 @@ public class Application {
     @Bean
     InitializingBean initDatabase() {
         return () -> {
-          userRepository.save(new AppUser(new NetId("mlica"), passwordHashingService.hash(new Password("passwd")), new Role(RoleType.Admin), new ArrayList<>(List.of(new Faculty("EEMCS")))));
-          userRepository.save(new AppUser(new NetId("test"), passwordHashingService.hash(new Password("passwd")), new Role(RoleType.Employee), new ArrayList<>(List.of(new Faculty("EEMCS")))));
-          userRepository.save(new AppUser(new NetId("test1"), passwordHashingService.hash(new Password("passwd")), new Role(RoleType.Faculty), new ArrayList<>(List.of(new Faculty("EEMCS")))));
+            userRepository.save(new AppUser(new NetId("mlica"),
+                    passwordHashingService.hash(new Password("passwd")),
+                    new Role(RoleType.Admin), new ArrayList<>(List.of(new Faculty("EEMCS")))));
+            userRepository.save(new AppUser(new NetId("test"),
+                    passwordHashingService.hash(new Password("passwd")),
+                    new Role(RoleType.Employee), new ArrayList<>(List.of(new Faculty("EEMCS")))));
+            userRepository.save(new AppUser(new NetId("test1"),
+                    passwordHashingService.hash(new Password("passwd")),
+                    new Role(RoleType.Faculty), new ArrayList<>(List.of(new Faculty("EEMCS")))));
         };
     }
 }

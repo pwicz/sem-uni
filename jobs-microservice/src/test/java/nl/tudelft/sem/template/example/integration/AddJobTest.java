@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import commons.RoleType;
 import commons.Job;
 import commons.NetId;
+import commons.RoleType;
 import java.time.LocalDate;
 import java.util.List;
 import nl.tudelft.sem.template.example.authentication.AuthManager;

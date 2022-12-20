@@ -2,12 +2,11 @@ package nl.tudelft.sem.template.example.chain;
 
 import commons.Faculty;
 import commons.Resource;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 public abstract class BaseResourceValidator extends BaseValidator {
 

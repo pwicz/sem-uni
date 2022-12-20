@@ -1,17 +1,24 @@
 package nl.tudelft.sem.template.example.chain;
 
-import commons.*;
-
+import commons.Faculty;
+import commons.FacultyRequestModel;
+import commons.FacultyResponseModel;
+import commons.Job;
+import commons.NetId;
+import commons.RoleType;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import nl.tudelft.sem.template.example.domain.InvalidIdException;
 import nl.tudelft.sem.template.example.domain.InvalidNetIdException;
 import nl.tudelft.sem.template.example.domain.JobRepository;
 import nl.tudelft.sem.template.example.models.JobChainModel;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 

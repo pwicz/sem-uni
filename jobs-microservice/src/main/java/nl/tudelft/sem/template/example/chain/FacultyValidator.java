@@ -1,27 +1,31 @@
 package nl.tudelft.sem.template.example.chain;
 
-import commons.*;
+import commons.Faculty;
+import commons.FacultyRequestModel;
+import commons.FacultyResponseModel;
+import commons.Job;
+import commons.RoleType;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import nl.tudelft.sem.template.example.models.JobChainModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class FacultyValidator extends BaseValidator {
 
     @Override
     public boolean handle(JobChainModel jobChainModel) throws JobRejectedException {
         Job job = jobChainModel.getJob();
-        RoleType role = jobChainModel.getAuthRole();
-        List<Faculty> faculty = jobChainModel.getAuthFaculty();
+        final RoleType role = jobChainModel.getAuthRole();
+        final List<Faculty> faculty = jobChainModel.getAuthFaculty();
 
         FacultyRequestModel requestModel = new FacultyRequestModel();
         requestModel.setNetId(job.getNetId().toString());
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<FacultyResponseModel> response = restTemplate
-                .postForEntity("http://localhost:8081/faculty",requestModel, FacultyResponseModel.class);
+                .postForEntity("http://localhost:8081/faculty", requestModel, FacultyResponseModel.class);
 
 
         if (!response.getStatusCode().is2xxSuccessful()) {

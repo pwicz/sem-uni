@@ -3,9 +3,9 @@ package nl.tudelft.sem.template.example.domain;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import commons.RoleType;
 import commons.Job;
 import commons.NetId;
+import commons.RoleType;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

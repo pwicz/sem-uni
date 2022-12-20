@@ -17,6 +17,11 @@ public class Role implements GrantedAuthority {
         this.roleValue = role;
     }
 
+    /**
+     * Constructor Role from String to Enum.
+     *
+     * @param role role
+     */
     public Role(String role) {
         if (role.equals("Admin")) {
             this.roleValue = RoleType.Admin;

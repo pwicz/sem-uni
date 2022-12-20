@@ -71,8 +71,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                             roleType = RoleType.Admin;
                         } else if (role.equals("Employee")) {
                             roleType = RoleType.Employee;
-                        }
-                        else {
+                        } else {
                             roleType = RoleType.Faculty;
                         }
                         var authenticationToken = new UsernamePasswordAuthenticationToken(

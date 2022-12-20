@@ -1,12 +1,13 @@
 package nl.tudelft.sem.template.example.models;
 
 import commons.Faculty;
-import commons.RoleType;
 import commons.Job;
+import commons.RoleType;
+import java.util.List;
 import lombok.Data;
 import nl.tudelft.sem.template.example.chain.DirectiveJob;
 
-import java.util.List;
+
 
 @Data
 public class JobChainModel {
