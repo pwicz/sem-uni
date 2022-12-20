@@ -1,5 +1,6 @@
 package commons;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
@@ -8,8 +9,4 @@ import lombok.Data;
 @Data
 public class FacultyRequestModel {
     private String netId;
-
-    public FacultyRequestModel(String netId) {
-        this.netId = netId;
-    }
 }

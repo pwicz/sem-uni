@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import commons.Account;
+import commons.FacultyRequestModel;
+import commons.RoleType;
 import commons.Job;
 import commons.NetId;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
@@ -39,14 +40,16 @@ public class ChainController {
      */
     @PostMapping("/approve")
     public ResponseEntity<JobResponseModel> approveJob(@RequestBody ApproveRequestModel request) {
+        System.out.println(request.getId());
         try {
             NetId netId = new NetId(authManager.getNetId());
-            Account role = (Account) authManager.getRole();
+            RoleType role = (RoleType) authManager.getRole();
+            System.out.println(request.getId());
             Long id = request.getId();
-
+            System.out.println("here I am");
             Job approvedJob = chainService.approveJob(netId, role, id);
             JobResponseModel jobResponseModel = new JobResponseModel(approvedJob.getNetId().toString(),
-                    approvedJob.getStatus());
+                    approvedJob.getStatus(), id);
             return ResponseEntity.ok(jobResponseModel);
         } catch (InvalidIdException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "INVALID_ID", e);
@@ -55,6 +58,11 @@ public class ChainController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "BAD_REQUEST", e);
         }
+    }
+
+    @PostMapping("/t")
+    public void tt(@RequestBody FacultyRequestModel requestModel) {
+        System.out.println(requestModel.getNetId());
     }
 
     /**
@@ -67,12 +75,12 @@ public class ChainController {
     public ResponseEntity<JobResponseModel> rejectJob(@RequestBody RejectRequestModel request) {
         try {
             NetId netId = new NetId(authManager.getNetId());
-            Account role = (Account) authManager.getRole();
+            RoleType role = (RoleType) authManager.getRole();
             Long id = request.getId();
 
             Job rejectedJob = chainService.rejectJob(netId, role, id);
             JobResponseModel jobResponseModel = new JobResponseModel(rejectedJob.getNetId().toString(),
-                    rejectedJob.getStatus());
+                    rejectedJob.getStatus(), id);
             return ResponseEntity.ok(jobResponseModel);
         } catch (InvalidIdException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "INVALID_ID", e);

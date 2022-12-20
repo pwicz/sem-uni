@@ -12,8 +12,11 @@ public class JobResponseModel {
     private String netId;
     private String status;
 
-    public JobResponseModel(String netId, String status) {
+    private Long id;
+
+    public JobResponseModel(String netId, String status, Long id) {
         this.netId = netId;
         this.status = status;
+        this.id = id;
     }
 }

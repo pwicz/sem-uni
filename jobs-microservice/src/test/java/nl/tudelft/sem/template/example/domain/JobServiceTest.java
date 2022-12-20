@@ -3,7 +3,7 @@ package nl.tudelft.sem.template.example.domain;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import commons.Account;
+import commons.RoleType;
 import commons.Job;
 import commons.NetId;
 import java.util.Optional;
@@ -50,7 +50,7 @@ class JobServiceTest {
         int memoryUsage = 3;
         try {
             Job created = jobService.createJob(netId, netId, resourceType, cpuUsage,
-                    gpuUsage, memoryUsage, Account.Employee);
+                    gpuUsage, memoryUsage, RoleType.Employee);
             jobRepository.save(created);
             Optional<Job> jobOptional = jobRepository.findById(created.getJobId());
             assertFalse(jobOptional.isEmpty());

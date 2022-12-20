@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.authentication;
 
+import commons.RoleType;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import java.io.IOException;
@@ -65,9 +66,18 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     if (jwtTokenVerifier.validateToken(token)) {
                         String netId = jwtTokenVerifier.getNetIdFromToken(token);
                         String role = jwtTokenVerifier.getRole(token);
+                        RoleType roleType;
+                        if (role.equals("Admin")) {
+                            roleType = RoleType.Admin;
+                        } else if (role.equals("Employee")) {
+                            roleType = RoleType.Employee;
+                        }
+                        else {
+                            roleType = RoleType.Faculty;
+                        }
                         var authenticationToken = new UsernamePasswordAuthenticationToken(
                                 netId,
-                                role, List.of() // no credentials and no authorities
+                                roleType, List.of() // no credentials and no authorities
                         );
                         authenticationToken.setDetails(new WebAuthenticationDetailsSource()
                                 .buildDetails(request));

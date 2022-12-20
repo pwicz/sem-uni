@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
  * Model for retrieving the faculty of a user.
  */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class FacultyResponseModel {
     private String faculty;
 }

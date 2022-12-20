@@ -1,32 +1,39 @@
 package nl.tudelft.sem.template.example.chain;
 
-import commons.Account;
+import commons.RoleType;
 import commons.FacultyRequestModel;
 import commons.FacultyResponseModel;
 import commons.Job;
 import commons.NetId;
+
+import java.util.Collections;
 import java.util.Optional;
 import nl.tudelft.sem.template.example.domain.InvalidIdException;
 import nl.tudelft.sem.template.example.domain.InvalidNetIdException;
 import nl.tudelft.sem.template.example.domain.JobRepository;
 import nl.tudelft.sem.template.example.models.JobChainModel;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+@SuppressWarnings("PMD")
 @Service
 public class ChainService {
 
 
     private final transient JobRepository jobRepository;
 
+    private final RestTemplate restTemplate;
+
     /**
      * Constructor for the ChainService service.
      *
      * @param jobRepository Job database in the Jobs microservice
      */
-    public ChainService(JobRepository jobRepository) {
+    public ChainService(JobRepository jobRepository, RestTemplate restTemplate) {
+
         this.jobRepository = jobRepository;
+        this.restTemplate = restTemplate;
     }
 
     /**
@@ -38,7 +45,7 @@ public class ChainService {
      * @return the approved Job
      * @throws Exception if the Job can not be scheduled or some parameters are not expected
      */
-    public Job approveJob(NetId netId, Account role, Long id) throws Exception {
+    public Job approveJob(NetId netId, RoleType role, Long id) throws Exception {
         return handleJob(netId, role, id, DirectiveJob.Approve);
     }
 
@@ -51,7 +58,7 @@ public class ChainService {
      * @return the rejected Job
      * @throws Exception if the Job cannot be rejected or some parameters are not expected
      */
-    public Job rejectJob(NetId netId, Account role, Long id) throws Exception {
+    public Job rejectJob(NetId netId, RoleType role, Long id) throws Exception {
         return handleJob(netId, role, id, DirectiveJob.Reject);
     }
 
@@ -65,7 +72,7 @@ public class ChainService {
      * @return the handled Job
      * @throws Exception if the Job can not be handled or some parameters are not expected
      */
-    private Job handleJob(NetId netId, Account role, Long id, DirectiveJob directiveJob) throws Exception {
+    private Job handleJob(NetId netId, RoleType role, Long id, DirectiveJob directiveJob) throws Exception {
         Optional<Job> jobOptional = jobRepository.findById(id);
         if (jobOptional.isEmpty()) {
             throw new InvalidIdException(id);
@@ -93,11 +100,14 @@ public class ChainService {
     }
 
     private String getFaculty(NetId netId) throws Exception {
-
-        RestTemplate restTemplate = new RestTemplate();
-        FacultyRequestModel requestModel = new FacultyRequestModel(netId.toString());
+        FacultyRequestModel requestModel = new FacultyRequestModel();
+        requestModel.setNetId(netId.toString());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        HttpEntity<FacultyRequestModel> entity = new HttpEntity<>(requestModel, headers);
         ResponseEntity<FacultyResponseModel> responseModelResponseEntity = restTemplate
-                .getForEntity("/faculty", FacultyResponseModel.class, requestModel);
+                .exchange("http://localhost:8081/faculty", HttpMethod.POST, entity, FacultyResponseModel.class);
 
         if (!responseModelResponseEntity.getStatusCode().is2xxSuccessful()) {
             throw new InvalidNetIdException(netId.toString());

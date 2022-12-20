@@ -10,9 +10,9 @@ import org.springframework.security.core.GrantedAuthority;
 public class Role implements GrantedAuthority {
     private static final long serialVersionUID = 4L;      //Default serial version uid
 
-    private final transient Account role;
+    private final transient RoleType role;
 
-    public Role(Account role) {
+    public Role(RoleType role) {
         // validate NetID
         this.role = role;
     }
@@ -22,7 +22,7 @@ public class Role implements GrantedAuthority {
         return role.toString();
     }
 
-    public Account getRole() {
+    public RoleType getRole() {
         return role;
     }
 }

@@ -23,6 +23,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -128,12 +129,14 @@ public class AuthenticationController {
      * @return 200 OK if the registration is successful
      * @throws Exception if a user with this netId already exists
      */
-    @PostMapping("/faculty")
+    @PostMapping ("/faculty")
     public ResponseEntity<FacultyResponseModel> retrieveFaculty(@RequestBody FacultyRequestModel request) throws Exception {
         try {
             NetId netId = new NetId(request.getNetId());
             ArrayList<Faculty> faculty = getFacultyService.getFaculty(netId);
-            return ResponseEntity.ok(new FacultyResponseModel(faculty.toString()));
+            FacultyResponseModel facultyResponseModel = new FacultyResponseModel();
+            facultyResponseModel.setFaculty(faculty.toString());
+            return ResponseEntity.ok(facultyResponseModel);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }

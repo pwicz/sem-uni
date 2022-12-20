@@ -1,6 +1,6 @@
 package commons;
 
-public enum Account {
+public enum RoleType {
     Faculty,
     Admin,
     Employee,

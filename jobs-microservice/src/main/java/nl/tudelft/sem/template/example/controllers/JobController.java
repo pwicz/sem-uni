@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
 
-import commons.Account;
+import commons.RoleType;
 import commons.Job;
 import commons.NetId;
 import commons.UpdateJob;
@@ -79,7 +79,7 @@ public class JobController {
 
             List<Job> jobs = this.jobService.getAllJobs(netId, authNetId, role);
             List<JobResponseModel> responseModels = jobs.stream()
-                    .map(x -> new JobResponseModel(x.getNetId().toString(), x.getStatus())).collect(Collectors.toList());
+                    .map(x -> new JobResponseModel(x.getNetId().toString(), x.getStatus(), x.getJobId())).collect(Collectors.toList());
             return ResponseEntity.ok(responseModels);
         } catch (InvalidNetIdException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, invalidId, e);
@@ -120,7 +120,7 @@ public class JobController {
             NetId authNetId = new NetId(authManager.getNetId());
             List<Job> jobs = this.jobService.collectJobsByNetId(netId, authNetId);
             List<JobResponseModel> responseModels = jobs.stream()
-                .map(x -> new JobResponseModel(x.getNetId().toString(), x.getStatus())).collect(Collectors.toList());
+                .map(x -> new JobResponseModel(x.getNetId().toString(), x.getStatus(), x.getJobId())).collect(Collectors.toList());
 
             return ResponseEntity.ok(responseModels);
         } catch (InvalidNetIdException e) {
@@ -146,12 +146,12 @@ public class JobController {
             int cpuUsage = request.getCpuUsage();
             int gpuUsage = request.getGpuUsage();
             int memoryUsage = request.getMemoryUsage();
-            Account role = (Account) authManager.getRole();
+            RoleType role = (RoleType) authManager.getRole();
             System.out.println(role);
             Job createdJob = this.jobService.createJob(jobNetId, authNetId, resourceType, cpuUsage,
                     gpuUsage, memoryUsage, role);
 
-            JobResponseModel jobResponseModel = new JobResponseModel(createdJob.getNetId().toString(), "pending approval");
+            JobResponseModel jobResponseModel = new JobResponseModel(createdJob.getNetId().toString(), "pending approval", createdJob.getJobId());
 
             return ResponseEntity.ok(jobResponseModel);
         } catch (InvalidNetIdException e) {

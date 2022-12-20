@@ -1,6 +1,6 @@
 package nl.tudelft.sem.template.example.chain;
 
-import commons.Account;
+import commons.RoleType;
 import commons.FacultyRequestModel;
 import commons.FacultyResponseModel;
 import commons.Job;
@@ -13,10 +13,11 @@ public class FacultyValidator extends BaseValidator {
     @Override
     public boolean handle(JobChainModel jobChainModel) throws JobRejectedException {
         Job job = jobChainModel.getJob();
-        Account role = jobChainModel.getAuthRole();
+        RoleType role = jobChainModel.getAuthRole();
         String faculty = jobChainModel.getAuthFaculty();
 
-        FacultyRequestModel requestModel = new FacultyRequestModel(job.getNetId().toString());
+        FacultyRequestModel requestModel = new FacultyRequestModel();
+        requestModel.setNetId(job.getNetId().toString());
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<FacultyResponseModel> response = restTemplate
                 .getForEntity("/faculty", FacultyResponseModel.class, requestModel);
@@ -28,7 +29,7 @@ public class FacultyValidator extends BaseValidator {
         if (responseModel == null) {
             throw new JobRejectedException("INVALID_BODY");
         }
-        if (!responseModel.getFaculty().equals(faculty) || !role.equals(Account.Faculty)) {
+        if (!responseModel.getFaculty().equals(faculty) || !role.equals(RoleType.Faculty)) {
             throw new JobRejectedException("BAD_CREDENTIALS");
         }
         if (jobChainModel.getDirectiveJob().equals(DirectiveJob.Reject)) {

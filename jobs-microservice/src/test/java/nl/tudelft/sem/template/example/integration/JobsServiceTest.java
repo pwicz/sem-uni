@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import commons.Account;
+import commons.RoleType;
 import commons.Job;
 import commons.NetId;
 import java.time.LocalDate;
@@ -103,7 +103,7 @@ public class JobsServiceTest {
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
 
-        jobService.createJob(u1, u1, "memory", 10, 10, 10, Account.Employee);
+        jobService.createJob(u1, u1, "memory", 10, 10, 10, RoleType.Employee);
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(1);
@@ -123,8 +123,8 @@ public class JobsServiceTest {
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
 
-        jobService.createJob(u1, u1, "memory", 10, 10, 10, Account.Employee);
-        jobService.createJob(u2, u2, "cpu", 12, 10, 10, Account.Employee);
+        jobService.createJob(u1, u1, "memory", 10, 10, 10, RoleType.Employee);
+        jobService.createJob(u2, u2, "cpu", 12, 10, 10, RoleType.Employee);
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(2);
@@ -145,7 +145,7 @@ public class JobsServiceTest {
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
 
-        jobService.createJob(u1, u1, "memory", 10, 10, 10, Account.Employee);
+        jobService.createJob(u1, u1, "memory", 10, 10, 10, RoleType.Employee);
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(1);
@@ -163,8 +163,8 @@ public class JobsServiceTest {
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
 
-        jobService.createJob(u1, u1, "memory", 10, 10, 10, Account.Employee);
-        jobService.createJob(u2, u2, "cpu", 12, 10, 10, Account.Employee);
+        jobService.createJob(u1, u1, "memory", 10, 10, 10, RoleType.Employee);
+        jobService.createJob(u2, u2, "cpu", 12, 10, 10, RoleType.Employee);
 
 
 
