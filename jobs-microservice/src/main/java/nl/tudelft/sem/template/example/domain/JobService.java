@@ -1,19 +1,22 @@
 package nl.tudelft.sem.template.example.domain;
 
-
 import commons.Job;
 import commons.NetId;
+import commons.ScheduleJob;
 import commons.Status;
 import commons.exceptions.ResourceBiggerThanCpuException;
 import exceptions.InvalidIdException;
 import exceptions.InvalidNetIdException;
 import exceptions.InvalidResourcesException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * A DDD service for handling jobs.
@@ -22,9 +25,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class JobService {
 
+    private final transient JobRepository jobRepository;
+    private final transient RestTemplate restTemplate;
     private static final String nullValue = "null";
 
+    private String schedulerUrl = "http://localhost:8084";
     private String url = "http://localhost:8083";
+
+    public String getSchedulerUrl() {
+        return schedulerUrl;
+    }
+
+    public void setSchedulerUrl(String schedulerUrl) {
+        this.schedulerUrl = schedulerUrl;
+    }
 
     public String getUrl() {
         return url;
@@ -34,15 +48,37 @@ public class JobService {
         this.url = url;
     }
 
-    private final transient JobRepository jobRepository;
 
     /**
      * Instantiates a new JobService.
      *
+     * @param restTemplate the template to make REST API calls
      * @param jobRepository the job repository
      */
-    public JobService(JobRepository jobRepository) {
+    public JobService(JobRepository jobRepository, RestTemplate restTemplate) {
         this.jobRepository = jobRepository;
+        this.restTemplate = restTemplate;
+    }
+
+    /**
+     * Makes a POST request to the Scheduler, to schedule Jobs.
+     *
+     * @param scheduleJob the Job object to be scheduled
+     * @return the response message of the Scheduler
+     */
+    public String scheduleJob(ScheduleJob scheduleJob) throws InvalidScheduleJobException {
+        if (scheduleJob == null) {
+            throw new InvalidScheduleJobException(scheduleJob);
+        }
+
+        ResponseEntity<String> response = restTemplate
+                .postForEntity(schedulerUrl + "/schedule", scheduleJob, String.class);
+
+        if (response.getBody() == null) {
+            //TODO: why is response null?
+            return "Problem: ResponseEntity was null!";
+        }
+        return response.getBody();
     }
 
     /**
@@ -231,4 +267,5 @@ public class JobService {
         job.setScheduleDate(localDate);
         jobRepository.save(job);
     }
+
 }

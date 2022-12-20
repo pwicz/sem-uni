@@ -6,6 +6,7 @@ import commons.ScheduleJob;
 import commons.UpdateJob;
 import commons.exceptions.ResourceBiggerThanCpuException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -66,9 +67,12 @@ public class ProcessingJobsService {
             throw new ResourceBiggerThanCpuException(resource);
         }
 
-        // start with the first possible day: tomorrow
+        // start with the first possible day: tomorrow or the day after tomorrow
+        int possibleInXdays = 1;
+        //TODO: calculate possible day
+
         List<ScheduledInstance> scheduledInstances =
-                trySchedulingBetween(j, LocalDate.now().plusDays(1), j.getScheduleBefore());
+                trySchedulingBetween(j, LocalDate.now().plusDays(possibleInXdays), j.getScheduleBefore());
 
         if (scheduledInstances.isEmpty()) {
             // inform the Job microservice that the job was not scheduled
@@ -187,5 +191,15 @@ public class ProcessingJobsService {
         return res;
     }
 
-
+    /**
+     * Checks if it is 5 minutes before a new day starts.
+     *
+     * @return true if the current time is between 25:55 and 00:00 (excluding)
+     */
+    private boolean isFiveMinutesBeforeDayStarts() {
+        LocalTime currentTime = LocalTime.now();
+        LocalTime startTime = LocalTime.of(23, 55);
+        LocalTime endTime = LocalTime.of(0, 0);
+        return currentTime.isAfter(startTime) && currentTime.isBefore(endTime);
+    }
 }

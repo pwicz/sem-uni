@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -7,26 +8,35 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import commons.Job;
 import commons.NetId;
+import commons.ScheduleJob;
 import commons.Status;
 import commons.exceptions.ResourceBiggerThanCpuException;
-import exceptions.InvalidResourcesException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.RestTemplate;
 
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class JobServiceTest {
+
+    @MockBean
+    private RestTemplate restTemplate;
 
     @Autowired
     private transient JobRepository jobRepository;
@@ -47,6 +57,32 @@ class JobServiceTest {
     @AfterEach
     void after() {
         jobRepository.deleteAll();
+    }
+
+    @Test
+    void scheduleJobSuccess() throws InvalidScheduleJobException {
+        //Job job1 = new Job(new NetId("ageist"), 10, 10, 10);
+        ScheduleJob job = new ScheduleJob(1L, "EEMCS", LocalDate.now(), 10, 10, 10);
+        Mockito.when(restTemplate.postForEntity("http://localhost:8084/schedule", job, String.class))
+                .thenReturn(new ResponseEntity<String>("processing", HttpStatus.OK));
+        String responseText = jobService.scheduleJob(job);
+        assertThat(responseText).isEqualTo("processing");
+    }
+
+    @Test
+    void scheduleJobProblem() throws InvalidScheduleJobException {
+        ScheduleJob job = new ScheduleJob(1L, "EEMCS", LocalDate.now(), 10, 10, 10);
+        Mockito.when(restTemplate.postForEntity("http://localhost:8084/schedule", job, String.class))
+                .thenReturn(new ResponseEntity<String>((String) null, HttpStatus.OK));
+        String responseText = jobService.scheduleJob(job);
+        assertThat(responseText).isEqualTo("Problem: ResponseEntity was null!");
+    }
+
+    @Test
+    void scheduleJobException() {
+        Assertions.assertThrows(InvalidScheduleJobException.class, () -> {
+            jobService.scheduleJob(null);
+        });
     }
 
     @Test
