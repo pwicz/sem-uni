@@ -199,9 +199,8 @@ public class ProcessingJobsService {
      *
      * @return true if the current time is between 25:55 and 00:00 (excluding)
      */
-    private boolean isFiveMinutesBeforeDayStarts(LocalTime currentTime) {
+    public boolean isFiveMinutesBeforeDayStarts(LocalTime currentTime) {
         LocalTime startTime = LocalTime.of(23, 55);
-        LocalTime endTime = LocalTime.of(0, 0);
-        return currentTime.isAfter(startTime) && currentTime.isBefore(endTime);
+        return currentTime.isAfter(startTime) || currentTime.equals(startTime);
     }
 }
