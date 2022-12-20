@@ -97,7 +97,12 @@ public class JobsServiceTest {
     public void updateJobTest_Ok() throws Exception {
         String url = jobService.getUrl() + "/addJob";
 
-        JobRequestModel model = new JobRequestModel(u1.toString(), "memory", 10, 10, 10);
+        JobRequestModel model = new JobRequestModel();
+        model.setNetId(u1.toString());
+        model.setResourceType("memory");
+        model.setCpuUsage(10);
+        model.setGpuUsage(10);
+        model.setMemoryUsage(10);
 
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));

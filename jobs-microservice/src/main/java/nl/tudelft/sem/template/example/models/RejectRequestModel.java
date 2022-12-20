@@ -4,10 +4,5 @@ import lombok.Data;
 
 @Data
 public class RejectRequestModel {
-
     private Long id;
-
-    public RejectRequestModel(Long id) {
-        this.id = id;
-    }
 }

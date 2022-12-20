@@ -46,8 +46,10 @@ public class ChainController {
             Long id = request.getId();
             System.out.println("here I am");
             Job approvedJob = chainService.approveJob(netId, role, id);
-            JobResponseModel jobResponseModel = new JobResponseModel(approvedJob.getNetId().toString(),
-                    approvedJob.getStatus(), id);
+            JobResponseModel jobResponseModel = new JobResponseModel();
+            jobResponseModel.setId(id);
+            jobResponseModel.setStatus(approvedJob.getStatus());
+            jobResponseModel.setNetId(approvedJob.getNetId().toString());
             return ResponseEntity.ok(jobResponseModel);
         } catch (InvalidIdException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "INVALID_ID", e);
@@ -72,8 +74,10 @@ public class ChainController {
             Long id = request.getId();
 
             Job rejectedJob = chainService.rejectJob(netId, role, id);
-            JobResponseModel jobResponseModel = new JobResponseModel(rejectedJob.getNetId().toString(),
-                    rejectedJob.getStatus(), id);
+            JobResponseModel jobResponseModel = new JobResponseModel();
+            jobResponseModel.setNetId(rejectedJob.getNetId().toString());
+            jobResponseModel.setStatus(rejectedJob.getStatus());
+            jobResponseModel.setId(id);
             return ResponseEntity.ok(jobResponseModel);
         } catch (InvalidIdException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "INVALID_ID", e);

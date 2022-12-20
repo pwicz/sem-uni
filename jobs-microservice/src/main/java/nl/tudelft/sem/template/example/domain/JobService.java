@@ -6,6 +6,7 @@ import commons.RoleType;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import nl.tudelft.sem.template.example.models.JobResponseModel;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
@@ -167,5 +168,21 @@ public class JobService {
         Job job = jobOptional.get();
         job.setStatus(status);
         jobRepository.save(job);
+    }
+
+    /**
+     * Populate a JobResponseModel DTO.
+     *
+     * @param id id of the Job
+     * @param status status of the Job
+     * @param netId netId of the user that created the Job
+     * @return JobResponseModel
+     */
+    public JobResponseModel populateJobResponseModel(long id, String status, String netId) {
+        JobResponseModel jobResponseModel = new JobResponseModel();
+        jobResponseModel.setId(id);
+        jobResponseModel.setStatus(status);
+        jobResponseModel.setNetId(netId);
+        return jobResponseModel;
     }
 }

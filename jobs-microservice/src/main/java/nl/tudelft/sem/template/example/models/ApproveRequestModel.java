@@ -8,10 +8,5 @@ import lombok.Data;
  */
 @Data
 public class ApproveRequestModel {
-
     private long id;
-
-    public long getId() {
-        return id;
-    }
 }

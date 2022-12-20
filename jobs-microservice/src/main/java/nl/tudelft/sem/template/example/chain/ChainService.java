@@ -87,7 +87,11 @@ public class ChainService {
         List<Faculty> faculty = getFaculty(netId);
 
         // Chain Of Responsibility
-        JobChainModel jobChainModel = new JobChainModel(j, role, faculty, directiveJob);
+        JobChainModel jobChainModel = new JobChainModel();
+        jobChainModel.setJob(j);
+        jobChainModel.setAuthRole(role);
+        jobChainModel.setAuthFaculty(faculty);
+        jobChainModel.setDirectiveJob(directiveJob);
         Validator handler = new FacultyValidator();
         Validator handler2 = new FacultyResourceValidator();
         handler.setNext(handler2);

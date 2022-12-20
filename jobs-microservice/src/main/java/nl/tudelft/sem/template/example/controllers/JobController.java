@@ -78,7 +78,7 @@ public class JobController {
 
             List<Job> jobs = this.jobService.getAllJobs(netId, authNetId, role);
             List<JobResponseModel> responseModels = jobs.stream()
-                    .map(x -> new JobResponseModel(x.getNetId().toString(), x.getStatus(), x.getJobId()))
+                    .map(x -> jobService.populateJobResponseModel(x.getJobId(), x.getStatus(), x.getNetId().toString()))
                 .collect(Collectors.toList());
             return ResponseEntity.ok(responseModels);
         } catch (InvalidNetIdException e) {
@@ -100,7 +100,8 @@ public class JobController {
             NetId authNetId = new NetId(authManager.getNetId());
             long jobId = request.getId();
             String status = this.jobService.getJobStatus(authNetId, authNetId, jobId);
-            StatusResponseModel statusResponseModel = new StatusResponseModel(status);
+            StatusResponseModel statusResponseModel = new StatusResponseModel();
+            statusResponseModel.setStatus(status);
             return ResponseEntity.ok(statusResponseModel);
         } catch (InvalidNetIdException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, invalidId, e);
@@ -120,7 +121,7 @@ public class JobController {
             NetId authNetId = new NetId(authManager.getNetId());
             List<Job> jobs = this.jobService.collectJobsByNetId(netId, authNetId);
             List<JobResponseModel> responseModels = jobs.stream()
-                .map(x -> new JobResponseModel(x.getNetId().toString(), x.getStatus(), x.getJobId()))
+                .map(x -> jobService.populateJobResponseModel(x.getJobId(), x.getStatus(), x.getNetId().toString()))
                 .collect(Collectors.toList());
 
             return ResponseEntity.ok(responseModels);
@@ -152,8 +153,8 @@ public class JobController {
             Job createdJob = this.jobService.createJob(jobNetId, authNetId, resourceType, cpuUsage,
                     gpuUsage, memoryUsage, role);
 
-            JobResponseModel jobResponseModel = new JobResponseModel(createdJob.getNetId().toString(),
-                "pending approval", createdJob.getJobId());
+            JobResponseModel jobResponseModel = jobService.populateJobResponseModel(createdJob.getJobId(),
+                "pending", createdJob.getNetId().toString());
 
             return ResponseEntity.ok(jobResponseModel);
         } catch (InvalidNetIdException e) {
