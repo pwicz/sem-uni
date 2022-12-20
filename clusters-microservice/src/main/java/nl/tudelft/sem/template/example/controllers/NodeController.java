@@ -12,6 +12,7 @@ import java.util.List;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.Node;
 import nl.tudelft.sem.template.example.domain.NodeRepository;
+import nl.tudelft.sem.template.example.models.ReleaseFacultyModel;
 import nl.tudelft.sem.template.example.models.ToaRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -129,18 +130,19 @@ public class NodeController {
      */
     @PostMapping(path = {"/addNode"})
     public ResponseEntity<Node> addNode(@RequestBody Node node) throws JsonProcessingException {
-
-        //check for if url looks like url later
         if (node.getName() == null || node.getUrl() == null
                 || node.getFaculty() == null
                 || node.getToken() == null) {
+            System.out.println("Value is null");
             return ResponseEntity.badRequest().build();
         }
         if (node.getCpu() < node.getGpu()
                 || node.getCpu() < node.getMemory()) {
+            System.out.println("CPU resource smaller than GPU or MEMORY");
             return ResponseEntity.badRequest().build();
         }
         if (!node.getName().equals(authManager.getNetId())) {
+            System.out.println("Node doesnt belong to " + node.getName());
             return ResponseEntity.badRequest().build();
         }
         List<String> faculties = getFaculty(authManager.getNetId());
@@ -164,26 +166,27 @@ public class NodeController {
      * Endpoint to release nodes to the free pool.
      * Only facculty accounts are allowed to do this.
      * Only sets the date its released from and till
-     *
-     * @param faculty faculty of the release
-     * @param date    date its released from
-     * @param days    number days of days its released for
      */
-    @PostMapping("/releaseFaculty?faculty={faculty}&date={date}&days={days}")
-    public ResponseEntity<String> releaseFaculty(@PathVariable("faculty") String faculty,
-                                                 @PathVariable("date") LocalDate date, @PathVariable("days") int days)
+    @PostMapping("/releaseFaculty")
+    public ResponseEntity<String> releaseFaculty(@RequestBody ReleaseFacultyModel releaseModel)
                                                 throws JsonProcessingException {
         if (!authManager.getRole().equals("FacultyAccount")) {
+            System.out.println("Account is not facculty account. Current: " + getFaculty(authManager.getNetId()));
             return ResponseEntity.badRequest().build();
         }
-        if (!getFaculty(authManager.getNetId()).contains(faculty)) {
+        if (releaseModel.getDate() == null || releaseModel.getFaculty() == null
+                || releaseModel.getDate().isBefore(LocalDate.now()) || releaseModel.getDays() < 1) {
+            System.out.println("Null or date is before today or length is less than 1");
             return ResponseEntity.badRequest().build();
         }
-        if (date == null || faculty == null || date.isBefore(LocalDate.now()) || days < 1) {
+        if (!getFaculty(authManager.getNetId()).contains(releaseModel.getFaculty())) {
+            System.out.println("Releasing someone elses faculty");
             return ResponseEntity.badRequest().build();
         }
-        repo.updateRelease(faculty, date, days);
-        return ResponseEntity.ok("Released");
+        repo.updateRelease(releaseModel.getFaculty(), releaseModel.getDate(),
+                releaseModel.getDate().plusDays(releaseModel.getDays()));
+        return ResponseEntity.ok("Released from " + releaseModel.getDate()
+                + " to " + releaseModel.getDate().plusDays(releaseModel.getDays()));
     }
 
     private List<String> getFaculty(String netId) throws JsonProcessingException {

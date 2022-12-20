@@ -40,10 +40,10 @@ public class Node implements Comparable {
     @Column(name = "mem", nullable = false)
     private int mem;
 
-    @Column(name = "realeasedStart", nullable = true)
+    @Column(name = "RELEASEDSTART", nullable = true)
     private LocalDate released = null;
 
-    @Column(name = "realeasedEnd", nullable = true)
+    @Column(name = "RELEASEDEND", nullable = true)
     private LocalDate releaseEnd = null;
     @Column(name = "REMOVEDDATE", nullable = true)
     private LocalDate removedDate = null;

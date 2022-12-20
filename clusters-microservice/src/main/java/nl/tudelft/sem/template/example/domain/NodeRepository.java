@@ -64,14 +64,15 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
      * Meant to return in a FacultyResource model.
      *
      * @param  facultyToUpdate faculty of nodes you want to update
-     * @param  newDate date you want to free resouces on
-     * @param  newDays how many days to want to free for
+     * @param  start date you want to free resouces on
+     * @param  end date the free will end for
      */
-    @Modifying
+    @Transactional
+    @Modifying(clearAutomatically = true)
     @Query(
             nativeQuery = true,
-            value = "UPDATE Node SET date = ?2, days = ?3 WHERE faculty = ?1")
-    void updateRelease(String facultyToUpdate, LocalDate newDate, int newDays);
+            value = "UPDATE Node SET RELEASEDSTART = ?2, RELEASEDEND = ?3 WHERE faculty = ?1")
+    void updateRelease(String facultyToUpdate, LocalDate start, LocalDate end);
 
     /**
      * Returns node with the id.
