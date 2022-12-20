@@ -19,7 +19,7 @@ import nl.tudelft.sem.template.authentication.domain.user.Password;
 import nl.tudelft.sem.template.authentication.domain.user.PasswordHashingService;
 import nl.tudelft.sem.template.authentication.domain.user.Role;
 import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
-import nl.tudelft.sem.template.authentication.framework.integration.utils.JsonUtil;
+import nl.tudelft.sem.template.authentication.integration.utils.JsonUtil;
 import nl.tudelft.sem.template.authentication.models.AuthenticationRequestModel;
 import nl.tudelft.sem.template.authentication.models.AuthenticationResponseModel;
 import nl.tudelft.sem.template.authentication.models.RegistrationRequestModel;
@@ -67,16 +67,16 @@ public class UsersTests {
         final NetId testUser = new NetId("SomeUser");
         final Password testPassword = new Password("password123");
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
-        final Role role = new Role("employee");
+        final Role role = new Role("Faculty");
         final Faculty faculty = new Faculty("EEMCS");
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
 
         RegistrationRequestModel model = new RegistrationRequestModel();
         model.setNetId(testUser.toString());
         model.setPassword(testPassword.toString());
-        model.setRole(role.toString());
+        model.setRole(role.getAuthority());
         model.setFaculty(faculty.toString());
-
+        System.out.println(JsonUtil.serialize(model));
         // Act
         ResultActions resultActions = mockMvc.perform(post("/register")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -97,7 +97,7 @@ public class UsersTests {
         final NetId testUser = new NetId("SomeUser");
         final Password newTestPassword = new Password("password456");
         final HashedPassword existingTestPassword = new HashedPassword("password123");
-        final Role role = new Role("employee");
+        final Role role = new Role("Employee");
         final ArrayList<Faculty> faculties = new ArrayList<>();
         faculties.add(new Faculty("EEMCS"));
         //        final Set<Faculty> faculties = new HashSet<>();
@@ -130,7 +130,7 @@ public class UsersTests {
         final NetId testUser = new NetId("SomeUser");
         final Password testPassword = new Password("password123");
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
-        final Role role = new Role("employee");
+        final Role role = new Role("Employee");
         final ArrayList<Faculty> faculties = new ArrayList<>();
         final Faculty faculty = new Faculty("EEMCS");
         faculties.add(faculty);
@@ -226,7 +226,7 @@ public class UsersTests {
         final ArrayList<Faculty> faculties = new ArrayList<>();
         final Faculty faculty = new Faculty("EEMCS");
         faculties.add(faculty);
-        AppUser appUser = new AppUser(new NetId(testUser), testHashedPassword, new Role("employee"), faculties);
+        AppUser appUser = new AppUser(new NetId(testUser), testHashedPassword, new Role("Employee"), faculties);
         userRepository.save(appUser);
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();

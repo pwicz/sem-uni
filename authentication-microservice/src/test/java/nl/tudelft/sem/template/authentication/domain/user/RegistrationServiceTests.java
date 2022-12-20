@@ -7,11 +7,13 @@ import static org.mockito.Mockito.when;
 import commons.Faculty;
 import commons.NetId;
 import java.util.ArrayList;
+import nl.tudelft.sem.template.authentication.profiles.MockPasswordEncoderProfile;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Profile;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -30,14 +32,15 @@ public class RegistrationServiceTests {
     private transient PasswordHashingService mockPasswordEncoder;
 
     @Autowired
-    private transient UserRepository userRepository;
+    private  UserRepository userRepository;
+
 
     @Test
     public void createUser_withValidData_worksCorrectly() throws Exception {
         // Arrange
         final NetId testUser = new NetId("SomeUser");
         final Password testPassword = new Password("password123");
-        final Role role = new Role("employee");
+        final Role role = new Role("Employee");
         final ArrayList<Faculty> faculties = new ArrayList<>();
         faculties.add(new Faculty("EEMCS"));
 
@@ -60,7 +63,7 @@ public class RegistrationServiceTests {
         final NetId testUser = new NetId("SomeUser");
         final HashedPassword existingTestPassword = new HashedPassword("password123");
         final Password newTestPassword = new Password("password456");
-        final Role role = new Role("employee");
+        final Role role = new Role("Employee");
         final ArrayList<Faculty> faculties = new ArrayList<>();
         final Faculty faculty = new Faculty("EEMCS");
         faculties.add(faculty);
@@ -86,7 +89,7 @@ public class RegistrationServiceTests {
         // Arrange
         final NetId testUser = new NetId("SomeUser");
         final Password testPassword = new Password("password123");
-        final Role role = new Role("employee");
+        final Role role = new Role("Employee");
         final ArrayList<Faculty> faculties = new ArrayList<>();
         faculties.add(new Faculty("EEMCS"));
         faculties.add(new Faculty("3ME"));
