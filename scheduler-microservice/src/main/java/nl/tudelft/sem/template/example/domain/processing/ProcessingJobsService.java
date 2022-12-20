@@ -69,7 +69,10 @@ public class ProcessingJobsService {
 
         // start with the first possible day: tomorrow or the day after tomorrow
         int possibleInXdays = 1;
-        //TODO: calculate possible day
+
+        if (isFiveMinutesBeforeDayStarts()) {
+            possibleInXdays = 2;
+        }
 
         List<ScheduledInstance> scheduledInstances =
                 trySchedulingBetween(j, LocalDate.now().plusDays(possibleInXdays), j.getScheduleBefore());

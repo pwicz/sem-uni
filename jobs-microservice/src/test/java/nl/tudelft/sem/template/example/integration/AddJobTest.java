@@ -74,8 +74,8 @@ public class AddJobTest {
 
         u1 = new NetId("User");
         u2 = new NetId("User2");
-        j1 = new Job(u1, 10, 10, 10);
-        j2 = new Job(u2, 12, 10, 10);
+        j1 = new Job(u1, 10, 10, 10, LocalDate.now());
+        j2 = new Job(u2, 12, 10, 10, LocalDate.now());
 
     }
 
@@ -87,7 +87,7 @@ public class AddJobTest {
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
 
-        jobService.createJob(u1, u1, 10, 10, 10, "employee");
+        jobService.createJob(u1, u1, 10, 10, 10, "employee", LocalDate.now());
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
 
@@ -104,8 +104,8 @@ public class AddJobTest {
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
 
-        jobService.createJob(u1, u1, 10, 10, 10, "employee");
-        jobService.createJob(new NetId("Tmp"), new NetId("Tmp"), 12, 10, 10, "employee");
+        jobService.createJob(u1, u1, 10, 10, 10, "employee", LocalDate.now());
+        jobService.createJob(new NetId("Tmp"), new NetId("Tmp"), 12, 10, 10, "employee", LocalDate.now());
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
 
@@ -122,8 +122,8 @@ public class AddJobTest {
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
 
-        jobService.createJob(u1, u1, 10, 10, 10, "employee");
-        jobService.createJob(u2, u2, 12, 10, 10, "employee");
+        jobService.createJob(u1, u1, 10, 10, 10, "employee", LocalDate.now());
+        jobService.createJob(u2, u2, 12, 10, 10, "employee", LocalDate.now());
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
 
@@ -150,7 +150,7 @@ public class AddJobTest {
     @Test
     public void addJobWithGpuGreaterThanCpu_throwsException() {
         Exception e = assertThrows(ResourceBiggerThanCpuException.class, () -> {
-            jobService.createJob(u1, u1, 1, 2, 0, "employee");
+            jobService.createJob(u1, u1, 1, 2, 0, "employee", LocalDate.now());
         });
         assertThat(e.getMessage()).isEqualTo("GPU usage cannot be greater than the CPU usage.");
     }
@@ -158,7 +158,7 @@ public class AddJobTest {
     @Test
     public void addJobWithMemoryGreaterThanCpu_throwsException() {
         Exception e = assertThrows(ResourceBiggerThanCpuException.class, () -> {
-            jobService.createJob(u1, u1, 1, 0, 2, "employee");
+            jobService.createJob(u1, u1, 1, 0, 2, "employee", LocalDate.now());
         });
         assertThat(e.getMessage()).isEqualTo("Memory usage cannot be greater than the CPU usage.");
     }

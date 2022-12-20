@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /**
  * A DDD service for handling jobs.
@@ -93,7 +94,7 @@ public class JobService {
      * @throws Exception if the resources of NetId are invalid
      */
     public Job createJob(NetId netId, NetId authNetId, int cpuUsage, int gpuUsage,
-                         int memoryUsage, String role) throws Exception {
+                         int memoryUsage, String role, LocalDate preferredDate) throws Exception {
         if (cpuUsage < 0 || gpuUsage < 0 || memoryUsage < 0) {
             throw new InvalidResourcesException(Math.min(cpuUsage, Math.min(gpuUsage, memoryUsage)));
         }
@@ -112,7 +113,7 @@ public class JobService {
             throw new BadCredentialsException(role);
         }
 
-        Job newJob = new Job(netId, cpuUsage, gpuUsage, memoryUsage);
+        Job newJob = new Job(netId, cpuUsage, gpuUsage, memoryUsage, preferredDate);
         jobRepository.save(newJob);
 
         return newJob;
@@ -264,7 +265,7 @@ public class JobService {
         }
         Job job = jobOptional.get();
         job.setStatus(status);
-        job.setScheduleDate(localDate);
+        job.setPreferredDate(localDate);
         jobRepository.save(job);
     }
 

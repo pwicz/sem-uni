@@ -148,9 +148,10 @@ public class JobController {
             int gpuUsage = request.getGpuUsage();
             int memoryUsage = request.getMemoryUsage();
             String role = (String) authManager.getRole();
+            LocalDate preferredDate = LocalDate.now();
             System.out.println(role);
             Job createdJob = this.jobService.createJob(jobNetId, authNetId, cpuUsage,
-                    gpuUsage, memoryUsage, role);
+                    gpuUsage, memoryUsage, role, preferredDate);
 
             JobResponseModel jobResponseModel = new JobResponseModel(createdJob.getNetId().toString(), Status.PENDING);
 
