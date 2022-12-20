@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstance;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstanceRepository;
-import nl.tudelft.sem.template.example.domain.processing.RemovingJobsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -44,6 +44,9 @@ class JobServiceTest {
     @Autowired
     private transient JobService jobService;
 
+    //    @MockBean
+    //    private transient ScheduledInstanceRepository scheduledInstanceRepository;
+
     @BeforeEach
     void setUp() {
         Job job1 = new Job(new NetId("mlica"), 10, 10, 10);
@@ -60,7 +63,7 @@ class JobServiceTest {
     }
 
     @Test
-    void scheduleJobSuccess() throws InvalidScheduleJobException {
+    void scheduleJobSuccess() throws InvalidScheduleJobException, ResponseEntityException {
         //Job job1 = new Job(new NetId("ageist"), 10, 10, 10);
         ScheduleJob job = new ScheduleJob(1L, "EEMCS", LocalDate.now(), 10, 10, 10);
         Mockito.when(restTemplate.postForEntity("http://localhost:8084/schedule", job, String.class))
@@ -70,18 +73,50 @@ class JobServiceTest {
     }
 
     @Test
-    void scheduleJobProblem() throws InvalidScheduleJobException {
+    void scheduleJobProblem() throws InvalidScheduleJobException, ResponseEntityException {
         ScheduleJob job = new ScheduleJob(1L, "EEMCS", LocalDate.now(), 10, 10, 10);
         Mockito.when(restTemplate.postForEntity("http://localhost:8084/schedule", job, String.class))
                 .thenReturn(new ResponseEntity<String>((String) null, HttpStatus.OK));
-        String responseText = jobService.scheduleJob(job);
-        assertThat(responseText).isEqualTo("Problem: ResponseEntity was null!");
+        //String responseText = jobService.scheduleJob(job);
+        //assertThat(responseText).isEqualTo("Problem: ResponseEntity was null!");
+        Assertions.assertThrows(ResponseEntityException.class, () -> {
+            jobService.scheduleJob(job);
+        });
     }
 
     @Test
     void scheduleJobException() {
         Assertions.assertThrows(InvalidScheduleJobException.class, () -> {
             jobService.scheduleJob(null);
+        });
+    }
+
+    @Test
+    void unscheduleJobSuccess() throws ResponseEntityException {
+        //        ScheduledInstance scheduledInstance1 =
+        //                new ScheduledInstance(1L, "EEMCS", 10, 10, 10, LocalDate.now());
+        //
+        //        scheduledInstanceRepository.save(scheduledInstance1);
+
+        Mockito.when(restTemplate.postForEntity("http://localhost:8084/unschedule", 1L, String.class))
+                .thenReturn(new ResponseEntity<String>("processing", HttpStatus.OK));
+        String responseText = jobService.unscheduleJob(1L);
+        assertThat(responseText).isEqualTo("processing");
+        //assertThat(scheduledInstanceRepository.existsById(1L)).isFalse();
+    }
+
+    @Test
+    void unscheduleJobProblem() {
+        //        ScheduledInstance scheduledInstance1 =
+        //                new ScheduledInstance(1L, "EEMCS", 10, 10, 10, LocalDate.now());
+        //
+        //        scheduledInstanceRepository.save(scheduledInstance1);
+
+        Mockito.when(restTemplate.postForEntity("http://localhost:8084/unschedule", 1L, String.class))
+                .thenReturn(new ResponseEntity<String>((String) null, HttpStatus.OK));
+
+        Assertions.assertThrows(ResponseEntityException.class, () -> {
+            jobService.unscheduleJob(1L);
         });
     }
 

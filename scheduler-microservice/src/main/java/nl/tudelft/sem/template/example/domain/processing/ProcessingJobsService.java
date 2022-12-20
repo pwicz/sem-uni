@@ -1,7 +1,6 @@
 package nl.tudelft.sem.template.example.domain.processing;
 
 import commons.FacultyResource;
-import commons.NetId;
 import commons.ScheduleJob;
 import commons.UpdateJob;
 import commons.exceptions.ResourceBiggerThanCpuException;
@@ -13,10 +12,8 @@ import java.util.List;
 import lombok.Synchronized;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstance;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstanceRepository;
-import nl.tudelft.sem.template.example.models.FacultyRequestModel;
 import nl.tudelft.sem.template.example.models.FacultyResponseModel;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 

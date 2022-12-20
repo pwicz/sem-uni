@@ -9,7 +9,6 @@ import exceptions.InvalidIdException;
 import exceptions.InvalidNetIdException;
 import exceptions.InvalidResourcesException;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,7 +23,6 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class JobService {
-
     private final transient JobRepository jobRepository;
     private final transient RestTemplate restTemplate;
     private static final String nullValue = "null";
@@ -52,8 +50,8 @@ public class JobService {
     /**
      * Instantiates a new JobService.
      *
-     * @param restTemplate the template to make REST API calls
-     * @param jobRepository the job repository
+     * @param jobRepository               the job repository
+     * @param restTemplate                the template to make REST API calls
      */
     public JobService(JobRepository jobRepository, RestTemplate restTemplate) {
         this.jobRepository = jobRepository;
@@ -66,7 +64,7 @@ public class JobService {
      * @param scheduleJob the Job object to be scheduled
      * @return the response message of the Scheduler
      */
-    public String scheduleJob(ScheduleJob scheduleJob) throws InvalidScheduleJobException {
+    public String scheduleJob(ScheduleJob scheduleJob) throws InvalidScheduleJobException, ResponseEntityException {
         if (scheduleJob == null) {
             throw new InvalidScheduleJobException(scheduleJob);
         }
@@ -75,8 +73,24 @@ public class JobService {
                 .postForEntity(schedulerUrl + "/schedule", scheduleJob, String.class);
 
         if (response.getBody() == null) {
-            //TODO: why is response null?
-            return "Problem: ResponseEntity was null!";
+            throw new ResponseEntityException();
+        }
+        return response.getBody();
+    }
+
+    /**
+     * Makes a POST request to the Scheduler to unschedule Jobs.
+     *
+     * @param jobId - the id of the job to be unscheduled
+     * @return the response message of the scheduler
+     * @throws ResponseEntityException - exception that handles empty response from the Scheduler
+     */
+    public String unscheduleJob(long jobId) throws ResponseEntityException {
+        ResponseEntity<String> response = restTemplate
+                .postForEntity(schedulerUrl + "/unschedule", jobId, String.class);
+
+        if (response.getBody() == null) {
+            throw new ResponseEntityException();
         }
         return response.getBody();
     }

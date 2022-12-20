@@ -2,13 +2,13 @@ package nl.tudelft.sem.template.example.controllers;
 
 import commons.FacultyResource;
 import commons.NetId;
+import commons.Node;
 import commons.Resource;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
-import nl.tudelft.sem.template.example.domain.Node;
 import nl.tudelft.sem.template.example.domain.NodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
