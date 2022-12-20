@@ -1,13 +1,12 @@
 package nl.tudelft.sem.template.example.chain;
 
-import commons.RoleType;
-import commons.FacultyRequestModel;
-import commons.FacultyResponseModel;
-import commons.Job;
-import commons.NetId;
+import commons.*;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import nl.tudelft.sem.template.example.domain.InvalidIdException;
 import nl.tudelft.sem.template.example.domain.InvalidNetIdException;
 import nl.tudelft.sem.template.example.domain.JobRepository;
@@ -78,7 +77,7 @@ public class ChainService {
             throw new InvalidIdException(id);
         }
         Job j = jobOptional.get();
-        String faculty = getFaculty(netId);
+        List<Faculty> faculty = getFaculty(netId);
 
         // Chain Of Responsibility
         JobChainModel jobChainModel = new JobChainModel(j, role, faculty, directiveJob);
@@ -99,7 +98,7 @@ public class ChainService {
         }
     }
 
-    private String getFaculty(NetId netId) throws Exception {
+    private List<Faculty> getFaculty(NetId netId) throws Exception {
         FacultyRequestModel requestModel = new FacultyRequestModel();
         requestModel.setNetId(netId.toString());
         HttpHeaders headers = new HttpHeaders();
@@ -117,6 +116,6 @@ public class ChainService {
         if (response == null) {
             throw new Exception("null body");
         }
-        return response.getFaculty();
+        return response.getFaculty().stream().map(Faculty::new).collect(Collectors.toList());
     }
 }

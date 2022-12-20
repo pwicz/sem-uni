@@ -4,10 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * Model for retrieving the faculty of a user.
  */
 @Data
 public class FacultyResponseModel {
-    private String faculty;
+    private List<String> faculty;
 }

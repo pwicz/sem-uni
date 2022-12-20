@@ -1,35 +1,33 @@
 package nl.tudelft.sem.template.example.chain;
 
+import commons.Faculty;
 import commons.Job;
 import commons.Resource;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import nl.tudelft.sem.template.example.models.JobChainModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-public class FacultyResourceValidator extends BaseValidator {
+public class FacultyResourceValidator extends BaseResourceValidator {
 
     @Override
     public boolean handle(JobChainModel jobChainModel) throws JobRejectedException {
         Job job = jobChainModel.getJob();
-        String faculty = jobChainModel.getAuthFaculty();
+        List<Faculty> faculty = jobChainModel.getAuthFaculty();
         LocalDate localDate = LocalDate.now(); // TODO: this has to be changed to job schedule time
-
-        String requestPath = "/resources?faculty=" + faculty + "&day=" + localDate;
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Resource> resourceResponseEntity = restTemplate
-                .getForEntity(requestPath, Resource.class, "");
-        if (!resourceResponseEntity.getStatusCode().is2xxSuccessful()) {
-            throw new JobRejectedException("BAD_REQUEST");
-        }
-        Resource resource = resourceResponseEntity.getBody();
-        if (resource == null) {
-            throw new JobRejectedException("INVALID_BODY");
-        }
-        if (job.getCpuUsage() > resource.getCpu() || job.getGpuUsage() > resource.getGpu()
-                || job.getMemoryUsage() > resource.getMem()) {
+        List<Resource> resources = getFacultyResources(faculty, localDate);
+        int cpuAvailable = resources.stream().mapToInt(Resource::getCpu).sum();
+        int gpuAvailable = resources.stream().mapToInt(Resource::getGpu).sum();
+        int memoryAvailable = resources.stream().mapToInt(Resource::getMem).sum();
+        if (job.getCpuUsage() > cpuAvailable || job.getGpuUsage() > gpuAvailable
+                || job.getMemoryUsage() > memoryAvailable) {
             return super.checkNext(jobChainModel);
         }
         return true; // end of chain of responsibility
     }
+
+
 }

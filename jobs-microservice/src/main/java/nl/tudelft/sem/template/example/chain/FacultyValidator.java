@@ -1,12 +1,13 @@
 package nl.tudelft.sem.template.example.chain;
 
-import commons.RoleType;
-import commons.FacultyRequestModel;
-import commons.FacultyResponseModel;
-import commons.Job;
+import commons.*;
 import nl.tudelft.sem.template.example.models.JobChainModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class FacultyValidator extends BaseValidator {
 
@@ -14,13 +15,14 @@ public class FacultyValidator extends BaseValidator {
     public boolean handle(JobChainModel jobChainModel) throws JobRejectedException {
         Job job = jobChainModel.getJob();
         RoleType role = jobChainModel.getAuthRole();
-        String faculty = jobChainModel.getAuthFaculty();
+        List<Faculty> faculty = jobChainModel.getAuthFaculty();
 
         FacultyRequestModel requestModel = new FacultyRequestModel();
         requestModel.setNetId(job.getNetId().toString());
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<FacultyResponseModel> response = restTemplate
-                .getForEntity("/faculty", FacultyResponseModel.class, requestModel);
+                .postForEntity("http://localhost:8081/faculty",requestModel, FacultyResponseModel.class);
+
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new JobRejectedException("BAD_REQUEST");
@@ -29,7 +31,11 @@ public class FacultyValidator extends BaseValidator {
         if (responseModel == null) {
             throw new JobRejectedException("INVALID_BODY");
         }
-        if (!responseModel.getFaculty().equals(faculty) || !role.equals(RoleType.Faculty)) {
+
+        List<Faculty> userFaculty = responseModel.getFaculty().stream().map(Faculty::new).collect(Collectors.toList());
+        Set<Faculty> commonFaculties = userFaculty.stream().distinct().filter(faculty::contains).collect(Collectors.toSet());
+
+        if (commonFaculties.isEmpty() || !role.equals(RoleType.Faculty)) {
             throw new JobRejectedException("BAD_CREDENTIALS");
         }
         if (jobChainModel.getDirectiveJob().equals(DirectiveJob.Reject)) {

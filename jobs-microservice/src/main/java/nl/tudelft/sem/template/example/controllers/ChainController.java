@@ -60,11 +60,6 @@ public class ChainController {
         }
     }
 
-    @PostMapping("/t")
-    public void tt(@RequestBody FacultyRequestModel requestModel) {
-        System.out.println(requestModel.getNetId());
-    }
-
     /**
      * Reject the scheduling of a Job by a faculty account using Chain of Responsibility.
      *

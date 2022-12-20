@@ -1,0 +1,50 @@
+package nl.tudelft.sem.template.example.chain;
+
+import commons.Faculty;
+import commons.Resource;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+public abstract class BaseResourceValidator extends BaseValidator {
+
+    /**
+     * Get available resources for a specific faculty from the Clusters microservice.
+     *
+     * @param faculty the faculty to get the resources from
+     * @param localDate the date of the free resources
+     * @return a response with the requested Resource entity.
+     */
+    public List<Resource> getFacultyResources(List<Faculty> faculty, LocalDate localDate) throws JobRejectedException {
+        List<Resource> resources = new ArrayList<>();
+        for (Faculty f : faculty) {
+            resources.add(getFacultyResource(f, localDate));
+        }
+        return resources;
+    }
+
+    /**
+     * Get available resources for a specific faculty from the Clusters microservice.
+     *
+     * @param faculty the faculty to get the resources from
+     * @param localDate the date of the free resources
+     * @return a response with the requested Resource entity.
+     */
+    public Resource getFacultyResource(Faculty faculty, LocalDate localDate) throws JobRejectedException {
+        RestTemplate restTemplate = new RestTemplate();
+        String requestPath = "http://localhost:8085/resources?faculty=" + faculty.toString() + "&day=" + localDate.toString();
+
+        ResponseEntity<Resource> resourceResponseEntity = restTemplate.getForEntity(requestPath, Resource.class, "");
+        if (!resourceResponseEntity.getStatusCode().is2xxSuccessful()) {
+            throw new JobRejectedException("BAD_REQUEST");
+        }
+        Resource resource = resourceResponseEntity.getBody();
+        if (resource == null) {
+            throw new JobRejectedException("INVALID_FACULTY");
+        }
+        return resource;
+    }
+}
