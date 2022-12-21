@@ -32,7 +32,7 @@ class FacultyAttributeConverterTest {
 
     @Test
     void convertToEntityAttribute() {
-        ArrayList<Faculty> actualFaculties = fac.convertToEntityAttribute(dbValue);
+        List<Faculty> actualFaculties = fac.convertToEntityAttribute(dbValue);
         assertThat(actualFaculties).isEqualTo(faculties);
     }
 }

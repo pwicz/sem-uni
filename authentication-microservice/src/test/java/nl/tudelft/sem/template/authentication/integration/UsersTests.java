@@ -13,8 +13,13 @@ import commons.Faculty;
 import commons.NetId;
 import commons.RoleValue;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import nl.tudelft.sem.template.authentication.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.authentication.JwtTokenGenerator;
+import nl.tudelft.sem.template.authentication.controllers.AuthenticationController;
 import nl.tudelft.sem.template.authentication.domain.user.AppUser;
+import nl.tudelft.sem.template.authentication.domain.user.GetFacultyService;
 import nl.tudelft.sem.template.authentication.domain.user.HashedPassword;
 import nl.tudelft.sem.template.authentication.domain.user.Password;
 import nl.tudelft.sem.template.authentication.domain.user.PasswordHashingService;
@@ -23,12 +28,14 @@ import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import nl.tudelft.sem.template.authentication.integration.utils.JsonUtil;
 import nl.tudelft.sem.template.authentication.models.AuthenticationRequestModel;
 import nl.tudelft.sem.template.authentication.models.AuthenticationResponseModel;
+import nl.tudelft.sem.template.authentication.models.ChangeFacultyRequestModel;
 import nl.tudelft.sem.template.authentication.models.RegistrationRequestModel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -49,6 +56,9 @@ import org.springframework.test.web.servlet.ResultActions;
 public class UsersTests {
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private transient AuthManager mockAuthManager;
 
     @Autowired
     private transient PasswordHashingService mockPasswordEncoder;
@@ -175,6 +185,51 @@ public class UsersTests {
         verify(mockAuthenticationManager).authenticate(argThat(authentication ->
                 testUser.toString().equals(authentication.getPrincipal())
                     && testPassword.toString().equals(authentication.getCredentials())));
+    }
+
+    @Test
+    public void changeFacultyTest() throws Exception {
+        // Arrange
+        final NetId testUser = new NetId("SomeUser");
+        final NetId admin = new NetId("Admin");
+        final Password testPassword = new Password("password123");
+        final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
+        final Role role = new Role("EMPLOYEE");
+        final ArrayList<Faculty> faculties = new ArrayList<>();
+        final Faculty faculty = new Faculty("EEMCS");
+        faculties.add(faculty);
+
+        when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
+
+        when(mockAuthenticationManager.authenticate(argThat(authentication ->
+            !testUser.toString().equals(authentication.getPrincipal())
+                || !testPassword.toString().equals(authentication.getCredentials())
+        ))).thenThrow(new UsernameNotFoundException("User not found"));
+
+        final String testToken = "testJWTToken";
+        when(mockAuthManager.getRole()).thenReturn(RoleValue.ADMIN);
+
+        AppUser appUser = new AppUser(testUser, testHashedPassword, role, faculties);
+        userRepository.save(appUser);
+
+        AppUser adminUser = new AppUser(admin, testHashedPassword, new Role(RoleValue.ADMIN), faculties);
+        userRepository.save(adminUser);
+
+        ChangeFacultyRequestModel model = new ChangeFacultyRequestModel();
+        model.setNetId(testUser.toString());
+        model.setFaculty("3ME;CS;CG;");
+
+        GetFacultyService getFacultyService = new GetFacultyService(userRepository);
+        getFacultyService.changeFaculty(testUser, Arrays.asList(
+            new Faculty("3ME"),
+            new Faculty("CS"),
+            new Faculty("CG")));
+
+        AppUser savedUser = userRepository.findByNetId(testUser).orElseThrow();
+
+        assertThat(savedUser.getNetId()).isEqualTo(testUser);
+        List<Faculty> f = Arrays.asList(new Faculty("3ME"), new Faculty("CS"), new Faculty("CG"));
+        assertThat(savedUser.getFaculty()).isEqualTo(f);
     }
 
     @Test

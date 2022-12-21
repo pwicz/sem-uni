@@ -1,6 +1,5 @@
 package commons;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**

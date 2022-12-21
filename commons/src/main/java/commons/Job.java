@@ -42,8 +42,8 @@ public class Job {
     @Column(name = "status", nullable = false)
     private Status status;
 
-    @Column(name = "scheduleDate", nullable = false)
-    private String scheduleDate;
+    @Column(name = "preferredDate", nullable = false)
+    private LocalDate preferredDate;
 
 
     /**
@@ -54,13 +54,13 @@ public class Job {
      * @param gpuUsage the amount of gpu units needed
      * @param memoryUsage the amount of memory units needed
      */
-    public Job(NetId netId, int cpuUsage, int gpuUsage, int memoryUsage) {
+    public Job(NetId netId, int cpuUsage, int gpuUsage, int memoryUsage, LocalDate preferredDate) {
         this.netId = netId;
         this.cpuUsage = cpuUsage;
         this.gpuUsage = gpuUsage;
         this.memoryUsage = memoryUsage;
         this.status = Status.PENDING;
-        this.scheduleDate = "";
+        this.preferredDate = preferredDate;
     }
 
     /**
@@ -72,7 +72,7 @@ public class Job {
         gpuUsage = 0;
         memoryUsage = 0;
         this.status = Status.ACCEPTED;
-        this.scheduleDate = LocalDate.now().plusDays(3).toString();
+        this.preferredDate = LocalDate.now().plusDays(3);
     }
 
 
@@ -129,16 +129,12 @@ public class Job {
      *
      * @return the scheduleDate as a LocalDate Object.
      */
-    public LocalDate getScheduleDate() {
-        if (scheduleDate.equals("")) {
-            return null;
-        }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return LocalDate.parse(scheduleDate, formatter);
+    public LocalDate getPreferredDate() {
+        return preferredDate;
     }
 
-    public void setScheduleDate(LocalDate scheduleDate) {
-        this.scheduleDate = scheduleDate.toString();
+    public void setPreferredDate(LocalDate preferredDate) {
+        this.preferredDate = preferredDate;
     }
 
     @Override
@@ -152,7 +148,7 @@ public class Job {
         Job job = (Job) o;
         return jobId == job.jobId && cpuUsage == job.cpuUsage && gpuUsage == job.gpuUsage && memoryUsage == job.memoryUsage
                 && Objects.equals(netId, job.netId) && Objects.equals(status, job.status)
-                && Objects.equals(scheduleDate, job.scheduleDate);
+                && Objects.equals(preferredDate, job.preferredDate);
     }
 
     @Override

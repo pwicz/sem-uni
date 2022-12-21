@@ -2,7 +2,6 @@ package nl.tudelft.sem.template.authentication.authentication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 import commons.Faculty;
 import commons.NetId;
@@ -65,8 +64,7 @@ public class JwtUserDetailsServiceTests {
         final ArrayList<Faculty> faculties = new ArrayList<>();
         final Faculty faculty = new Faculty("EEMCS");
         faculties.add(faculty);
-        AppUser appUser = new AppUser(testUser, new HashedPassword(testPasswordHash),
-            new Role(RoleValue.EMPLOYEE), faculties);
+        AppUser appUser = new AppUser(testUser, new HashedPassword(testPasswordHash), role, faculties);
         userRepository.save(appUser);
 
         // Act

@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.chain;
 
 import commons.Faculty;
+import commons.FacultyResource;
 import commons.FacultyResourcesRequestModel;
 import commons.Resource;
 import java.time.LocalDate;
@@ -18,8 +19,8 @@ public abstract class BaseResourceValidator extends BaseValidator {
      * @param localDate the date of the free resources
      * @return a response with the requested Resource entity.
      */
-    public List<Resource> getFacultyResources(List<Faculty> faculty, LocalDate localDate) throws JobRejectedException {
-        List<Resource> resources = new ArrayList<>();
+    public List<FacultyResource> getFacultyResources(List<Faculty> faculty, LocalDate localDate) throws JobRejectedException {
+        List<FacultyResource> resources = new ArrayList<>();
         for (Faculty f : faculty) {
             resources.add(getFacultyResource(f, localDate));
         }
@@ -33,18 +34,18 @@ public abstract class BaseResourceValidator extends BaseValidator {
      * @param localDate the date of the free resources
      * @return a response with the requested Resource entity.
      */
-    public Resource getFacultyResource(Faculty faculty, LocalDate localDate) throws JobRejectedException {
+    public FacultyResource getFacultyResource(Faculty faculty, LocalDate localDate) throws JobRejectedException {
         RestTemplate restTemplate = new RestTemplate();
-        String requestPath = "http://localhost:8085/cluster/resourcesFacultyAvailable";
+        String requestPath = "http://localhost:8085/cluster/facultyDayResource";
         FacultyResourcesRequestModel facultyResourcesRequestModel = new FacultyResourcesRequestModel();
         facultyResourcesRequestModel.setFaculty(faculty.toString());
-        facultyResourcesRequestModel.setDate(localDate.toString());
-        ResponseEntity<Resource> resourceResponseEntity = restTemplate
-            .postForEntity(requestPath, facultyResourcesRequestModel, Resource.class);
+        facultyResourcesRequestModel.setDate(localDate);
+        ResponseEntity<FacultyResource> resourceResponseEntity = restTemplate
+            .postForEntity(requestPath, facultyResourcesRequestModel, FacultyResource.class);
         if (!resourceResponseEntity.getStatusCode().is2xxSuccessful()) {
             throw new JobRejectedException("BAD_REQUEST");
         }
-        Resource resource = resourceResponseEntity.getBody();
+        FacultyResource resource = resourceResponseEntity.getBody();
         if (resource == null) {
             throw new JobRejectedException("INVALID_FACULTY");
         }

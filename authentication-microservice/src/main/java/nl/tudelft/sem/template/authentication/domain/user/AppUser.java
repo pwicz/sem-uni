@@ -5,6 +5,7 @@ import commons.FacultyAttributeConverter;
 import commons.NetId;
 import commons.NetIdAttributeConverter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -45,7 +46,7 @@ public class AppUser extends HasEvents {
 
     @Column(name = "faculty", nullable = false)
     @Convert(converter = FacultyAttributeConverter.class)
-    private ArrayList<Faculty> faculty;
+    private List<Faculty> faculty;
 
     /**
      * Create new application user.
@@ -79,7 +80,7 @@ public class AppUser extends HasEvents {
         return role;
     }
 
-    public ArrayList<Faculty> getFaculty() {
+    public List<Faculty> getFaculty() {
         return faculty;
     }
 
@@ -101,5 +102,9 @@ public class AppUser extends HasEvents {
     @Override
     public int hashCode() {
         return Objects.hash(netId);
+    }
+
+    public void setFaculty(List<Faculty> f) {
+        this.faculty = f;
     }
 }

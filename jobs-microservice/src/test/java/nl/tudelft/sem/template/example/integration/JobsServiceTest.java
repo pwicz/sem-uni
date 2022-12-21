@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -76,8 +77,8 @@ public class JobsServiceTest {
 
         u1 = new NetId("User");
         u2 = new NetId("User2");
-        j1 = new Job(u1, 10, 10, 10);
-        j2 = new Job(u2, 12, 10, 10);
+        j1 = new Job(u1, 10, 10, 10, LocalDate.now());
+        j2 = new Job(u2, 12, 10, 10, LocalDate.now());
 
     }
 
@@ -88,19 +89,19 @@ public class JobsServiceTest {
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
-        Job j3 = new Job(u2, 10, 10, 10);
+        Job j3 = new Job(u2, 10, 10, 10, LocalDate.now());
 
         j1.setStatus(Status.ACCEPTED);
         j3.setStatus(Status.ACCEPTED);
-        jobService.createJob(u1, j1, "employee");
-        jobService.createJob(u2, j3, "employee");
+        jobService.createJob(u1, j1, RoleValue.EMPLOYEE);
+        jobService.createJob(u2, j3, RoleValue.EMPLOYEE);
 
-        jobService.createJob(u2, j2, "employee");
+        jobService.createJob(u2, j2, RoleValue.EMPLOYEE);
 
         List<Job> fromDb = jobService.getAllScheduledJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(2);
-        assertTrue(fromDb.get(0).getStatus() == Status.ACCEPTED);
-        assertTrue(fromDb.get(1).getStatus() == Status.ACCEPTED);
+        assertSame(fromDb.get(0).getStatus(), Status.ACCEPTED);
+        assertSame(fromDb.get(1).getStatus(), Status.ACCEPTED);
     }
 
     @Test
@@ -127,18 +128,17 @@ public class JobsServiceTest {
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
-        jobService.createJob(u1, u1,  10, 10, 10, RoleValue.EMPLOYEE);
-
-        jobService.createJob(u1, u1, 10, 10, 10, RoleValue.EMPLOYEE);
+        jobService.createJob(u1, u1,  10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+        jobService.createJob(u1, u1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(2);
-        assertTrue(fromDb.get(0).getStatus() == Status.PENDING);
+        assertSame(fromDb.get(0).getStatus(), Status.PENDING);
 
         jobService.updateJob(fromDb.get(0).getJobId(), Status.ACCEPTED, dateConstant);
         fromDb = jobService.getAllJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(2);
-        assertTrue(fromDb.get(0).getStatus() == Status.ACCEPTED);
+        assertSame(fromDb.get(0).getStatus(), Status.ACCEPTED);
     }
 
     @Test
@@ -148,8 +148,8 @@ public class JobsServiceTest {
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
-        jobService.createJob(u1, u1, 10, 10, 10, RoleValue.EMPLOYEE);
-        jobService.createJob(u2, u2, 12, 10, 10, RoleValue.EMPLOYEE);
+        jobService.createJob(u1, u1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+        jobService.createJob(u2, u2, 12, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(2);
@@ -169,7 +169,7 @@ public class JobsServiceTest {
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
-        jobService.createJob(u1, u1, 10, 10, 10, RoleValue.EMPLOYEE);
+        jobService.createJob(u1, u1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(1);
 
@@ -185,9 +185,8 @@ public class JobsServiceTest {
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
-
-        jobService.createJob(u1, u1, 10, 10, 10, RoleValue.EMPLOYEE);
-        jobService.createJob(u2, u2, 12, 10, 10, RoleValue.EMPLOYEE);
+        jobService.createJob(u1, u1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+        jobService.createJob(u2, u2, 12, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
 
         List<Job> fromDb = jobService.collectJobsByNetId(u1, u1);
         j1.setJobId(fromDb.get(0).getJobId());

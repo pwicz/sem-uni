@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.chain;
 
 import commons.Faculty;
+import commons.FacultyResource;
 import commons.Job;
 import commons.Resource;
 import java.time.LocalDate;
@@ -15,10 +16,10 @@ public class PoolResourceValidator extends BaseResourceValidator {
         List<Faculty> faculty = jobChainModel.getAuthFaculty();
         faculty.add(new Faculty("Pool"));
         LocalDate localDate = LocalDate.now(); // TODO: this has to be changed to job schedule time
-        List<Resource> resources = getFacultyResources(faculty, localDate);
-        int cpuAvailable = resources.stream().mapToInt(Resource::getCpu).sum();
-        int gpuAvailable = resources.stream().mapToInt(Resource::getGpu).sum();
-        int memoryAvailable = resources.stream().mapToInt(Resource::getMem).sum();
+        List<FacultyResource> resources = getFacultyResources(faculty, localDate);
+        int cpuAvailable = resources.stream().mapToInt(FacultyResource::getCpuUsage).sum();
+        int gpuAvailable = resources.stream().mapToInt(FacultyResource::getGpuUsage).sum();
+        int memoryAvailable = resources.stream().mapToInt(FacultyResource::getMemoryUsage).sum();
         if (job.getCpuUsage() > cpuAvailable || job.getGpuUsage() > gpuAvailable || job.getMemoryUsage() > memoryAvailable) {
             return false;
         }

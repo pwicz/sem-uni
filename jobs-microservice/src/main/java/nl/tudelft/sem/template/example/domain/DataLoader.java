@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.example.domain;
 
 import commons.Job;
 import commons.NetId;
+import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -22,8 +23,8 @@ public class DataLoader implements CommandLineRunner {
     }
 
     public void loadUsers() {
-        jobRepository.save(new Job(new NetId("mlica"), 10, 10, 10));
-        jobRepository.save(new Job(new NetId("mlica"), 100, 2000, 1));
-        jobRepository.save(new Job(new NetId("mlica"), 100, 20, 200));
+        jobRepository.save(new Job(new NetId("mlica"), 10, 10, 10, LocalDate.now()));
+        jobRepository.save(new Job(new NetId("mlica"), 100, 2000, 1, LocalDate.now()));
+        jobRepository.save(new Job(new NetId("mlica"), 100, 20, 200, LocalDate.now()));
     }
 }
