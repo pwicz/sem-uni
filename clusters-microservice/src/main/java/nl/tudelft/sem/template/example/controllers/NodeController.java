@@ -1,5 +1,8 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import commons.FacultyRequestModel;
+import commons.FacultyResponseModel;
 import commons.Resource;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,6 +17,9 @@ import nl.tudelft.sem.template.example.domain.ReleaseFacultyDto;
 import nl.tudelft.sem.template.example.domain.UserNotInThisFacultyException;
 import nl.tudelft.sem.template.example.services.ReleaseFacultyService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -108,7 +114,7 @@ public class NodeController {
      * @param node you want to add
      */
     @PostMapping(path = {"/addNode"})
-    public ResponseEntity<Node> addNode(@RequestBody Node node) {
+    public ResponseEntity<Node> addNode(@RequestBody Node node) throws JsonProcessingException {
 
         //check for if url looks like url later
         if (node.getName() == null || node.getUrl() == null
@@ -153,22 +159,29 @@ public class NodeController {
             throw new RuntimeException(e);
         } catch (UserNotInThisFacultyException e) {
             throw new RuntimeException(e);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
 
         return ResponseEntity.ok("Released");
     }
 
-    private List<String> getFaculty(String token) {
-        String usersUrl = "http://localhost:8081"; // authentication microservice
-
-        ResponseEntity<String[]> facultyType = restTemplate.getForEntity(usersUrl
-                + "/faculty", String[].class);
+    private List<String> getFaculty(String netId) throws JsonProcessingException {
+        String usersUrl = "http://localhost:8081/faculty"; //authentication microservice
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        FacultyRequestModel f = new FacultyRequestModel();
+        f.setNetId(netId);
+        HttpEntity<FacultyRequestModel> requestEntity = new HttpEntity<>(f, headers);
+        ResponseEntity<FacultyResponseModel> facultyType = restTemplate.postForEntity(usersUrl,
+                requestEntity, FacultyResponseModel.class);
 
         if (facultyType.getBody() == null) {
             return new ArrayList<>();
         }
 
-        return Arrays.asList(facultyType.getBody());
+        //return Collections.singletonList(facultyType.getBody().getFaculty());
+        return facultyType.getBody().getFaculty();
     }
 
 
@@ -180,7 +193,7 @@ public class NodeController {
      * @param token token of access
      */
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteNode(@PathVariable("id") long id, @RequestBody String token) {
+    public ResponseEntity<String> deleteNode(@PathVariable("id") long id, @RequestBody String token) throws JsonProcessingException {
         //Node n = repo.getNodeById(id).get();
         if (token == null) {
             return ResponseEntity.badRequest().build();

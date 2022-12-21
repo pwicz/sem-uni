@@ -5,12 +5,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import commons.FacultyRequestModel;
+import commons.FacultyResponseModel;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.AccountNotAuthorizedException;
 import nl.tudelft.sem.template.example.domain.FacultyCannotBeReleasedException;
 import nl.tudelft.sem.template.example.domain.NodeRepository;
 import nl.tudelft.sem.template.example.domain.ReleaseFacultyDto;
 import nl.tudelft.sem.template.example.domain.UserNotInThisFacultyException;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -44,7 +51,7 @@ public class ReleaseFacultyService {
      * @throws FacultyCannotBeReleasedException - exception when a faculty cannot be released
      */
     public void releaseFaculty(ReleaseFacultyDto releaseFacultyDto) throws AccountNotAuthorizedException,
-            UserNotInThisFacultyException, FacultyCannotBeReleasedException {
+            UserNotInThisFacultyException, FacultyCannotBeReleasedException, JsonProcessingException {
         if (!authManager.getRole().equals("FacultyAccount")) {
             throw new AccountNotAuthorizedException(authManager);
         }
@@ -78,19 +85,24 @@ public class ReleaseFacultyService {
     /**
      * Returns the list of faculties a user is assigned to.
      *
-     * @param token - the token of the user
+     * @param netId - the netId of the user
      * @return - the list of faculties
      */
-    public List<String> getFaculty(String token) {
-        String usersUrl = "http://localhost:8081"; // authentication microservice
-
-        ResponseEntity<String[]> facultyType = restTemplate.getForEntity(usersUrl
-                + "/faculty", String[].class);
+    private List<String> getFaculty(String netId) throws JsonProcessingException {
+        String usersUrl = "http://localhost:8081/faculty"; //authentication microservice
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        FacultyRequestModel f = new FacultyRequestModel();
+        f.setNetId(netId);
+        HttpEntity<FacultyRequestModel> requestEntity = new HttpEntity<>(f, headers);
+        ResponseEntity<FacultyResponseModel> facultyType = restTemplate.postForEntity(usersUrl,
+                requestEntity, FacultyResponseModel.class);
 
         if (facultyType.getBody() == null) {
             return new ArrayList<>();
         }
 
-        return Arrays.asList(facultyType.getBody());
+        //return Collections.singletonList(facultyType.getBody().getFaculty());
+        return facultyType.getBody().getFaculty();
     }
 }
