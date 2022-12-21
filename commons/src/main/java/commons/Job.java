@@ -42,8 +42,11 @@ public class Job {
     @Column(name = "status", nullable = false)
     private Status status;
 
-    @Column(name = "preferredDate", nullable = false)
+    @Column(name = "preferred_date", nullable = false)
     private LocalDate preferredDate;
+
+    @Column(name = "date_created", nullable = false)
+    private LocalDate dateCreated;
 
 
     /**
@@ -61,6 +64,7 @@ public class Job {
         this.memoryUsage = memoryUsage;
         this.status = Status.PENDING;
         this.preferredDate = preferredDate;
+        this.dateCreated = LocalDate.now();
     }
 
     /**
@@ -124,17 +128,16 @@ public class Job {
         this.status = status;
     }
 
-    /**
-     * getter and converter of scheduleDate, from String to LocalDate.
-     *
-     * @return the scheduleDate as a LocalDate Object.
-     */
     public LocalDate getPreferredDate() {
         return preferredDate;
     }
 
     public void setPreferredDate(LocalDate preferredDate) {
         this.preferredDate = preferredDate;
+    }
+
+    public LocalDate getDateCreated() {
+        return dateCreated;
     }
 
     @Override

@@ -79,7 +79,7 @@ public class SchedulerController {
     }
 
     /**
-     * The api GET endpoint to get all Jobs in the database.
+     * The api GET endpoint to get all faculty resources from the next day.
      *
      * @return list of Jobs to be scheduled
      */
