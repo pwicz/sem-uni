@@ -11,5 +11,4 @@ public class RegistrationRequestModel {
     private String password;
     private String role;
     private String faculty;
-    //private Set<Faculty> faculties;
 }

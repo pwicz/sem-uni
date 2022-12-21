@@ -39,9 +39,9 @@ public class Node implements Comparable {
     @Column(name = "gpu", nullable = false)
     private int gpu;
 
-    @JsonProperty("memoryUsage")
-    @Column(name = "memoryUsage", nullable = false)
-    private int memoryUsage;
+    @JsonProperty("memory")
+    @Column(name = "memory", nullable = false)
+    private int memory;
 
     @Column(name = "RELEASEDSTART", nullable = true)
     private LocalDate released = null;
@@ -68,7 +68,7 @@ public class Node implements Comparable {
         this.token = token;
         this.cpu = cpuUsage;
         this.gpu  = gpuUsage;
-        this.memoryUsage = memUsage;
+        this.memory = memUsage;
     }
 
     public long getId() {
@@ -114,7 +114,7 @@ public class Node implements Comparable {
     //Json is very stupid. i have to ignore annotate this due to json parsing
     @JsonIgnore
     public int getMemory() {
-        return memoryUsage;
+        return memory;
     }
 
     public LocalDate getReleased() {
