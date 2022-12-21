@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import commons.Job;
 import commons.NetId;
 import commons.Status;
-import commons.exceptions.ResourceBiggerThanCpuException;
+import exceptions.ResourceBiggerThanCpuException;
 import exceptions.InvalidNetIdException;
 import java.time.LocalDate;
 import java.util.List;
