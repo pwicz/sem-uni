@@ -3,8 +3,8 @@ package nl.tudelft.sem.template.example.models;
 import java.time.LocalDate;
 
 public class FacultyResourceModel {
-    private String faculty;
-    private LocalDate date;
+    private transient String faculty;
+    private transient LocalDate date;
 
     /**
      * Constructs RequestModel for cluster.
