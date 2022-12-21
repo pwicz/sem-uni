@@ -14,6 +14,7 @@ import java.util.List;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.Node;
 import nl.tudelft.sem.template.example.domain.NodeRepository;
+import nl.tudelft.sem.template.example.models.FacultyResourceModel;
 import nl.tudelft.sem.template.example.models.ReleaseFacultyModel;
 import nl.tudelft.sem.template.example.models.ToaRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,15 +71,8 @@ public class NodeController {
         }
 
         List<Node> facultyNodes = repo.getNodesByFaculty(faculty).get();
-        int cpu = 0;
-        int gpu = 0;
-        int mem = 0;
-        for (Node n : facultyNodes) {
-            cpu += n.getCpu();
-            gpu += n.getGpu();
-            mem += n.getMemory();
-        }
-        Resource r = new Resource(cpu, gpu, mem);
+
+        Resource r = resourceCreator(facultyNodes);
         return ResponseEntity.ok(r);
     }
 
@@ -115,6 +109,7 @@ public class NodeController {
             System.out.println("user has null role");
             return ResponseEntity.badRequest().build();
         }
+        System.out.println(repo.getTest1().toString());
         return ResponseEntity.ok(authManager.getRole().toString());
     }
 
@@ -125,11 +120,18 @@ public class NodeController {
      * @param facDay request model for faculty and date
      */
     @GetMapping(path = {"/facultyDayResource"})
-    public ResponseEntity<FacultyResource> getFacultyAvailableResourcesForDay(@RequestBody FacultyResource facDay) {
-        Resource r = repo.getFreeResources(facDay.getFaculty(), facDay.getDate()).get();
-        FacultyResource facultyResources = new FacultyResource(facDay.getFaculty(), facDay.getDate(),
-                r.getCpu(), r.getGpu(), r.getMem());
-        return ResponseEntity.ok(facultyResources);
+    public ResponseEntity<FacultyResource> getFacultyAvailableResourcesForDay(@RequestBody FacultyResourceModel facDay) {
+        if (repo.getAvailableResources(facDay.getFaculty(), facDay.getDate()).isPresent()) {
+            List<Node> n = repo.getAvailableResources(facDay.getFaculty(), facDay.getDate()).get();
+            Resource r = resourceCreator(n);
+            FacultyResource facultyResources = new FacultyResource(facDay.getFaculty(),
+                    facDay.getDate(), r.getCpu(), r.getGpu(), r.getMem());
+            return ResponseEntity.ok(facultyResources);
+        } else {
+            return ResponseEntity.ok(new FacultyResource(facDay.getFaculty(),
+                    facDay.getDate(), 0, 0, 0));
+        }
+
     }
 
     /**
@@ -260,18 +262,16 @@ public class NodeController {
         }
     }
 
-    //the addresses need to match up in the future
     private String notifySchedulerOfResourceChange(LocalDate date, String faculty) {
-        String schedulerUrl = "http://localhost:8084"; //scheduler microservice
-
-        ResponseEntity<String> facultyType = restTemplate.getForEntity(schedulerUrl
-                + "/receiveResourceChange?faculty=" + faculty + "&day=" + date.toString(), String.class);
-
-        if (facultyType.getBody() == null) {
-            return "Failed Notify";
-        }
-
-        return facultyType.getBody();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        List<Node> n = repo.getAvailableResources(faculty, date).get();
+        Resource r = resourceCreator(n);
+        FacultyResource f = new FacultyResource(faculty, date, r.getCpu(), r.getGpu(), r.getMem());
+        HttpEntity<FacultyResource> requestEntity = new HttpEntity<>(f, headers);
+        ResponseEntity<String> updated = restTemplate.postForEntity("http://localhost:8084/resource-update",
+            requestEntity, String.class);
+        return updated.getBody();
     }
 
     /**
@@ -295,12 +295,25 @@ public class NodeController {
         List<FacultyResource> res = new ArrayList<>();
 
         for (String f : faculties) {
-            Resource r = repo.getFreeResources(f, LocalDate.now().plusDays(1)).get();
+            List<Node> n = repo.getAvailableResources(f, LocalDate.now().plusDays(1)).get();
+            Resource r = resourceCreator(n);
             FacultyResource facultyResources = new FacultyResource(f, LocalDate.now().plusDays(1),
                     r.getCpu(), r.getGpu(), r.getMem());
             res.add(facultyResources);
         }
         return ResponseEntity.ok(res);
+    }
+
+    private Resource resourceCreator(List<Node> nodes) {
+        int cpu = 0;
+        int gpu = 0;
+        int mem = 0;
+        for (Node n : nodes) {
+            cpu += n.getCpu();
+            gpu += n.getGpu();
+            mem += n.getMemory();
+        }
+        return new Resource(cpu, gpu, mem);
     }
 }
 

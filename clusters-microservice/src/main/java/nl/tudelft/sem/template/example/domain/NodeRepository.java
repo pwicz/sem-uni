@@ -15,6 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface NodeRepository extends JpaRepository<Node, Long> {
+    @Query(
+            nativeQuery = true,
+            value = "SELECT new Resource(SUM(CPU), SUM(GPU), SUM(MEMORY)) FROM Node ")
+    Optional<Resource> getTest1();
 
     /**
      * Deletes the Node from the database.
@@ -56,10 +60,10 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
      */
     @Query(
             nativeQuery = true,
-            value = "SELECT faculty, ?2, SUM(CPU), SUM(GPU), SUM(MEM) FROM Node "
+            value = "SELECT SUM(CPU), SUM(GPU), SUM(MEMORY) FROM Node "
                     + "WHERE faculty = ?1 OR "
-                    + "(released <= ?2 AND releaseEND >= ?2)")
-    Optional<Resource> getFreeResources(String faculty, LocalDate date);
+                    + "(releasedStart <= ?2 AND releasedEND >= ?2)")
+    Optional<Resource> getFreeResources1(String faculty, LocalDate date);
 
     /**
      * Gets all nodes that belong to faculty.
@@ -71,10 +75,25 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
      */
     @Query(
             nativeQuery = true,
-            value = "SELECT SUM(CPU), SUM(GPU), SUM(MEMORYUSAGE) FROM Node "
+            value = "SELECT * FROM Node "
+                    + "WHERE removedDate IS NULL AND (faculty = ?1 OR "
+                    + "(releasedStart <= ?2 AND releasedEND >= ?2))")
+    Optional<List<Node>> getAvailableResources(String faculty, LocalDate date);
+
+    /**
+     * Gets all nodes that belong to faculty.
+     * And Nodes that are released.
+     *
+     * @param  faculty you want to get the nodes of
+     * @param date date you want to get the resources on
+     * @return Optional of a Node list from the specific faculty
+     */
+    @Query(
+            nativeQuery = true,
+            value = "SELECT SUM(CPU), SUM(GPU), SUM(MEMORY) FROM Node "
                     + "WHERE faculty = ?1 OR "
                     + "(released <= ?2 AND releaseEND >= ?2)")
-    Optional<Resource> getReservedResources(String faculty, String date);
+    Optional<FacultyResource> getReservedResources(String faculty, String date);
 
     /**
      * Meant to return in a FacultyResource model.
