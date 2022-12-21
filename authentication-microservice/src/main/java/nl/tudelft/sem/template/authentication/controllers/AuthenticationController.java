@@ -20,8 +20,6 @@ import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import nl.tudelft.sem.template.authentication.models.AuthenticationRequestModel;
 import nl.tudelft.sem.template.authentication.models.AuthenticationResponseModel;
 import nl.tudelft.sem.template.authentication.models.ChangeFacultyRequestModel;
-import nl.tudelft.sem.template.authentication.models.FacultyRequestModel;
-import nl.tudelft.sem.template.authentication.models.FacultyResponseModel;
 import nl.tudelft.sem.template.authentication.models.RegistrationRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -146,7 +144,7 @@ public class AuthenticationController {
     public ResponseEntity<FacultyResponseModel> retrieveFaculty(@RequestBody FacultyRequestModel request) throws Exception {
         try {
             NetId netId = new NetId(request.getNetId());
-            ArrayList<Faculty> faculty = getFacultyService.getFaculty(netId);
+            List<Faculty> faculty = getFacultyService.getFaculty(netId);
             FacultyResponseModel facultyResponseModel = new FacultyResponseModel();
             facultyResponseModel.setFaculty(faculty.stream().map(Faculty::toString).collect(Collectors.toList()));
             return ResponseEntity.ok(facultyResponseModel);
@@ -164,8 +162,7 @@ public class AuthenticationController {
     @GetMapping("/faculties")
     public ResponseEntity<FacultyResponseModel> retrieveFaculties() {
         List<String> all = getFacultyService.getFaculties();
-
-        return ResponseEntity.ok(new FacultyResponseModel(all.toString()));
+        return ResponseEntity.ok(new FacultyResponseModel(all));
     }
 
     /**
