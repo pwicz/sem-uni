@@ -1,4 +1,4 @@
-package commons;
+package nl.tudelft.sem.template.example.domain;
 
 import java.time.LocalDate;
 import javax.persistence.Column;
