@@ -8,6 +8,7 @@ import commons.ScheduleJob;
 import commons.UpdateJob;
 import commons.exceptions.ResourceBiggerThanCpuException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstance;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstanceRepository;
@@ -221,6 +222,26 @@ public class ProcessingJobsServiceTest {
         Exception e = assertThrows(ResourceBiggerThanCpuException.class,
                 () -> processingJobsService.scheduleJob(scheduleJob));
         assertThat(e.getMessage()).isEqualTo("Memory usage cannot be greater than the CPU usage.");
+    }
+
+    @Test
+    public void isFiveMinutesTrue() {
+        assertThat(processingJobsService.isFiveMinutesBeforeDayStarts(LocalTime.of(23, 55))).isTrue();
+    }
+
+    @Test
+    public void isFiveMinutesTrue2() {
+        assertThat(processingJobsService.isFiveMinutesBeforeDayStarts(LocalTime.of(23, 59))).isTrue();
+    }
+
+    @Test
+    public void isFiveMinutesFalse() {
+        assertThat(processingJobsService.isFiveMinutesBeforeDayStarts(LocalTime.of(23, 55).minusMinutes(1))).isFalse();
+    }
+
+    @Test
+    public void isFiveMinutesFalse2() {
+        assertThat(processingJobsService.isFiveMinutesBeforeDayStarts(LocalTime.of(23, 59).plusMinutes(1))).isFalse();
     }
 
     private boolean compareScheduledInstances(ScheduledInstance a, ScheduledInstance b) {
