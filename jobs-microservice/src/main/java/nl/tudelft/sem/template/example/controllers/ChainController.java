@@ -43,9 +43,7 @@ public class ChainController {
         try {
             NetId netId = new NetId(authManager.getNetId());
             RoleValue role = (RoleValue) authManager.getRole();
-            System.out.println(request.getId());
             Long id = request.getId();
-            System.out.println("here I am");
             Job approvedJob = chainService.approveJob(netId, role, id);
             JobResponseModel jobResponseModel = new JobResponseModel();
             jobResponseModel.setId(id);

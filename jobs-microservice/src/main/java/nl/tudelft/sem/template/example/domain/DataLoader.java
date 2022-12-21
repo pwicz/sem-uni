@@ -22,8 +22,8 @@ public class DataLoader implements CommandLineRunner {
     }
 
     public void loadUsers() {
-        /*jobRepository.save(new Job(new NetId("mlica"), "CPU", 10, 10, 10));
-        jobRepository.save(new Job(new NetId("mlica"), "GPU", 100, 2000, 1));
-        jobRepository.save(new Job(new NetId("mlica"), "MEMORY", 100, 20, 200));*/
+        jobRepository.save(new Job(new NetId("mlica"), 10, 10, 10));
+        jobRepository.save(new Job(new NetId("mlica"), 100, 2000, 1));
+        jobRepository.save(new Job(new NetId("mlica"), 100, 20, 200));
     }
 }

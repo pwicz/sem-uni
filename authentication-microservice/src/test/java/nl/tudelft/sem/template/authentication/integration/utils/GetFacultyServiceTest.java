@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import commons.Faculty;
 import commons.NetId;
+import commons.RoleValue;
 import java.util.ArrayList;
 import nl.tudelft.sem.template.authentication.domain.user.AppUser;
 import nl.tudelft.sem.template.authentication.domain.user.GetFacultyService;
@@ -39,7 +40,7 @@ public class GetFacultyServiceTest {
     public void userNotInRepoTest() throws NetIdDoesNotExistException {
         final NetId testUser = new NetId("SomeUser");
         final HashedPassword existingTestPassword = new HashedPassword("password123");
-        final Role role = new Role("employee");
+        final Role role = new Role(RoleValue.EMPLOYEE);
         final ArrayList<Faculty> faculties = new ArrayList<>();
         faculties.add(new Faculty("EEMCS"));
         faculties.add(new Faculty("3ME"));
@@ -59,7 +60,7 @@ public class GetFacultyServiceTest {
     public void userInRepoTest() throws NetIdDoesNotExistException {
         final NetId testUser = new NetId("SomeUser");
         final HashedPassword existingTestPassword = new HashedPassword("password123");
-        final Role role = new Role("employee");
+        final Role role = new Role(RoleValue.EMPLOYEE);
         final ArrayList<Faculty> faculties = new ArrayList<>();
         faculties.add(new Faculty("EEMCS"));
         faculties.add(new Faculty("3ME"));

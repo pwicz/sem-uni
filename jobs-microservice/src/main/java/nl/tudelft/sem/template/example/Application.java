@@ -26,13 +26,4 @@ public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
-
-    @Bean
-    InitializingBean initDatabase() {
-        return () -> {
-            jobRepository.save(new Job(new NetId("mlica"),  10, 10, 10));
-            jobRepository.save(new Job(new NetId("mlica"), 100, 2000, 1));
-            jobRepository.save(new Job(new NetId("mlica"), 100, 20, 200));
-        };
-    }
 }

@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.chain;
 
 import commons.Faculty;
+import commons.FacultyResourcesRequestModel;
 import commons.Resource;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -34,9 +35,12 @@ public abstract class BaseResourceValidator extends BaseValidator {
      */
     public Resource getFacultyResource(Faculty faculty, LocalDate localDate) throws JobRejectedException {
         RestTemplate restTemplate = new RestTemplate();
-        String requestPath = "http://localhost:8085/resources?faculty=" + faculty.toString() + "&day=" + localDate.toString();
-
-        ResponseEntity<Resource> resourceResponseEntity = restTemplate.getForEntity(requestPath, Resource.class, "");
+        String requestPath = "http://localhost:8085/cluster/resourcesFacultyAvailable";
+        FacultyResourcesRequestModel facultyResourcesRequestModel = new FacultyResourcesRequestModel();
+        facultyResourcesRequestModel.setFaculty(faculty.toString());
+        facultyResourcesRequestModel.setDate(localDate.toString());
+        ResponseEntity<Resource> resourceResponseEntity = restTemplate
+            .postForEntity(requestPath, facultyResourcesRequestModel, Resource.class);
         if (!resourceResponseEntity.getStatusCode().is2xxSuccessful()) {
             throw new JobRejectedException("BAD_REQUEST");
         }

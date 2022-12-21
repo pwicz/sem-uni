@@ -33,7 +33,7 @@ public class DataLoader implements CommandLineRunner {
     }
 
     public void loadUsers() {
-        /*userRepository.save(new AppUser(new NetId("mlica"),
+        userRepository.save(new AppUser(new NetId("mlica"),
             passwordHashingService.hash(new Password("passwd")),
             new Role(RoleValue.FAC_ACC), new ArrayList<>(List.of(new Faculty("EEMCS")))));
         userRepository.save(new AppUser(new NetId("test"),
@@ -41,6 +41,6 @@ public class DataLoader implements CommandLineRunner {
             new Role(RoleValue.FAC_ACC), new ArrayList<>(List.of(new Faculty("EEMCS")))));
         userRepository.save(new AppUser(new NetId("test1"),
             passwordHashingService.hash(new Password("passwd")),
-            new Role(RoleValue.FAC_ACC), new ArrayList<>(List.of(new Faculty("EEMCS")))));*/
+            new Role(RoleValue.FAC_ACC), new ArrayList<>(List.of(new Faculty("EEMCS")))));
     }
 }

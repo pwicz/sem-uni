@@ -28,7 +28,6 @@ public class JwtTokenGeneratorTests {
     private final String secret = "testSecret123";
 
     private String netId = "andy";
-    private String role = "Employee";
     private UserDetails user;
 
     /**

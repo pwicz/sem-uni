@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import commons.FacultyResource;
+import commons.FacultyResourcesRequestModel;
 import commons.NetId;
 import commons.Node;
 import commons.Resource;
@@ -90,10 +91,10 @@ public class NodeController {
      * @param faculty faculty you want resources from
      * @param date day you want to see the free resources for
      */
-    @GetMapping(path = {"/resources?faculty={faculty}&day={date}"})
-    public ResponseEntity<FacultyResource> getFacultyAvailableResourcesForDay(@PathVariable("faculty") String faculty,
-                                                                              @PathVariable("date") String date) {
-        FacultyResource facultyResources = repo.getFreeResources(faculty, date).get();
+    @PostMapping(path = {"/resourcesFacultyAvailable"})
+    public ResponseEntity<FacultyResource> getFacultyAvailableResourcesForDay(@RequestBody
+                                                                                  FacultyResourcesRequestModel request) {
+        FacultyResource facultyResources = repo.getFreeResources(request.getFaculty(), request.getDate()).get();
         return ResponseEntity.ok(facultyResources);
     }
 
