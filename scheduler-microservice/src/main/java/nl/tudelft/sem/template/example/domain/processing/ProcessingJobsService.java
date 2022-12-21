@@ -67,7 +67,10 @@ public class ProcessingJobsService {
 
         // start with the first possible day: tomorrow or the day after tomorrow
         int possibleInXdays = 1;
-        //TODO: calculate possible day
+
+        if (isFiveMinutesBeforeDayStarts(LocalTime.now())) {
+            possibleInXdays = 2;
+        }
 
         List<ScheduledInstance> scheduledInstances =
                 trySchedulingBetween(j, LocalDate.now().plusDays(possibleInXdays), j.getScheduleBefore());
@@ -194,10 +197,8 @@ public class ProcessingJobsService {
      *
      * @return true if the current time is between 25:55 and 00:00 (excluding)
      */
-    private boolean isFiveMinutesBeforeDayStarts() {
-        LocalTime currentTime = LocalTime.now();
+    public boolean isFiveMinutesBeforeDayStarts(LocalTime currentTime) {
         LocalTime startTime = LocalTime.of(23, 55);
-        LocalTime endTime = LocalTime.of(0, 0);
-        return currentTime.isAfter(startTime) && currentTime.isBefore(endTime);
+        return currentTime.isAfter(startTime) || currentTime.equals(startTime);
     }
 }

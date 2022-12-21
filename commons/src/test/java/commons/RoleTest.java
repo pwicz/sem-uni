@@ -15,6 +15,6 @@ public class RoleTest {
 
     @Test
     public void getAuthorityTest() {
-        assertThat(role.getAuthority()).isEqualTo("EMPLOYEE");
+        assertThat(role.getAuthority()).isEqualTo(RoleValue.EMPLOYEE.toString());
     }
 }
