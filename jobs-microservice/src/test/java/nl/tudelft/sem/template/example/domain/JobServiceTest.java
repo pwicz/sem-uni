@@ -10,7 +10,7 @@ import commons.Job;
 import commons.NetId;
 import commons.ScheduleJob;
 import commons.Status;
-import commons.exceptions.ResourceBiggerThanCpuException;
+import exceptions.ResourceBiggerThanCpuException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;

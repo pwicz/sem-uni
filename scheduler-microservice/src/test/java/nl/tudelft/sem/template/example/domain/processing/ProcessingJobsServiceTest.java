@@ -4,10 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import commons.FacultyResource;
-import commons.NetId;
 import commons.ScheduleJob;
 import commons.UpdateJob;
-import commons.exceptions.ResourceBiggerThanCpuException;
+import exceptions.ResourceBiggerThanCpuException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
