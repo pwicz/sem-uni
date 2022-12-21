@@ -260,10 +260,10 @@ public class NodeController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         List<Node> n;
-        if (repo.getAvailableResources(faculty, date).isPresent()){
+        if (repo.getAvailableResources(faculty, date).isPresent()) {
             n = repo.getAvailableResources(faculty, date).get();
         } else {
-            n = null;
+            n = List.of(new Node("", "", "", "", 0, 0, 0));
         }
         Resource r = resourceCreator(n);
         FacultyResource f = new FacultyResource(faculty, date, r.getCpu(), r.getGpu(), r.getMem());
@@ -305,7 +305,7 @@ public class NodeController {
 
     private Resource resourceCreator(List<Node> nodes) {
         if (nodes == null) {
-            return new Resource(0,0,0);
+            return new Resource(0, 0, 0);
         }
         int cpu = 0;
         int gpu = 0;
