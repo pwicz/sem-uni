@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.authentication.models;
 
+import commons.Faculty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,5 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FacultyResponseModel {
-    private String faculty;
+    private String faculties;
+
 }

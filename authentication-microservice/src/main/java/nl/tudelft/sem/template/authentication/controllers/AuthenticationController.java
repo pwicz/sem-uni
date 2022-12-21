@@ -5,9 +5,13 @@ import commons.FacultyRequestModel;
 import commons.FacultyResponseModel;
 import commons.NetId;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
+import nl.tudelft.sem.template.authentication.authentication.AuthManager;
 import nl.tudelft.sem.template.authentication.authentication.JwtTokenGenerator;
 import nl.tudelft.sem.template.authentication.authentication.JwtUserDetailsService;
+import nl.tudelft.sem.template.authentication.domain.user.AppUser;
 import nl.tudelft.sem.template.authentication.domain.user.GetFacultyService;
 import nl.tudelft.sem.template.authentication.domain.user.Password;
 import nl.tudelft.sem.template.authentication.domain.user.RegistrationService;
@@ -15,6 +19,9 @@ import nl.tudelft.sem.template.authentication.domain.user.Role;
 import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import nl.tudelft.sem.template.authentication.models.AuthenticationRequestModel;
 import nl.tudelft.sem.template.authentication.models.AuthenticationResponseModel;
+import nl.tudelft.sem.template.authentication.models.ChangeFacultyRequestModel;
+import nl.tudelft.sem.template.authentication.models.FacultyRequestModel;
+import nl.tudelft.sem.template.authentication.models.FacultyResponseModel;
 import nl.tudelft.sem.template.authentication.models.RegistrationRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +31,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,6 +41,9 @@ import org.springframework.web.server.ResponseStatusException;
 public class AuthenticationController {
 
     private final transient AuthenticationManager authenticationManager;
+
+    private final transient AuthManager authManager;
+
 
     private final transient JwtTokenGenerator jwtTokenGenerator;
 
@@ -60,13 +71,15 @@ public class AuthenticationController {
                                     JwtUserDetailsService jwtUserDetailsService,
                                     RegistrationService registrationService,
                                     GetFacultyService getFacultyService,
-                                    UserRepository userRepository) {
+                                    UserRepository userRepository,
+                                    AuthManager authManager) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenGenerator = jwtTokenGenerator;
         this.jwtUserDetailsService = jwtUserDetailsService;
         this.registrationService = registrationService;
         this.getFacultyService = getFacultyService;
         this.userRepository = userRepository;
+        this.authManager = authManager;
     }
 
     /**
@@ -137,6 +150,43 @@ public class AuthenticationController {
             FacultyResponseModel facultyResponseModel = new FacultyResponseModel();
             facultyResponseModel.setFaculty(faculty.stream().map(Faculty::toString).collect(Collectors.toList()));
             return ResponseEntity.ok(facultyResponseModel);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    /**
+     * Endpoint for retrieving the faculty of a user.
+     *
+     * @return 200 OK if the registration is successful
+     * @throws Exception if a user with this netid already exists
+     */
+    @GetMapping("/faculties")
+    public ResponseEntity<FacultyResponseModel> retrieveFaculties() {
+        List<String> all = getFacultyService.getFaculties();
+
+        return ResponseEntity.ok(new FacultyResponseModel(all.toString()));
+    }
+
+    /**
+     * Endpoint for retrieving the faculty of a user.
+     *
+     * @param request The registration model
+     * @return 200 OK if the registration is successful
+     * @throws Exception if a user with this netid already exists
+     */
+    @PostMapping("/changeFaculty")
+    public ResponseEntity changeFaculty(@RequestBody ChangeFacultyRequestModel request) throws Exception {
+
+        if (!authManager.getRole().equals("admin")) {
+            return ResponseEntity.badRequest().body("Unauthorized");
+        }
+        try {
+            NetId netId = new NetId(request.getNetId());
+            List<Faculty> faculties =
+                Arrays.stream(request.getFaculty().split(";")).map(s -> new Faculty(s)).collect(Collectors.toList());
+            getFacultyService.changeFaculty(netId, faculties);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }

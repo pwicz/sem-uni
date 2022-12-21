@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import commons.Faculty;
 import commons.FacultyRequestModel;
 import commons.FacultyResponseModel;
+import commons.FacultyResource;
+import commons.NetId;
 import commons.Resource;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 
+
 @RestController
 @RequestMapping("/cluster")
 public class NodeController {
@@ -36,6 +39,8 @@ public class NodeController {
     private final transient NodeRepository repo;
     private final transient AuthManager authManager;
     private final transient JasonUtil jsonUtil;
+
+    private final transient String usersUrl = "http://localhost:8081";
 
     /**
      * Constructor for the NodeController.
@@ -121,9 +126,9 @@ public class NodeController {
      * @param date    day you want to see the free resources for
      */
     @GetMapping(path = {"/resources?faculty={faculty}&day={date}"})
-    public ResponseEntity<Resource> getFacultyAvailableResourcesForDay(@PathVariable("faculty") String faculty,
-                                                                       @PathVariable("date") String date) {
-        Resource facultyResources = repo.getFreeResources(faculty, date).get();
+    public ResponseEntity<FacultyResource> getFacultyAvailableResourcesForDay(@PathVariable("faculty") String faculty,
+                                                                              @PathVariable("date") String date) {
+        FacultyResource facultyResources = repo.getFreeResources(faculty, date).get();
         return ResponseEntity.ok(facultyResources);
     }
 
@@ -136,7 +141,6 @@ public class NodeController {
      */
     @PostMapping(path = {"/addNode"})
     public ResponseEntity<Node> addNode(@RequestBody Node node) throws JsonProcessingException {
-        //System.out.println(node.getMemory()); //mem=0
         if (node.getName() == null || node.getUrl() == null
                 || node.getFaculty() == null
                 || node.getToken() == null) {
@@ -214,7 +218,6 @@ public class NodeController {
         return facultyType.getBody().getFaculty();
     }
 
-
     /**
      * Marks Node with the id as deleted.
      * Later when databse clearner is called it will actually delete from database.
@@ -271,6 +274,31 @@ public class NodeController {
         return facultyType.getBody();
     }
 
+    /**
+     * The api GET endpoint to get all Jobs in the database.
+     *
+     * @return list of Jobs to be scheduled
+     */
+    @GetMapping(path = "/resourcesNextDay")
+    public ResponseEntity<List<FacultyResource>> getResourcesNextDay() throws Exception {
+        String role = authManager.getRole().toString();
+        if (!role.equals("employee") || !role.equals("admin") || !role.equals("fac_acc")) {
+            return ResponseEntity.badRequest().build();
+        }
 
+        ResponseEntity<String[]> facultyType = restTemplate.postForEntity(usersUrl
+                + "/faculty", new NetId(authManager.getNetId()), String[].class);
+
+        List<String> faculties = Arrays.asList(facultyType.getBody());
+        System.out.println(faculties);
+
+        List<FacultyResource> res = new ArrayList<>();
+
+        for (String f : faculties) {
+            FacultyResource facultyResources = repo.getFreeResources(f, LocalDate.now().plusDays(1).toString()).get();
+            res.add(facultyResources);
+        }
+        return ResponseEntity.ok(res);
+    }
 }
 

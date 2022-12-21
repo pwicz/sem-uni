@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.domain;
 
 
+import commons.FacultyResource;
 import commons.Resource;
 import java.time.LocalDate;
 import java.util.List;
@@ -58,7 +59,7 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
             value = "SELECT SUM(CPU), SUM(GPU), SUM(MEMORYUSAGE) FROM Node "
                     + "WHERE faculty = ?1 OR "
                     + "(released <= ?2 AND releaseEND >= ?2)")
-    Optional<Resource> getFreeResources(String faculty, String date);
+    Optional<Resource> getReservedResources(String faculty, String date);
 
     /**
      * Meant to return in a FacultyResource model.
@@ -97,4 +98,6 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
             value = "UPDATE NODE SET removedDate = ?2 WHERE id = ?1")
     void setAsDeleted(long id, LocalDate date);
 
+
+    
 }

@@ -26,7 +26,7 @@ public class JwtTokenVerifier {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
-    public String getRole(String token) {
+    public String getRoleFromToken(String token) {
         Claims claims = getClaims(token);
         return claims.get("role").toString();
     }

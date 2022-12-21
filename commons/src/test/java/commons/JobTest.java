@@ -14,9 +14,9 @@ class JobTest {
     Job job1;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         netId1 = new NetId("ageist");
-        job1 = new Job(netId1, 3, 2, 1);
+        job1 = new Job(netId1, 3, 2, 1, LocalDate.now());
     }
 
     @Test
@@ -77,30 +77,30 @@ class JobTest {
 
     @Test
     void getScheduleDate() {
-        assertThat(job1.getScheduleDate()).isNull();
+        assertThat(job1.getPreferredDate()).isEqualTo(LocalDate.now());
     }
 
     @Test
     void setScheduleDate() {
-        job1.setScheduleDate(LocalDate.now().plusDays(3));
-        assertThat(job1.getScheduleDate()).isEqualTo(LocalDate.now().plusDays(3));
+        job1.setPreferredDate(LocalDate.now().plusDays(3));
+        assertThat(job1.getPreferredDate()).isEqualTo(LocalDate.now().plusDays(3));
     }
 
     @Test
     void equals() {
-        Job job2 = new Job(netId1, 3, 2, 1);
+        Job job2 = new Job(netId1, 3, 2, 1, LocalDate.now());
         assertTrue(job1.equals(job2));
 
-        job2.setScheduleDate(LocalDate.now());
+        job2.setPreferredDate(LocalDate.now().plusDays(3));
         assertFalse(job1.equals(job2));
 
         Job job3 = null;
         assertFalse(job1.equals(job3));
 
-        Job job4 = new Job(netId1, 2, 2, 1);
+        Job job4 = new Job(netId1, 2, 2, 1, LocalDate.now());
         assertFalse(job1.equals(job4));
 
-        Job job5 = new Job(netId1, 1, 2, 1);
+        Job job5 = new Job(netId1, 1, 2, 1, LocalDate.now());
         assertFalse(job1.equals(job4));
 
         Job job6 = job1;

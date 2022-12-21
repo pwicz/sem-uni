@@ -23,8 +23,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class RegistrationServiceTests {
 
+
     @Autowired
     private transient RegistrationService registrationService;
+
+    @Autowired
+    private transient GetFacultyService facultyService;
 
     @Autowired
     private transient PasswordHashingService mockPasswordEncoder;
@@ -105,5 +109,4 @@ public class RegistrationServiceTests {
         assertThat(savedUser.getPassword()).isEqualTo(testHashedPassword);
         assertThat(savedUser.getFaculty()).isEqualTo(faculties);
     }
-
 }
