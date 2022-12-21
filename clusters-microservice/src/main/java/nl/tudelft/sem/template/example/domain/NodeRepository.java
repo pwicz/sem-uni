@@ -56,6 +56,21 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
      */
     @Query(
             nativeQuery = true,
+            value = "SELECT faculty, ?2, SUM(CPU), SUM(GPU), SUM(MEM) FROM Node "
+                    + "WHERE faculty = ?1 OR "
+                    + "(released <= ?2 AND releaseEND >= ?2)")
+    Optional<FacultyResource> getFreeResources(String faculty, String date);
+
+    /**
+     * Gets all nodes that belong to faculty.
+     * And Nodes that are released.
+     *
+     * @param  faculty you want to get the nodes of
+     * @param date date you want to get the resources on
+     * @return Optional of a Node list from the specific faculty
+     */
+    @Query(
+            nativeQuery = true,
             value = "SELECT SUM(CPU), SUM(GPU), SUM(MEMORYUSAGE) FROM Node "
                     + "WHERE faculty = ?1 OR "
                     + "(released <= ?2 AND releaseEND >= ?2)")
