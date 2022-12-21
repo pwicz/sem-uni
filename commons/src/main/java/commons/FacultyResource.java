@@ -8,6 +8,7 @@ public class FacultyResource {
     private final int cpuUsage;
     private final int gpuUsage;
     private final int memoryUsage;
+
     /**
      * Constructs ScheduleJob object.
      *

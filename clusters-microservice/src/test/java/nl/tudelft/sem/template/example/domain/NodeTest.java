@@ -1,4 +1,4 @@
-package commons;
+package nl.tudelft.sem.template.example.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

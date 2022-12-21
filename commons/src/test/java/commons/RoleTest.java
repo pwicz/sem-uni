@@ -10,11 +10,11 @@ public class RoleTest {
 
     @BeforeEach
     void init() {
-        role = new Role("employee");
+        role = new Role(RoleValue.EMPLOYEE);
     }
 
     @Test
     public void getAuthorityTest() {
-        assertThat(role.getAuthority()).isEqualTo("employee");
+        assertThat(role.getAuthority()).isEqualTo("EMPLOYEE");
     }
 }
