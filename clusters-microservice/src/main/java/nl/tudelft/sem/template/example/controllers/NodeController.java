@@ -224,40 +224,34 @@ public class NodeController {
      * Marks Node with the id as deleted.
      * Later when databse clearner is called it will actually delete from database.
      *
-     * @param id    id of the node you want to delete
      * @param token token of access
      */
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteNode(@PathVariable("id") long id,
-                                             @RequestBody ToaRequestModel token) throws JsonProcessingException {
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteNode(@RequestBody ToaRequestModel token) throws JsonProcessingException {
         //Node n = repo.getNodeById(id).get();
         if (token == null) {
             return ResponseEntity.badRequest().build();
         }
-        if (repo.findById(id).isEmpty()) {
+        if (repo.getNodeByToken(token.getToken()).isEmpty()) {
             System.out.println("Repo is empty");
             return ResponseEntity.badRequest().build();
         }
         List<String> faculties = getFaculty(authManager.getNetId());
-        if (!checkIfAdmin() && !faculties.contains(repo.findById(id).get().getFaculty())) {
+        if (!checkIfAdmin() && !faculties.contains(
+                repo.getNodeByToken(token.getToken()).get().getFaculty())) {
             System.out.println("Facultys dont match");
             return ResponseEntity.badRequest().build();
         }
-        if (!token.getToken().equals(repo.findById(id).get().getToken())) {
-            System.out.println("Tokens of access dont match");
-            System.out.println("Token provided: " + token);
-            System.out.println("Token required: " + repo.findById(id).get().getToken());
-            return ResponseEntity.badRequest().build();
-        }
-        repo.setAsDeleted(id, LocalDate.now().plusDays(1L));
-        Node n = repo.getNodeById(id).get();
-        System.out.println(n.getRemovedDate());
+
+        repo.setAsDeleted(token.getToken(), LocalDate.now().plusDays(1L));
+        Node n = repo.getNodeByToken(token.getToken()).get();
+
         //n.setRemovedDate(LocalDate.now().plusDays(1L)); // not updated forever in the database
         try {
             String response = notifySchedulerOfResourceChange(LocalDate.now().plusDays(1L), n.getFaculty());
             return ResponseEntity.ok(response + " " + n.getRemovedDate());
         } catch (Exception e) {
-            System.out.println(e.getStackTrace());
+            e.printStackTrace();
             return ResponseEntity.ok("Failed Notify: " + n.getRemovedDate().toString() + " updated remove date");
         }
     }
@@ -265,7 +259,12 @@ public class NodeController {
     private String notifySchedulerOfResourceChange(LocalDate date, String faculty) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        List<Node> n = repo.getAvailableResources(faculty, date).get();
+        List<Node> n;
+        if (repo.getAvailableResources(faculty, date).isPresent()){
+            n = repo.getAvailableResources(faculty, date).get();
+        } else {
+            n = null;
+        }
         Resource r = resourceCreator(n);
         FacultyResource f = new FacultyResource(faculty, date, r.getCpu(), r.getGpu(), r.getMem());
         HttpEntity<FacultyResource> requestEntity = new HttpEntity<>(f, headers);
@@ -305,6 +304,9 @@ public class NodeController {
     }
 
     private Resource resourceCreator(List<Node> nodes) {
+        if (nodes == null) {
+            return new Resource(0,0,0);
+        }
         int cpu = 0;
         int gpu = 0;
         int mem = 0;

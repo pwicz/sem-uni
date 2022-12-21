@@ -122,16 +122,24 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
     /**
      * flag the ndoe with id as deleted from tomorrow.
      *
-     * @param  id of the node to delete
+     * @param  token of access todelete it
      * @param  date deleted from tomorrow
      */
     @Transactional
     @Modifying(clearAutomatically = true)
     @Query(
             nativeQuery = true,
-            value = "UPDATE NODE SET removedDate = ?2 WHERE id = ?1")
-    void setAsDeleted(long id, LocalDate date);
+            value = "UPDATE NODE SET removedDate = ?2 WHERE token = ?1")
+    void setAsDeleted(String token, LocalDate date);
 
-
+    /**
+     * Returns node with the token.
+     *
+     * @param toke of the node you want to return
+     */
+    @Query(
+            nativeQuery = true,
+            value = "SELECT * FROM NODE WHERE token = ?1 LIMIT 1")
+    Optional<Node> getNodeByToken(String toke);
     
 }
