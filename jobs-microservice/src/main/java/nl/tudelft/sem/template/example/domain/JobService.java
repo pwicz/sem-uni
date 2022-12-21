@@ -9,7 +9,6 @@ import exceptions.InvalidIdException;
 import exceptions.InvalidNetIdException;
 import exceptions.InvalidResourcesException;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /**
  * A DDD service for handling jobs.
@@ -234,7 +232,7 @@ public class JobService {
      * @param netId NetId of the request creator
      * @param authNetId NetId of the authenticated user
      * @param role role of the request creator
-     * @return a list of Job entities containing all jobs in the database.
+     * @return a list of Job entities containing all "ACCEPTED" jobs in the database.
      * @throws Exception if the NetId is invalid or the creator of the request does not have the admin role.
      */
     public List<Job> getAllScheduledJobs(NetId netId, NetId authNetId, String role) throws Exception {
@@ -248,6 +246,20 @@ public class JobService {
             throw new BadCredentialsException(role);
         }
         return jobRepository.findAll().stream().filter(j -> j.getStatus() == Status.ACCEPTED).collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieve all the Job entities from the database.
+     *
+     * @param role role of the method user
+     * @return a list of Job entities containing all "PENDING" jobs in the database.
+     * @throws Exception if the method user does not have the "approvalSystem" role.
+     */
+    public List<Job> getAllPendingJobs(String role) throws Exception {
+        if (!role.equals("approvalSystem")) {
+            throw new BadCredentialsException(role);
+        }
+        return jobRepository.findAll().stream().filter(j -> j.getStatus() == Status.PENDING).collect(Collectors.toList());
     }
 
     /**
