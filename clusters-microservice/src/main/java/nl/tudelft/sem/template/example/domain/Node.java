@@ -1,5 +1,7 @@
 package nl.tudelft.sem.template.example.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,15 +11,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.NoArgsConstructor;
 
-
 @Entity
-@Table(name = "nodes")
+@Table(name = "NODE")
 @NoArgsConstructor
 public class Node implements Comparable {
+
     @Id
-    @Column(name = "id", nullable = false, unique = true)
+    //@Column(name = "NODEID", nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.AUTO)
-    //@Getter @Setter, does this work still?
     private long id;
 
     @Column(name = "netId", nullable = false)
@@ -38,15 +39,16 @@ public class Node implements Comparable {
     @Column(name = "gpu", nullable = false)
     private int gpu;
 
-    @Column(name = "mem", nullable = false)
-    private int mem;
+    @JsonProperty("memoryUsage")
+    @Column(name = "memoryUsage", nullable = false)
+    private int memoryUsage;
 
-    @Column(name = "realeasedStart", nullable = true)
+    @Column(name = "RELEASEDSTART", nullable = true)
     private LocalDate released = null;
 
-    @Column(name = "realeasedEnd", nullable = true)
+    @Column(name = "RELEASEDEND", nullable = true)
     private LocalDate releaseEnd = null;
-    @Column(name = "removedDate", nullable = true)
+    @Column(name = "REMOVEDDATE", nullable = true)
     private LocalDate removedDate = null;
 
     /**
@@ -66,7 +68,7 @@ public class Node implements Comparable {
         this.token = token;
         this.cpu = cpuUsage;
         this.gpu  = gpuUsage;
-        this.mem = memUsage;
+        this.memoryUsage = memUsage;
     }
 
     public long getId() {
@@ -89,6 +91,10 @@ public class Node implements Comparable {
         return faculty;
     }
 
+    public void setFaculty(String faculty) {
+        this.faculty = faculty;
+    }
+
     public String getToken() {
         return token;
     }
@@ -105,8 +111,10 @@ public class Node implements Comparable {
         return gpu;
     }
 
+    //Json is very stupid. i have to ignore annotate this due to json parsing
+    @JsonIgnore
     public int getMemory() {
-        return mem;
+        return memoryUsage;
     }
 
     public LocalDate getReleased() {

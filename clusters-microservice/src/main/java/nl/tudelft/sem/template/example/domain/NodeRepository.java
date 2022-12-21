@@ -7,8 +7,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Repository
@@ -30,7 +32,7 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
      */
     @Query(
             nativeQuery = true,
-            value = "SELECT * FROM Node SORT BY faculty")
+            value = "SELECT * FROM Node ORDER BY faculty")
     Optional<List<Node>> getAllNodes();
 
     /**
@@ -57,11 +59,19 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
             value = "SELECT faculty, ?2, SUM(CPU), SUM(GPU), SUM(MEM) FROM Node "
                     + "WHERE faculty = ?1 OR "
                     + "(released <= ?2 AND releaseEND >= ?2)")
-    Optional<FacultyResource> getFreeResources(String faculty, String date);
+    Optional<Resource> getFreeResources(String faculty, LocalDate date);
 
+    /**
+     * Gets all nodes that belong to faculty.
+     * And Nodes that are released.
+     *
+     * @param  faculty you want to get the nodes of
+     * @param date date you want to get the resources on
+     * @return Optional of a Node list from the specific faculty
+     */
     @Query(
             nativeQuery = true,
-            value = "SELECT SUM(CPU), SUM(GPU), SUM(MEM) FROM Node "
+            value = "SELECT SUM(CPU), SUM(GPU), SUM(MEMORYUSAGE) FROM Node "
                     + "WHERE faculty = ?1 OR "
                     + "(released <= ?2 AND releaseEND >= ?2)")
     Optional<Resource> getReservedResources(String faculty, String date);
@@ -70,13 +80,15 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
      * Meant to return in a FacultyResource model.
      *
      * @param  facultyToUpdate faculty of nodes you want to update
-     * @param  newDate date you want to free resouces on
-     * @param  newDays how many days to want to free for
+     * @param  start date you want to free resouces on
+     * @param  end date the free will end for
      */
+    @Transactional
+    @Modifying(clearAutomatically = true)
     @Query(
             nativeQuery = true,
-            value = "UPDATE Node SET date = ?2, days = ?3 WHERE faculty = ?1")
-    void updateRelease(String facultyToUpdate, LocalDate newDate, int newDays);
+            value = "UPDATE Node SET RELEASEDSTART = ?2, RELEASEDEND = ?3 WHERE faculty = ?1")
+    void updateRelease(String facultyToUpdate, LocalDate start, LocalDate end);
 
     /**
      * Returns node with the id.
@@ -85,7 +97,7 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
      */
     @Query(
             nativeQuery = true,
-            value = "SELECT Node WHERE id = ?1")
+            value = "SELECT * FROM NODE WHERE id = ?1")
     Optional<Node> getNodeById(long id);
 
     /**
@@ -94,9 +106,13 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
      * @param  id of the node to delete
      * @param  date deleted from tomorrow
      */
+    @Transactional
+    @Modifying(clearAutomatically = true)
     @Query(
             nativeQuery = true,
-            value = "UPDATE Node SET removedDate = ?2 WHERE id = ?1")
+            value = "UPDATE NODE SET removedDate = ?2 WHERE id = ?1")
     void setAsDeleted(long id, LocalDate date);
 
+
+    
 }
