@@ -7,6 +7,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -37,8 +40,9 @@ public class Node implements Comparable {
     @Column(name = "gpu", nullable = false)
     private int gpu;
 
-    @Column(name = "mem", nullable = false)
-    private int mem;
+    @JsonProperty("memoryUsage")
+    @Column(name = "memoryUsage", nullable = false)
+    private int memoryUsage;
 
     @Column(name = "RELEASEDSTART", nullable = true)
     private LocalDate released = null;
@@ -65,7 +69,7 @@ public class Node implements Comparable {
         this.token = token;
         this.cpu = cpuUsage;
         this.gpu  = gpuUsage;
-        this.mem = memUsage;
+        this.memoryUsage = memUsage;
     }
 
     public long getId() {
@@ -108,8 +112,10 @@ public class Node implements Comparable {
         return gpu;
     }
 
+    //Json is very stupid. i have to ignore annotate this due to json parsing
+    @JsonIgnore
     public int getMemory() {
-        return mem;
+        return memoryUsage;
     }
 
     public LocalDate getReleased() {

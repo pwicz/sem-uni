@@ -55,7 +55,7 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
      */
     @Query(
             nativeQuery = true,
-            value = "SELECT SUM(CPU), SUM(GPU), SUM(MEM) FROM Node "
+            value = "SELECT SUM(CPU), SUM(GPU), SUM(MEMORYUSAGE) FROM Node "
                     + "WHERE faculty = ?1 OR "
                     + "(released <= ?2 AND releaseEND >= ?2)")
     Optional<Resource> getFreeResources(String faculty, String date);

@@ -59,7 +59,7 @@ public class NodeController {
      */
     @GetMapping(path = {"/resources/{faculty}"})
     public ResponseEntity<Resource> getTotalResourcesForFaculty(@PathVariable("faculty") String faculty) {
-        if (!authManager.getRole().toString().equals("admin")) {
+        if (!checkIfAdmin()) {
             System.out.println("Needed Admin permissions.Current: " + authManager.getRole().toString());
             return ResponseEntity.badRequest().build();
         }
@@ -77,12 +77,18 @@ public class NodeController {
         return ResponseEntity.ok(r);
     }
 
+    //This is onyl needed to fix PMD
+    private boolean checkIfAdmin() {
+        boolean value = authManager.getRole().toString().equals("admin");
+        return value;
+    }
+
     /**
      * Returns all the nodes available for admin to see.
      */
     @GetMapping(path = {"/resources"})
     public ResponseEntity<List<Node>> getAllNodes(@RequestBody String token) {
-        if (!authManager.getRole().toString().equals("admin")) {
+        if (!checkIfAdmin()) {
             System.out.println("Admin privileges required. Current Role:" + authManager.getRole().toString());
             return ResponseEntity.badRequest().build();
         }
@@ -130,7 +136,7 @@ public class NodeController {
      */
     @PostMapping(path = {"/addNode"})
     public ResponseEntity<Node> addNode(@RequestBody Node node) throws JsonProcessingException {
-        System.out.println(node.getMemory());
+        //System.out.println(node.getMemory()); //mem=0
         if (node.getName() == null || node.getUrl() == null
                 || node.getFaculty() == null
                 || node.getToken() == null) {
@@ -150,7 +156,7 @@ public class NodeController {
         if (!(faculties.contains(node.getFaculty()))) {
             System.out.println("failed after get faculty");
             return ResponseEntity.badRequest().build();
-        } else if (authManager.getRole().toString().equals("admin")) {
+        } else if (checkIfAdmin()) {
             node.setFaculty("FreePool");
         }
         try {
@@ -228,7 +234,7 @@ public class NodeController {
             return ResponseEntity.badRequest().build();
         }
         List<String> faculties = getFaculty(authManager.getNetId());
-        if (!authManager.getRole().equals("admin") && !faculties.contains(repo.findById(id).get().getFaculty())) {
+        if (!checkIfAdmin() && !faculties.contains(repo.findById(id).get().getFaculty())) {
             System.out.println("Facultys dont match");
             return ResponseEntity.badRequest().build();
         }

@@ -9,14 +9,34 @@ import org.springframework.stereotype.Component;
 @Component
 public class JasonUtil {
 
-    //change hwo the programlooks
-    public String serialize(Object object) throws JsonProcessingException{
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.writeValueAsString(object);
+    /**
+     * Converts the object into a jason string.
+     *
+     * @param object object to convert to json
+     */
+    public String jsonSerializer(Object object) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.writeValueAsString(object);
+        } catch (Exception e) {
+            System.out.println(e.getStackTrace());
+            return null;
+        }
     }
 
-    public <T> T deserialise(String jsonString, Class<T> type) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(jsonString, type);
+    /**
+     * Converts the object into a jason string.
+     *
+     * @param jsonString json to convert into object
+     * @param type the class you want to convert to
+     */
+    public <T> T jsonDeserialiser(String jsonString, Class<T> type) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.readValue(jsonString, type);
+        } catch (Exception e) {
+            System.out.println(e.getStackTrace());
+            return null;
+        }
     }
 }
