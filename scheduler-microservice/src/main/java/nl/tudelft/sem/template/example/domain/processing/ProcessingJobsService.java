@@ -1,9 +1,10 @@
 package nl.tudelft.sem.template.example.domain.processing;
 
 import commons.FacultyResource;
+import commons.FacultyTotalResource;
 import commons.ScheduleJob;
 import commons.UpdateJob;
-import commons.exceptions.ResourceBiggerThanCpuException;
+import exceptions.ResourceBiggerThanCpuException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -158,14 +159,14 @@ public class ProcessingJobsService {
 
      * @return  List of faculty resource
      */
-    public List<FacultyResource> getAllResourcesNextDay() {
+    public List<FacultyTotalResource> getAllResourcesNextDay() {
 
         ResponseEntity<FacultyResponseModel> fac = restTemplate.getForEntity(authUrl
                 + "/faculties", FacultyResponseModel.class);
 
         List<String> faculties = Arrays.asList(fac.getBody().getFaculties());
 
-        List<FacultyResource> res = new ArrayList<>();
+        List<FacultyTotalResource> res = new ArrayList<>();
 
         LocalDate tmrw = LocalDate.now().plusDays(1);
         for (String f : faculties) {
@@ -182,9 +183,9 @@ public class ProcessingJobsService {
             int gpuUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getGpuUsage).sum();
             int memoryUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getMemoryUsage).sum();
 
-            FacultyResource fr = new FacultyResource(f, tmrw,
+            FacultyTotalResource fr = new FacultyTotalResource(f, tmrw,
                     cpuUsageSum, gpuUsageSum, memoryUsageSum,
-                    total.getCpuUsageTotal(), total.getGpuUsageTotal(), total.getMemoryUsageTotal()
+                    total.getCpuUsage(), total.getGpuUsage(), total.getMemoryUsage()
             );
             res.add(fr);
         }

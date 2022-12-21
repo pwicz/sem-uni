@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
 import commons.FacultyResource;
+import commons.FacultyTotalResource;
 import commons.Job;
 import commons.ScheduleJob;
 import java.util.List;
@@ -84,12 +85,12 @@ public class SchedulerController {
      * @return list of Jobs to be scheduled
      */
     @GetMapping(path = "/allResourcesNextDay")
-    public ResponseEntity<List<FacultyResource>> getAllResourcesNextDay() throws Exception {
+    public ResponseEntity<List<FacultyTotalResource>> getAllResourcesNextDay() throws Exception {
         String role = authManager.getRole().toString();
         if (!role.equals("admin")) {
             return ResponseEntity.badRequest().build();
         }
-        List<FacultyResource> res = processingJobsService.getAllResourcesNextDay();
+        List<FacultyTotalResource> res = processingJobsService.getAllResourcesNextDay();
         return ResponseEntity.ok(res);
     }
 

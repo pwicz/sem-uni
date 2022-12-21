@@ -2,6 +2,7 @@ package commons;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
@@ -12,11 +13,25 @@ class JobTest {
 
     NetId netId1;
     Job job1;
+    LocalDate pref;
 
     @BeforeEach
     void setUp() throws Exception {
         netId1 = new NetId("ageist");
+        pref = LocalDate.now();
+        job1 = new Job(netId1, 3, 2, 1, pref);
+    }
+
+    @Test
+    void constructorTest() {
         job1 = new Job(netId1, 3, 2, 1, LocalDate.now());
+        assertNotNull(job1);
+    }
+
+    @Test
+    void testConstructorTest() {
+        job1 = new Job(1);
+        assertNotNull(job1);
     }
 
     @Test
@@ -76,6 +91,18 @@ class JobTest {
     }
 
     @Test
+    void getPreferedDate() {
+        assertThat(job1.getPreferredDate()).isEqualTo(pref);
+    }
+
+    @Test
+    void setPreferedDate() {
+        LocalDate newD = LocalDate.now().plusDays(1);
+        job1.setPreferredDate(newD);
+        assertThat(job1.getPreferredDate()).isEqualTo(newD);
+    }
+
+    @Test
     void getScheduleDate() {
         assertThat(job1.getPreferredDate()).isEqualTo(LocalDate.now());
     }
@@ -84,6 +111,16 @@ class JobTest {
     void setScheduleDate() {
         job1.setPreferredDate(LocalDate.now().plusDays(3));
         assertThat(job1.getPreferredDate()).isEqualTo(LocalDate.now().plusDays(3));
+    }
+
+    @Test
+    void getStatus() {
+    }
+
+    @Test
+    void setStatus() {
+        job1.setStatus(Status.ACCEPTED);
+        assertThat(job1.getStatus()).isEqualTo(Status.ACCEPTED);
     }
 
     @Test
