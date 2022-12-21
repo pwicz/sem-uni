@@ -23,8 +23,8 @@ public class DataLoader implements CommandLineRunner {
     }
 
     public void loadUsers() {
-        jobRepository.save(new Job(new NetId("mlica"), 10, 10, 10, LocalDate.now()));
+        /*jobRepository.save(new Job(new NetId("mlica"), 10, 10, 10, LocalDate.now()));
         jobRepository.save(new Job(new NetId("mlica"), 100, 2000, 1, LocalDate.now()));
-        jobRepository.save(new Job(new NetId("mlica"), 100, 20, 200, LocalDate.now()));
+        jobRepository.save(new Job(new NetId("mlica"), 100, 20, 200, LocalDate.now()));*/
     }
 }

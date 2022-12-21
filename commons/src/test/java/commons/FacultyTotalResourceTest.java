@@ -15,13 +15,30 @@ class FacultyTotalResourceTest {
     @BeforeEach
     void setUp() {
         LocalDate today = LocalDate.now();
-        fr = new FacultyTotalResource("EEMCS", today, 3, 2, 1, 10, 10, 10);
+        fr = new FacultyTotalResource();
+        fr.setFaculty("EEMCS");
+        fr.setDate(today);
+        fr.setCpuUsage(3);
+        fr.setGpuUsage(2);
+        fr.setMemoryUsage(1);
+        fr.setMemoryUsageTotal(10);
+        fr.setCpuUsageTotal(10);
+        fr.setGpuUsageTotal(10);
     }
 
     @Test
     void constructorTest() {
         LocalDate tmrw = LocalDate.now().plusDays(1);
-        fr = new FacultyTotalResource("EE", tmrw, 10, 2, 1, 10, 10, 10);
+        fr = new FacultyTotalResource();
+
+        fr.setFaculty("EE");
+        fr.setDate(tmrw);
+        fr.setCpuUsage(10);
+        fr.setGpuUsage(2);
+        fr.setMemoryUsage(1);
+        fr.setMemoryUsageTotal(10);
+        fr.setCpuUsageTotal(10);
+        fr.setGpuUsageTotal(10);
 
         assertNotNull(fr);
 
