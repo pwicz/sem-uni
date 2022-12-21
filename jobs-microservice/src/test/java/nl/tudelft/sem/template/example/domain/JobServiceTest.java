@@ -76,7 +76,7 @@ class JobServiceTest {
         Mockito.when(restTemplate.postForEntity("http://localhost:8084/schedule", job, String.class))
                 .thenReturn(new ResponseEntity<String>((String) null, HttpStatus.OK));
         String responseText = jobService.scheduleJob(job);
-        assertThat(responseText).isEqualTo("Problem: ResponseEntity was null!");
+        assertThat(responseText).isEqualTo("Response body is null!");
     }
 
     @Test
