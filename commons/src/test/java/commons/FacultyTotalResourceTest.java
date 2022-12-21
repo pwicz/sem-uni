@@ -8,20 +8,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-class FacultyResourceTest {
+class FacultyTotalResourceTest {
 
-    FacultyResource fr;
+    FacultyTotalResource fr;
 
     @BeforeEach
     void setUp() {
         LocalDate today = LocalDate.now();
-        fr = new FacultyResource("EEMCS", today, 3, 2, 1);
+        fr = new FacultyTotalResource("EEMCS", today, 3, 2, 1, 10, 10 ,10);
     }
 
     @Test
     void constructorTest() {
         LocalDate tmrw = LocalDate.now().plusDays(1);
-        fr = new FacultyResource("EE", tmrw, 10, 2, 1);
+        fr = new FacultyTotalResource("EE", tmrw, 10, 2, 1, 10, 10 ,10);
 
         assertNotNull(fr);
 
@@ -30,6 +30,9 @@ class FacultyResourceTest {
         assertThat(fr.getCpuUsage()).isEqualTo(10);
         assertThat(fr.getGpuUsage()).isEqualTo(2);
         assertThat(fr.getMemoryUsage()).isEqualTo(1);
+        assertThat(fr.getMemoryUsageTotal()).isEqualTo(10);
+        assertThat(fr.getMemoryUsageTotal()).isEqualTo(10);
+        assertThat(fr.getMemoryUsageTotal()).isEqualTo(10);
     }
 
 
@@ -56,5 +59,20 @@ class FacultyResourceTest {
     @Test
     void getMemoryUsage() {
         assertThat(fr.getMemoryUsage()).isEqualTo(1);
+    }
+
+    @Test
+    void getCpuUsageT() {
+        assertThat(fr.getCpuUsageTotal()).isEqualTo(10);
+    }
+
+    @Test
+    void getGpuUsageT() {
+        assertThat(fr.getGpuUsageTotal()).isEqualTo(10);
+    }
+
+    @Test
+    void getMemoryUsageT() {
+        assertThat(fr.getMemoryUsageTotal()).isEqualTo(10);
     }
 }

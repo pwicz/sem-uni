@@ -66,8 +66,6 @@ public class JwtUserDetailsServiceTests {
         final ArrayList<Faculty> faculties = new ArrayList<>();
         final Faculty faculty = new Faculty("EEMCS");
         faculties.add(faculty);
-        //        final Set<Faculty> faculties = new HashSet<>();
-        //        faculties.add(new Faculty("EEMCS"));
 
         AppUser appUser = new AppUser(testUser, new HashedPassword(testPasswordHash), role, faculties);
         userRepository.save(appUser);
