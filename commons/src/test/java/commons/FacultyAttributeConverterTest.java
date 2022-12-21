@@ -2,37 +2,32 @@ package commons;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 
 
 class FacultyAttributeConverterTest {
 
     FacultyAttributeConverter fac;
-    ArrayList<Faculty> faculties;
+    Faculty faculty;
     String dbValue;
 
     @BeforeEach
     void setUp() {
         fac = new FacultyAttributeConverter();
-        Faculty faculty1 = new Faculty("EEMCS");
-        Faculty faculty2 = new Faculty("ARCH");
-        faculties = new ArrayList<>(List.of(faculty1, faculty2));
-        dbValue = "EEMCS;ARCH;";
+        faculty = new Faculty("EEMCS");
+        dbValue = "EEMCS";
     }
 
     @Test
     void convertToDatabaseColumn() {
-        String actualDbValue = fac.convertToDatabaseColumn(faculties);
+        String actualDbValue = fac.convertToDatabaseColumn(faculty);
         assertThat(actualDbValue).isEqualTo(dbValue);
     }
 
     @Test
     void convertToEntityAttribute() {
-        List<Faculty> actualFaculties = fac.convertToEntityAttribute(dbValue);
-        assertThat(actualFaculties).isEqualTo(faculties);
+        Faculty actualFaculty= fac.convertToEntityAttribute(dbValue);
+        assertThat(actualFaculty).isEqualTo(faculty);
     }
 }

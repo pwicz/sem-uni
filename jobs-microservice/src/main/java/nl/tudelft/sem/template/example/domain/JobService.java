@@ -1,9 +1,6 @@
 package nl.tudelft.sem.template.example.domain;
 
-import commons.Job;
-import commons.NetId;
-import commons.ScheduleJob;
-import commons.Status;
+import commons.*;
 import commons.exceptions.ResourceBiggerThanCpuException;
 import exceptions.InvalidIdException;
 import exceptions.InvalidNetIdException;
@@ -74,8 +71,7 @@ public class JobService {
                 .postForEntity(schedulerUrl + "/schedule", scheduleJob, String.class);
 
         if (response.getBody() == null) {
-            //TODO: why is response null?
-            return "Problem: ResponseEntity was null!";
+            return "Response body is null!";
         }
         return response.getBody();
     }
@@ -91,7 +87,7 @@ public class JobService {
      * @return a new Job
      * @throws Exception if the resources of NetId are invalid
      */
-    public Job createJob(NetId netId, NetId authNetId, int cpuUsage, int gpuUsage,
+    public Job createJob(NetId netId, NetId authNetId, Faculty faculty, int cpuUsage, int gpuUsage,
                          int memoryUsage, String role, LocalDate preferredDate) throws Exception {
         if (cpuUsage < 0 || gpuUsage < 0 || memoryUsage < 0) {
             throw new InvalidResourcesException(Math.min(cpuUsage, Math.min(gpuUsage, memoryUsage)));
@@ -111,7 +107,7 @@ public class JobService {
             throw new BadCredentialsException(role);
         }
 
-        Job newJob = new Job(netId, cpuUsage, gpuUsage, memoryUsage, preferredDate);
+        Job newJob = new Job(netId, faculty, cpuUsage, gpuUsage, memoryUsage, preferredDate);
         jobRepository.save(newJob);
 
         return newJob;
@@ -249,16 +245,11 @@ public class JobService {
     }
 
     /**
-     * Retrieve all the Job entities from the database.
+     * Retrieve all the "PENDING" Job entities from the database.
      *
-     * @param role role of the method user
      * @return a list of Job entities containing all "PENDING" jobs in the database.
-     * @throws Exception if the method user does not have the "approvalSystem" role.
      */
-    public List<Job> getAllPendingJobs(String role) throws Exception {
-        if (!role.equals("approvalSystem")) {
-            throw new BadCredentialsException(role);
-        }
+    public List<Job> getAllPendingJobs() {
         return jobRepository.findAll().stream().filter(j -> j.getStatus() == Status.PENDING).collect(Collectors.toList());
     }
 

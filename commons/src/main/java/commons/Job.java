@@ -30,6 +30,10 @@ public class Job {
     @Convert(converter = NetIdAttributeConverter.class)
     private NetId netId;
 
+    @Column(name = "faculty", nullable = false)
+    @Convert(converter = FacultyAttributeConverter.class)
+    private Faculty faculty;
+
     @Column(name = "cpu_usage", nullable = false)
     private int cpuUsage;
 
@@ -57,8 +61,9 @@ public class Job {
      * @param gpuUsage the amount of gpu units needed
      * @param memoryUsage the amount of memory units needed
      */
-    public Job(NetId netId, int cpuUsage, int gpuUsage, int memoryUsage, LocalDate preferredDate) {
+    public Job(NetId netId, Faculty faculty, int cpuUsage, int gpuUsage, int memoryUsage, LocalDate preferredDate) {
         this.netId = netId;
+        this.faculty = faculty;
         this.cpuUsage = cpuUsage;
         this.gpuUsage = gpuUsage;
         this.memoryUsage = memoryUsage;
@@ -72,6 +77,7 @@ public class Job {
      */
     public Job(int temp) {
         this.netId = new NetId("test");
+        this.faculty = new Faculty("EEMCS");
         cpuUsage = 0;
         gpuUsage = 0;
         memoryUsage = 0;
@@ -94,6 +100,14 @@ public class Job {
 
     public void setNetId(NetId netId) {
         this.netId = netId;
+    }
+
+    public Faculty getFaculty() {
+        return this.faculty;
+    }
+
+    public void setFaculty(Faculty faculty) {
+        this.faculty = faculty;
     }
 
     public int getCpuUsage() {
@@ -149,13 +163,15 @@ public class Job {
             return false;
         }
         Job job = (Job) o;
-        return jobId == job.jobId && cpuUsage == job.cpuUsage && gpuUsage == job.gpuUsage && memoryUsage == job.memoryUsage
+        return jobId == job.jobId && Objects.equals(faculty, job.faculty) && cpuUsage == job.cpuUsage
+                && gpuUsage == job.gpuUsage && memoryUsage == job.memoryUsage
                 && Objects.equals(netId, job.netId) && Objects.equals(status, job.status)
                 && Objects.equals(preferredDate, job.preferredDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(jobId, netId, cpuUsage, gpuUsage, memoryUsage, status);
+        return Objects.hash(jobId, netId, faculty, cpuUsage,
+                gpuUsage, memoryUsage, status, preferredDate, dateCreated);
     }
 }

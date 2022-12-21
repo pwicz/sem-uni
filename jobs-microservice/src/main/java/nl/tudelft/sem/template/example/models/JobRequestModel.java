@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.models;
 
+import commons.Faculty;
 import lombok.Data;
 
 /**
@@ -9,6 +10,7 @@ import lombok.Data;
 public class JobRequestModel {
 
     private String netId;
+    private String faculty;
     private int cpuUsage;
     private int gpuUsage;
     private int memoryUsage;
@@ -24,8 +26,9 @@ public class JobRequestModel {
      * @param gpuUsage GPU usage of the job.
      * @param memoryUsage memory usage of the job.
      */
-    public JobRequestModel(String netId, int cpuUsage, int gpuUsage, int memoryUsage) {
+    public JobRequestModel(String netId, String faculty, int cpuUsage, int gpuUsage, int memoryUsage) {
         this.netId = netId;
+        this.faculty = faculty;
         this.cpuUsage = cpuUsage;
         this.gpuUsage = gpuUsage;
         this.memoryUsage = memoryUsage;
@@ -37,6 +40,14 @@ public class JobRequestModel {
 
     public void setNetId(String netId) {
         this.netId = netId;
+    }
+
+    public String getFaculty() {
+        return this.faculty;
+    }
+
+    public void setFaculty(String faculty) {
+        this.faculty = faculty;
     }
 
     public int getCpuUsage() {

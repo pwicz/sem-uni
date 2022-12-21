@@ -1,10 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
 
-import commons.Job;
-import commons.NetId;
-import commons.Status;
-import commons.UpdateJob;
+import commons.*;
 import exceptions.InvalidIdException;
 import exceptions.InvalidNetIdException;
 import exceptions.InvalidResourcesException;
@@ -144,13 +141,14 @@ public class JobController {
         try {
             NetId jobNetId = new NetId(request.getNetId());
             NetId authNetId = new NetId(authManager.getNetId());
+            Faculty faculty = new Faculty(request.getFaculty());
             int cpuUsage = request.getCpuUsage();
             int gpuUsage = request.getGpuUsage();
             int memoryUsage = request.getMemoryUsage();
             String role = (String) authManager.getRole();
             LocalDate preferredDate = LocalDate.now();
             System.out.println(role);
-            Job createdJob = this.jobService.createJob(jobNetId, authNetId, cpuUsage,
+            Job createdJob = this.jobService.createJob(jobNetId, authNetId, faculty, cpuUsage,
                     gpuUsage, memoryUsage, role, preferredDate);
 
             JobResponseModel jobResponseModel = new JobResponseModel(createdJob.getNetId().toString(), Status.PENDING);
