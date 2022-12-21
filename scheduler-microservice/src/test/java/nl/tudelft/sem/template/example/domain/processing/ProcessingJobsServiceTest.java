@@ -44,7 +44,13 @@ public class ProcessingJobsServiceTest {
         ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(1),
                 5, 2, 2);
 
-        FacultyResource[] s = {new FacultyResource(facultyConstant, dateConstant, 10, 10, 10)};
+        FacultyResource fr = new FacultyResource();
+        fr.setFaculty(facultyConstant);
+        fr.setDate(dateConstant);
+        fr.setCpuUsage(10);
+        fr.setGpuUsage(10);
+        fr.setMemoryUsage(10);
+        FacultyResource[] s = {fr};
 
         String url = processingJobsService.getResourcesUrl() + "/resources?faculty="
                 + facultyConstant + "&day=" + dateConstant;
