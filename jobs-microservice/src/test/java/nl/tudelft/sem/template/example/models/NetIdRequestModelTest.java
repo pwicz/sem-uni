@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 public class NetIdRequestModelTest {
     @Test
-    void test(){
+    void test() {
         NetIdRequestModel jm = new NetIdRequestModel("filip");
         assertThat(jm.getNetId()).isEqualTo("filip");
     }

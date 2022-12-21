@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 public class StatusResponseModelTest {
     @Test
-    void test(){
+    void test() {
         StatusResponseModel jm = new StatusResponseModel(Status.ACCEPTED);
         assertThat(jm.getStatus()).isEqualTo(Status.ACCEPTED.toString());
     }

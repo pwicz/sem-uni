@@ -33,6 +33,7 @@ class JobTest {
         job1 = new Job(1);
         assertNotNull(job1);
     }
+
     @Test
     void getJobId() {
         assertThat(job1.getJobId()).isEqualTo(0L);

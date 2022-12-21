@@ -9,27 +9,29 @@ import org.junit.jupiter.api.Test;
 
 public class JobRequestModelTest {
     JobRequestModel jm;
+
     @BeforeEach
-    void init(){
+    void init() {
         jm = new JobRequestModel("filip", 10, 4, 3);
     }
 
     @Test
-    void test(){
+    void test() {
         assertThat(jm.getNetId()).isEqualTo("filip");
     }
+
     @Test
-    void testCpu(){
+    void testCpu() {
         assertThat(jm.getCpuUsage()).isEqualTo(10);
     }
 
     @Test
-    void testGpu(){
+    void testGpu() {
         assertThat(jm.getGpuUsage()).isEqualTo(4);
     }
 
     @Test
-    void testMem(){
+    void testMem() {
         assertThat(jm.getMemoryUsage()).isEqualTo(3);
     }
 }

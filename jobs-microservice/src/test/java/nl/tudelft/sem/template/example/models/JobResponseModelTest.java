@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 public class JobResponseModelTest {
     @Test
-    void test(){
+    void test() {
         JobResponseModel jm = new JobResponseModel("filip", Status.ACCEPTED);
         assertThat(jm.getNetId()).isEqualTo("filip");
         assertThat(jm.getStatus()).isEqualTo(Status.ACCEPTED);

@@ -15,13 +15,13 @@ class FacultyTotalResourceTest {
     @BeforeEach
     void setUp() {
         LocalDate today = LocalDate.now();
-        fr = new FacultyTotalResource("EEMCS", today, 3, 2, 1, 10, 10 ,10);
+        fr = new FacultyTotalResource("EEMCS", today, 3, 2, 1, 10, 10, 10);
     }
 
     @Test
     void constructorTest() {
         LocalDate tmrw = LocalDate.now().plusDays(1);
-        fr = new FacultyTotalResource("EE", tmrw, 10, 2, 1, 10, 10 ,10);
+        fr = new FacultyTotalResource("EE", tmrw, 10, 2, 1, 10, 10, 10);
 
         assertNotNull(fr);
 

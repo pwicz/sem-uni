@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 public class FacultyRequestModelTest {
     @Test
-    void test(){
+    void test() {
         FacultyRequestModel fr = new FacultyRequestModel("filip");
         assertThat(fr.getNetId()).isEqualTo("filip");
     }
