@@ -122,13 +122,13 @@ public class NodeController {
      * Gets the number of free resources available for facculty and day.
      * Only allowed to access if you belong to the faculty.
      *
-     * @param faculty faculty you want resources from
-     * @param date    day you want to see the free resources for
+     * @param facDay request model for faculty and date
      */
-    @GetMapping(path = {"/resources?faculty={faculty}&day={date}"})
-    public ResponseEntity<FacultyResource> getFacultyAvailableResourcesForDay(@PathVariable("faculty") String faculty,
-                                                                              @PathVariable("date") String date) {
-        FacultyResource facultyResources = repo.getFreeResources(faculty, date).get();
+    @GetMapping(path = {"/facultyDayResource"})
+    public ResponseEntity<FacultyResource> getFacultyAvailableResourcesForDay(@RequestBody FacultyResource facDay) {
+        Resource r = repo.getFreeResources(facDay.getFaculty(), facDay.getDate()).get();
+        FacultyResource facultyResources = new FacultyResource(facDay.getFaculty(), facDay.getDate(),
+                r.getCpu(), r.getGpu(), r.getMem());
         return ResponseEntity.ok(facultyResources);
     }
 
@@ -295,7 +295,9 @@ public class NodeController {
         List<FacultyResource> res = new ArrayList<>();
 
         for (String f : faculties) {
-            FacultyResource facultyResources = repo.getFreeResources(f, LocalDate.now().plusDays(1).toString()).get();
+            Resource r = repo.getFreeResources(f, LocalDate.now().plusDays(1)).get();
+            FacultyResource facultyResources = new FacultyResource(f, LocalDate.now().plusDays(1),
+                    r.getCpu(), r.getGpu(), r.getMem());
             res.add(facultyResources);
         }
         return ResponseEntity.ok(res);

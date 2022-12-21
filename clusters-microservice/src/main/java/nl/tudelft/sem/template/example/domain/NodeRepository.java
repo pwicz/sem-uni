@@ -59,7 +59,7 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
             value = "SELECT faculty, ?2, SUM(CPU), SUM(GPU), SUM(MEM) FROM Node "
                     + "WHERE faculty = ?1 OR "
                     + "(released <= ?2 AND releaseEND >= ?2)")
-    Optional<FacultyResource> getFreeResources(String faculty, String date);
+    Optional<Resource> getFreeResources(String faculty, LocalDate date);
 
     /**
      * Gets all nodes that belong to faculty.
