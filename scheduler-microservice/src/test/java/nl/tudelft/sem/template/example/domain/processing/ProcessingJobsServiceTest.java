@@ -143,9 +143,6 @@ public class ProcessingJobsServiceTest {
         String facultyConstant2 = "3ME";
         LocalDate dateConstant = LocalDate.now().plusDays(1);
 
-        ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(2),
-                50, 10, 2);
-
         //CHECKSTYLE.OFF: Indentation
         FacultyResource[] dayOne = {
                 new FacultyResource(facultyConstant, dateConstant, 2, 1, 0),
@@ -153,14 +150,17 @@ public class ProcessingJobsServiceTest {
         //CHECKSTYLE.ON: Indentation
         FacultyResource[] dayTwo = {new FacultyResource(facultyConstant, dateConstant.plusDays(1), 5, 2, 2)};
 
-        String url = processingJobsService.getResourcesUrl() + "/facultyResources?faculty="
+        String url = processingJobsService.getResourcesUrl() + "/resources?faculty="
                 + facultyConstant + "&day=";
 
+        System.out.println(url + dateConstant);
         Mockito.when(restTemplate.getForEntity(url + dateConstant, FacultyResource[].class))
                 .thenReturn(new ResponseEntity<>(dayOne, HttpStatus.OK));
         Mockito.when(restTemplate.getForEntity(url + dateConstant.plusDays(1), FacultyResource[].class))
                 .thenReturn(new ResponseEntity<>(dayTwo, HttpStatus.OK));
 
+        ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(2),
+                50, 10, 2);
         processingJobsService.scheduleJob(scheduleJob);
 
         Mockito.verify(restTemplate).postForEntity(processingJobsService.getJobsUrl() + "/updateStatus",
@@ -186,7 +186,7 @@ public class ProcessingJobsServiceTest {
         //CHECKSTYLE.ON: Indentation
         FacultyResource[] dayTwo = {new FacultyResource(facultyConstant, dateConstant.plusDays(1), 5, 2, 2)};
 
-        String url = processingJobsService.getResourcesUrl() + "/facultyResources?faculty="
+        String url = processingJobsService.getResourcesUrl() + "/resources?faculty="
                 + facultyConstant + "&day=";
 
         Mockito.when(restTemplate.getForEntity(url + dateConstant, FacultyResource[].class))
