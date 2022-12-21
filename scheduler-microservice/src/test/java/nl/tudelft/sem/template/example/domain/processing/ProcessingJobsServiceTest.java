@@ -41,8 +41,7 @@ public class ProcessingJobsServiceTest {
         String facultyConstant = "EEMCS";
         LocalDate dateConstant = LocalDate.now().plusDays(1);
 
-        ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(1),
-                5, 2, 2);
+
 
         FacultyResource fr = new FacultyResource();
         fr.setFaculty(facultyConstant);
@@ -59,6 +58,8 @@ public class ProcessingJobsServiceTest {
                 .thenReturn(new ResponseEntity<>(s, HttpStatus.OK));
 
 
+        ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(1),
+            5, 2, 2);
         processingJobsService.scheduleJob(scheduleJob);
 
         Mockito.verify(restTemplate).postForEntity(processingJobsService.getJobsUrl() + "/updateStatus",

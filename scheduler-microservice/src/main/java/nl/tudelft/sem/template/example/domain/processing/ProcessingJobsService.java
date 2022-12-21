@@ -173,7 +173,7 @@ public class ProcessingJobsService {
             ResponseEntity<FacultyResource> facultyResourcesResponse = restTemplate.getForEntity(resourcesUrl
                     + "/resources?faculty=" + f + "&day=" + tmrw, FacultyResource.class);
 
-            FacultyResource total  = facultyResourcesResponse.getBody();
+
             if (facultyResourcesResponse.getBody() == null) {
                 continue;
             }
@@ -183,6 +183,7 @@ public class ProcessingJobsService {
             int gpuUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getGpuUsage).sum();
             int memoryUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getMemoryUsage).sum();
 
+            FacultyResource total  = facultyResourcesResponse.getBody();
             FacultyTotalResource fr = new FacultyTotalResource();
             fr.setFaculty(f);
             fr.setDate(tmrw);
