@@ -104,7 +104,7 @@ public class ProcessingJobsService {
             int gpuToSchedule = job.getGpuUsage();
             int memoryToSchedule = job.getMemoryUsage();
 
-            List<FacultyResource> facultyResources = getAvailableResources(job.getFaculty(), currentDate);
+            List<FacultyResource> facultyResources = getAvailableResources(job.getFaculty().toString(), currentDate);
             List<ScheduledInstance> scheduledInstances = new ArrayList<>();
             for (var r : facultyResources) {
                 if (!(cpuToSchedule > 0 || gpuToSchedule > 0 || memoryToSchedule > 0)) {
@@ -127,7 +127,7 @@ public class ProcessingJobsService {
                 cpuToSchedule -= providedCpu;
                 gpuToSchedule -= providedGpu;
                 memoryToSchedule -= providedMemory;
-                scheduledInstances.add(new ScheduledInstance(job.getJobId(), job.getFaculty(), r.getFaculty(),
+                scheduledInstances.add(new ScheduledInstance(job.getJobId(), job.getFaculty().toString(), r.getFaculty(),
                         providedCpu, providedGpu, providedMemory, currentDate));
             }
 
@@ -197,7 +197,7 @@ public class ProcessingJobsService {
     /**
      * Checks if it is 5 minutes before a new day starts.
      *
-     * @return true if the current time is between 25:55 and 00:00 (excluding)
+     * @return true if the current time is between 25:55 (including) and 00:00 (excluding)
      */
     public boolean isFiveMinutesBeforeDayStarts(LocalTime currentTime) {
         LocalTime startTime = LocalTime.of(23, 55);

@@ -1,6 +1,10 @@
 package nl.tudelft.sem.template.example.domain;
 
-import commons.*;
+import commons.Faculty;
+import commons.Job;
+import commons.NetId;
+import commons.ScheduleJob;
+import commons.Status;
 import commons.exceptions.ResourceBiggerThanCpuException;
 import exceptions.InvalidIdException;
 import exceptions.InvalidNetIdException;
@@ -61,6 +65,7 @@ public class JobService {
      *
      * @param scheduleJob the Job object to be scheduled
      * @return the response message of the Scheduler
+     * @throws InvalidScheduleJobException if scheduleJob is null
      */
     public String scheduleJob(ScheduleJob scheduleJob) throws InvalidScheduleJobException {
         if (scheduleJob == null) {

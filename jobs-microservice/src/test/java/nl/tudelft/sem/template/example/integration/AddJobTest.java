@@ -108,7 +108,8 @@ public class AddJobTest {
 
 
         jobService.createJob(u1, u1, f1, 10, 10, 10, "employee", LocalDate.now());
-        jobService.createJob(new NetId("Tmp"), new NetId("Tmp"), new Faculty("Tmp"), 12, 10, 10, "employee", LocalDate.now());
+        jobService.createJob(new NetId("Tmp"), new NetId("Tmp"), new Faculty("Tmp"),
+                12, 10, 10, "employee", LocalDate.now());
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
 

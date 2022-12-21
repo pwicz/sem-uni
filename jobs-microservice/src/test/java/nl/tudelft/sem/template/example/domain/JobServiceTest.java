@@ -6,7 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import commons.*;
+import commons.Faculty;
+import commons.Job;
+import commons.NetId;
+import commons.ScheduleJob;
+import commons.Status;
 import commons.exceptions.ResourceBiggerThanCpuException;
 import java.time.LocalDate;
 import java.util.List;
@@ -45,9 +49,9 @@ class JobServiceTest {
     void setUp() {
         Job job1 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 10, 10, 10, LocalDate.now());
         jobRepository.save(job1);
-        Job job3 = new Job(new NetId("mlica"), new Faculty("EEMCS"),20, 10, 1, LocalDate.now());
+        Job job3 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 20, 10, 1, LocalDate.now());
         jobRepository.save(job3);
-        Job job2 = new Job(new NetId("ppolitowicz"), new Faculty("EEMCS"),1, 2, 3, LocalDate.now());
+        Job job2 = new Job(new NetId("ppolitowicz"), new Faculty("EEMCS"), 1, 2, 3, LocalDate.now());
         jobRepository.save(job2);
     }
 
@@ -59,7 +63,7 @@ class JobServiceTest {
     @Test
     void scheduleJobSuccess() throws InvalidScheduleJobException {
         //Job job1 = new Job(new NetId("ageist"), 10, 10, 10);
-        ScheduleJob job = new ScheduleJob(1L, "EEMCS", LocalDate.now(), 10, 10, 10);
+        ScheduleJob job = new ScheduleJob(1L, new Faculty("EEMCS"), LocalDate.now(), 10, 10, 10);
         Mockito.when(restTemplate.postForEntity("http://localhost:8084/schedule", job, String.class))
                 .thenReturn(new ResponseEntity<String>("processing", HttpStatus.OK));
         String responseText = jobService.scheduleJob(job);
@@ -68,7 +72,7 @@ class JobServiceTest {
 
     @Test
     void scheduleJobProblem() throws InvalidScheduleJobException {
-        ScheduleJob job = new ScheduleJob(1L, "EEMCS", LocalDate.now(), 10, 10, 10);
+        ScheduleJob job = new ScheduleJob(1L, new Faculty("EEMCS"), LocalDate.now(), 10, 10, 10);
         Mockito.when(restTemplate.postForEntity("http://localhost:8084/schedule", job, String.class))
                 .thenReturn(new ResponseEntity<String>((String) null, HttpStatus.OK));
         String responseText = jobService.scheduleJob(job);
@@ -90,7 +94,8 @@ class JobServiceTest {
         int gpuUsage = 2;
         int memoryUsage = 3;
         try {
-            Job created = jobService.createJob(netId, netId, faculty, cpuUsage, gpuUsage, memoryUsage, "employee", LocalDate.now());
+            Job created = jobService.createJob(netId, netId, faculty,
+                    cpuUsage, gpuUsage, memoryUsage, "employee", LocalDate.now());
             Job saved = jobRepository.save(created);
             Optional<Job> jobOptional = jobRepository.findById(saved.getJobId());
             assertFalse(jobOptional.isEmpty());
@@ -109,7 +114,8 @@ class JobServiceTest {
         int gpuUsage = 2;
         int memoryUsage = 3;
         assertThrows(ResourceBiggerThanCpuException.class, () -> {
-            Job created = jobService.createJob(netId, netId, faculty, cpuUsage, gpuUsage, memoryUsage, "employee", LocalDate.now());
+            Job created = jobService.createJob(netId, netId, faculty,
+                    cpuUsage, gpuUsage, memoryUsage, "employee", LocalDate.now());
         });
     }
 
@@ -133,8 +139,8 @@ class JobServiceTest {
     @Test
     void collectJobsByNetId() {
         NetId netId = new NetId("mlica");
-        Job expected1 = new Job(new NetId("mlica"), new Faculty("EEMCS"),10, 10, 10, LocalDate.now());
-        Job expected2 = new Job(new NetId("mlica"), new Faculty("EEMCS"),20, 10, 1, LocalDate.now());
+        Job expected1 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 10, 10, 10, LocalDate.now());
+        Job expected2 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 20, 10, 1, LocalDate.now());
         try {
             List<Job> jobs = jobService.collectJobsByNetId(netId, netId);
             expected1.setJobId(jobs.get(0).getJobId());

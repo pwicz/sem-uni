@@ -3,8 +3,8 @@ package nl.tudelft.sem.template.example.domain.processing;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import commons.Faculty;
 import commons.FacultyResource;
-import commons.NetId;
 import commons.ScheduleJob;
 import commons.UpdateJob;
 import commons.exceptions.ResourceBiggerThanCpuException;
@@ -39,13 +39,13 @@ public class ProcessingJobsServiceTest {
 
     @Test
     public void scheduleJob_forNextDay_worksCorrectly() throws ResourceBiggerThanCpuException {
-        String facultyConstant = "EEMCS";
+        Faculty facultyConstant = new Faculty("EEMCS");
         LocalDate dateConstant = LocalDate.now().plusDays(1);
 
         ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(1),
                 5, 2, 2);
 
-        FacultyResource[] s = {new FacultyResource(facultyConstant, dateConstant, 10, 10, 10)};
+        FacultyResource[] s = {new FacultyResource(facultyConstant.toString(), dateConstant, 10, 10, 10)};
 
         String url = processingJobsService.getResourcesUrl() + "/resources?faculty="
                 + facultyConstant + "&day=" + dateConstant;
@@ -61,14 +61,14 @@ public class ProcessingJobsServiceTest {
 
         List<ScheduledInstance> fromDb = scheduledInstanceRepository.findAllByJobId(1L);
 
-        ScheduledInstance expected = new ScheduledInstance(1L, facultyConstant, 5, 2, 2, dateConstant);
+        ScheduledInstance expected = new ScheduledInstance(1L, facultyConstant.toString(), 5, 2, 2, dateConstant);
         assertThat(fromDb.size()).isEqualTo(1);
         assertThat(compareScheduledInstances(fromDb.get(0), expected)).isEqualTo(true);
     }
 
     @Test
     public void scheduleJob_forOtherDay_worksCorrectly() throws ResourceBiggerThanCpuException {
-        String facultyConstant = "EEMCS";
+        Faculty facultyConstant = new Faculty("EEMCS");
         LocalDate dateConstant = LocalDate.now().plusDays(1);
 
         ScheduledInstance toDb = new ScheduledInstance(4L, "EEMCS", 6, 5, 5, dateConstant);
@@ -77,8 +77,8 @@ public class ProcessingJobsServiceTest {
         ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(5),
                 5, 2, 2);
 
-        FacultyResource[] dayOne = {new FacultyResource(facultyConstant, dateConstant, 10, 7, 7)};
-        FacultyResource[] dayTwo = {new FacultyResource(facultyConstant, dateConstant.plusDays(1), 5, 2, 2)};
+        FacultyResource[] dayOne = {new FacultyResource(facultyConstant.toString(), dateConstant, 10, 7, 7)};
+        FacultyResource[] dayTwo = {new FacultyResource(facultyConstant.toString(), dateConstant.plusDays(1), 5, 2, 2)};
 
         String url = processingJobsService.getResourcesUrl() + "/resources?faculty="
                 + facultyConstant + "&day=";
@@ -95,22 +95,23 @@ public class ProcessingJobsServiceTest {
 
         List<ScheduledInstance> fromDb = scheduledInstanceRepository.findAllByJobId(1L);
 
-        ScheduledInstance expected = new ScheduledInstance(1L, facultyConstant, 5, 2, 2, dateConstant.plusDays(1));
+        ScheduledInstance expected = new ScheduledInstance(1L, facultyConstant.toString(),
+                5, 2, 2, dateConstant.plusDays(1));
         assertThat(fromDb.size()).isEqualTo(1);
         assertThat(compareScheduledInstances(fromDb.get(0), expected)).isEqualTo(true);
     }
 
     @Test
     public void scheduleJob_splitBetweenFaculties_worksCorrectly() throws ResourceBiggerThanCpuException {
-        String facultyConstant = "EEMCS";
-        String facultyConstant2 = "3ME";
+        Faculty facultyConstant = new Faculty("EEMCS");
+        Faculty facultyConstant2 = new Faculty("3ME");
         LocalDate dateConstant = LocalDate.now().plusDays(1);
 
         ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(5),
                 5, 2, 2);
 
-        FacultyResource[] dayOne = {new FacultyResource(facultyConstant, dateConstant, 2, 1, 0),
-            new FacultyResource(facultyConstant2, dateConstant, 10, 10, 10)};
+        FacultyResource[] dayOne = {new FacultyResource(facultyConstant.toString(), dateConstant, 2, 1, 0),
+            new FacultyResource(facultyConstant2.toString(), dateConstant, 10, 10, 10)};
 
         String url = processingJobsService.getResourcesUrl() + "/resources?faculty="
                 + facultyConstant + "&day=";
@@ -125,8 +126,8 @@ public class ProcessingJobsServiceTest {
 
         List<ScheduledInstance> fromDb = scheduledInstanceRepository.findAllByJobId(1L);
 
-        ScheduledInstance expectedEemcs = new ScheduledInstance(1L, facultyConstant, 2, 1, 0, dateConstant);
-        ScheduledInstance expected3me = new ScheduledInstance(1L, facultyConstant2, 3, 1, 2, dateConstant);
+        ScheduledInstance expectedEemcs = new ScheduledInstance(1L, facultyConstant.toString(), 2, 1, 0, dateConstant);
+        ScheduledInstance expected3me = new ScheduledInstance(1L, facultyConstant2.toString(), 3, 1, 2, dateConstant);
         assertThat(fromDb.size()).isEqualTo(2);
         for (var si : fromDb) {
             if (si.getFaculty().equals(facultyConstant)) {
@@ -140,8 +141,8 @@ public class ProcessingJobsServiceTest {
 
     @Test
     public void scheduleJob_notAbleToSchedule_worksCorrectly() throws ResourceBiggerThanCpuException {
-        String facultyConstant = "EEMCS";
-        String facultyConstant2 = "3ME";
+        Faculty facultyConstant = new Faculty("EEMCS");
+        Faculty facultyConstant2 = new Faculty("3ME");
         LocalDate dateConstant = LocalDate.now().plusDays(1);
 
         ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(2),
@@ -149,10 +150,10 @@ public class ProcessingJobsServiceTest {
 
         //CHECKSTYLE.OFF: Indentation
         FacultyResource[] dayOne = {
-                new FacultyResource(facultyConstant, dateConstant, 2, 1, 0),
-                new FacultyResource(facultyConstant2, dateConstant, 10, 10, 10)};
+                new FacultyResource(facultyConstant.toString(), dateConstant, 2, 1, 0),
+                new FacultyResource(facultyConstant2.toString(), dateConstant, 10, 10, 10)};
         //CHECKSTYLE.ON: Indentation
-        FacultyResource[] dayTwo = {new FacultyResource(facultyConstant, dateConstant.plusDays(1), 5, 2, 2)};
+        FacultyResource[] dayTwo = {new FacultyResource(facultyConstant.toString(), dateConstant.plusDays(1), 5, 2, 2)};
 
         String url = processingJobsService.getResourcesUrl() + "/facultyResources?faculty="
                 + facultyConstant + "&day=";
@@ -173,8 +174,8 @@ public class ProcessingJobsServiceTest {
 
     @Test
     public void scheduleJob_notAbleToSchedule_fullDay_worksCorrectly() throws ResourceBiggerThanCpuException {
-        String facultyConstant = "EEMCS";
-        String facultyConstant2 = "3ME";
+        Faculty facultyConstant = new Faculty("EEMCS");
+        Faculty facultyConstant2 = new Faculty("3ME");
         LocalDate dateConstant = LocalDate.now().plusDays(1);
 
         ScheduledInstance toDb = new ScheduledInstance(4L, "3ME", 7, 1, 1, dateConstant);
@@ -182,10 +183,10 @@ public class ProcessingJobsServiceTest {
 
         //CHECKSTYLE.OFF: Indentation
         FacultyResource[] dayOne = {
-                new FacultyResource(facultyConstant, dateConstant, 2, 1, 0),
-                new FacultyResource(facultyConstant2, dateConstant, 10, 10, 10)};
+                new FacultyResource(facultyConstant.toString(), dateConstant, 2, 1, 0),
+                new FacultyResource(facultyConstant2.toString(), dateConstant, 10, 10, 10)};
         //CHECKSTYLE.ON: Indentation
-        FacultyResource[] dayTwo = {new FacultyResource(facultyConstant, dateConstant.plusDays(1), 5, 2, 2)};
+        FacultyResource[] dayTwo = {new FacultyResource(facultyConstant.toString(), dateConstant.plusDays(1), 5, 2, 2)};
 
         String url = processingJobsService.getResourcesUrl() + "/facultyResources?faculty="
                 + facultyConstant + "&day=";
@@ -209,7 +210,7 @@ public class ProcessingJobsServiceTest {
 
     @Test
     public void scheduleJob_withGpuGreaterThanCpu_throwsException() {
-        ScheduleJob scheduleJob = new ScheduleJob(1, "EEMCS", LocalDate.now().plusDays(1),
+        ScheduleJob scheduleJob = new ScheduleJob(1, new Faculty("EEMCS"), LocalDate.now().plusDays(1),
                 1, 2, 1);
         Exception e = assertThrows(ResourceBiggerThanCpuException.class,
                 () -> processingJobsService.scheduleJob(scheduleJob));
@@ -218,7 +219,7 @@ public class ProcessingJobsServiceTest {
 
     @Test
     public void scheduleJob_withMemoryGreaterThanCpu_throwsException() {
-        ScheduleJob scheduleJob = new ScheduleJob(1, "EEMCS", LocalDate.now().plusDays(1),
+        ScheduleJob scheduleJob = new ScheduleJob(1, new Faculty("EEMCS"), LocalDate.now().plusDays(1),
                 1, 1, 2);
         Exception e = assertThrows(ResourceBiggerThanCpuException.class,
                 () -> processingJobsService.scheduleJob(scheduleJob));

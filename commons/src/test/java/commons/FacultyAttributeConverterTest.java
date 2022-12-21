@@ -27,7 +27,7 @@ class FacultyAttributeConverterTest {
 
     @Test
     void convertToEntityAttribute() {
-        Faculty actualFaculty= fac.convertToEntityAttribute(dbValue);
+        Faculty actualFaculty = fac.convertToEntityAttribute(dbValue);
         assertThat(actualFaculty).isEqualTo(faculty);
     }
 }

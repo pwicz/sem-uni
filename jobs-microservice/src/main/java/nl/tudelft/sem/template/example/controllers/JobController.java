@@ -1,7 +1,11 @@
 package nl.tudelft.sem.template.example.controllers;
 
 
-import commons.*;
+import commons.Faculty;
+import commons.Job;
+import commons.NetId;
+import commons.Status;
+import commons.UpdateJob;
 import exceptions.InvalidIdException;
 import exceptions.InvalidNetIdException;
 import exceptions.InvalidResourcesException;

@@ -1,17 +1,14 @@
 package nl.tudelft.sem.template.example.domain;
 
-import commons.Faculty;
 import commons.Job;
-import commons.NetId;
 import commons.ScheduleJob;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class AutomaticApproveJobsComponent {
@@ -23,37 +20,31 @@ public class AutomaticApproveJobsComponent {
         this.jobService = jobService;
     }
 
-
+    /**
+     * Approves & schedule automatically every day at 6pm all PENDING jobs that are due tomorrow.
+     *
+     * @throws InvalidScheduleJobException if scheduleJob is null
+     */
     @Scheduled(cron = "0 0 18 * * ?")
-    public void approveJobsAfter6pm() {
+    public void approveJobsAfter6pm() throws InvalidScheduleJobException {
 
         // 1. get all pending Jobs
         List<Job> pendingJobs = jobService.getAllPendingJobs();
 
-        // 2. filter and sort so that only pending Jobs due tomorrow are considered and sorted according to their creation date
+        // 2. filter and sort so that only pending Jobs due tomorrow are considered
+        // and sorted according to their creation date
         List<Job> filteredSortedPendingJobs = pendingJobs.stream()
-                .filter(x -> x.getPreferredDate() == LocalDate.now().plusDays(1))
-                .sorted(new Comparator<Job>() {
-                    @Override
-                    public int compare(Job j1, Job j2) {
-                        return j1.getDateCreated().compareTo(j2.getDateCreated());
-                    }
-                }).collect(Collectors.toList());
+                .filter(x -> x.getPreferredDate().equals(LocalDate.now().plusDays(1)))
+                .sorted((j1, j2) -> j1.getDateCreated().compareTo(j2.getDateCreated()))
+                .collect(Collectors.toList());
 
-        // 3. approve jobs and stop, when CPU ressource == 0
+        // 3. approve & send jobs to scheduler
         for (Job job : filteredSortedPendingJobs) {
-            // check resources
-                // make GET request to scheduler MS "/allResourcesNextDay" -> add it to JobService
-
             ScheduleJob scheduleJob = new ScheduleJob(job.getJobId(),
                     job.getFaculty(), job.getPreferredDate(),
                     job.getCpuUsage(), job.getGpuUsage(), job.getMemoryUsage());
 
-            // call scheduleJob function
-
-
+            jobService.scheduleJob(scheduleJob);
         }
-
-
     }
 }
