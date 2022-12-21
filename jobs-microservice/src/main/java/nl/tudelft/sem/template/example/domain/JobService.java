@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import nl.tudelft.sem.template.example.models.JobIdRequestModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
@@ -85,7 +86,7 @@ public class JobService {
      * @return the response message of the scheduler
      * @throws ResponseEntityException - exception that handles empty response from the Scheduler
      */
-    public String unscheduleJob(long jobId) throws ResponseEntityException {
+    public String unscheduleJob(JobIdRequestModel jobId) throws ResponseEntityException {
         ResponseEntity<String> response = restTemplate
                 .postForEntity(schedulerUrl + "/unschedule", jobId, String.class);
 

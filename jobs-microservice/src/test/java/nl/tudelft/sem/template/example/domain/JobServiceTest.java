@@ -14,6 +14,7 @@ import commons.exceptions.ResourceBiggerThanCpuException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import nl.tudelft.sem.template.example.models.JobIdRequestModel;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -98,9 +99,9 @@ class JobServiceTest {
         //
         //        scheduledInstanceRepository.save(scheduledInstance1);
 
-        Mockito.when(restTemplate.postForEntity("http://localhost:8084/unschedule", 1L, String.class))
+        Mockito.when(restTemplate.postForEntity("http://localhost:8084/unschedule", new JobIdRequestModel(1L), String.class))
                 .thenReturn(new ResponseEntity<String>("processing", HttpStatus.OK));
-        String responseText = jobService.unscheduleJob(1L);
+        String responseText = jobService.unscheduleJob(new JobIdRequestModel(1L));
         assertThat(responseText).isEqualTo("processing");
         //assertThat(scheduledInstanceRepository.existsById(1L)).isFalse();
     }
@@ -112,11 +113,11 @@ class JobServiceTest {
         //
         //        scheduledInstanceRepository.save(scheduledInstance1);
 
-        Mockito.when(restTemplate.postForEntity("http://localhost:8084/unschedule", 1L, String.class))
+        Mockito.when(restTemplate.postForEntity("http://localhost:8084/unschedule", new JobIdRequestModel(1L), String.class))
                 .thenReturn(new ResponseEntity<String>((String) null, HttpStatus.OK));
 
         Assertions.assertThrows(ResponseEntityException.class, () -> {
-            jobService.unscheduleJob(1L);
+            jobService.unscheduleJob(new JobIdRequestModel(1L));
         });
     }
 
