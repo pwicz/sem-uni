@@ -45,19 +45,23 @@ class JobServiceTest {
     @Autowired
     private transient JobService jobService;
 
+
+
     @BeforeEach
     void setUp() {
         Job job1 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 10, 10, 10, LocalDate.now());
+        job1.setStatus(Status.PENDING);
         jobRepository.save(job1);
-        Job job3 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 20, 10, 1, LocalDate.now());
-        jobRepository.save(job3);
         Job job2 = new Job(new NetId("ppolitowicz"), new Faculty("EEMCS"), 1, 2, 3, LocalDate.now());
+        job2.setStatus(Status.PENDING);
         jobRepository.save(job2);
+        Job job3 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 20, 10, 1, LocalDate.now());
+        job3.setStatus(Status.ACCEPTED);
+        jobRepository.save(job3);
     }
 
     @Test
     void scheduleJobSuccess() throws InvalidScheduleJobException {
-        //Job job1 = new Job(new NetId("ageist"), 10, 10, 10);
         ScheduleJob job = new ScheduleJob(1L, new Faculty("EEMCS"), LocalDate.now(), 10, 10, 10);
         Mockito.when(restTemplate.postForEntity("http://localhost:8084/schedule", job, String.class))
                 .thenReturn(new ResponseEntity<String>("processing", HttpStatus.OK));
@@ -175,6 +179,15 @@ class JobServiceTest {
             fail();
         }
 
+    }
+
+    @Test
+    void getAllPendingJobs() {
+        List<Job> jobs = jobService.getAllPendingJobs();
+        for (Job job : jobs) {
+            assertThat(job.getStatus()).isEqualTo(Status.PENDING);
+        }
+        assertThat(jobs.size()).isEqualTo(2);
     }
 
     @Test

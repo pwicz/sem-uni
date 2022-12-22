@@ -33,10 +33,7 @@ public class AutomaticApproveJobsComponent {
 
         // 2. filter and sort so that only pending Jobs due tomorrow are considered
         // and sorted according to their creation date
-        List<Job> filteredSortedPendingJobs = pendingJobs.stream()
-                .filter(x -> x.getPreferredDate().equals(LocalDate.now().plusDays(1)))
-                .sorted((j1, j2) -> j1.getDateCreated().compareTo(j2.getDateCreated()))
-                .collect(Collectors.toList());
+        List<Job> filteredSortedPendingJobs = filterAndSortPendingJobs(pendingJobs);
 
         // 3. approve & send jobs to scheduler
         for (Job job : filteredSortedPendingJobs) {
@@ -46,5 +43,17 @@ public class AutomaticApproveJobsComponent {
 
             jobService.scheduleJob(scheduleJob);
         }
+    }
+
+    /**
+     *
+     * @param pendingJobs list of Jobs that have the status "PENDING"
+     * @return a sorted (according to creationDate) list of jobs that are due tomorrow
+     */
+    public List<Job> filterAndSortPendingJobs(List<Job> pendingJobs) {
+        return pendingJobs.stream()
+                .filter(x -> x.getPreferredDate().equals(LocalDate.now().plusDays(1)))
+                .sorted((j1, j2) -> j1.getDateCreated().compareTo(j2.getDateCreated()))
+                .collect(Collectors.toList());
     }
 }
