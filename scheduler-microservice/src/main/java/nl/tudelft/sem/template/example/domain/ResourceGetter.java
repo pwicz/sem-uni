@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 public class ResourceGetter {
     private final transient RestTemplate restTemplate;
-    private final transient String resourcesUrl;
+    private transient String resourcesUrl;
 
     public ResourceGetter(RestTemplate restTemplate, String resourcesUrl) {
         this.restTemplate = restTemplate;
@@ -37,5 +37,9 @@ public class ResourceGetter {
         }
 
         return Arrays.asList(Objects.requireNonNull(facultyResourcesResponse.getBody()));
+    }
+
+    public void setResourcesUrl(String resourcesUrl) {
+        this.resourcesUrl = resourcesUrl;
     }
 }

@@ -15,6 +15,8 @@ import nl.tudelft.sem.template.example.domain.ResourceGetter;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstance;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstanceRepository;
 import nl.tudelft.sem.template.example.domain.strategies.ScheduleBetweenClusters;
+import nl.tudelft.sem.template.example.domain.strategies.ScheduleBetweenClustersMostResourcesFirst;
+import nl.tudelft.sem.template.example.domain.strategies.ScheduleOneCluster;
 import nl.tudelft.sem.template.example.domain.strategies.SchedulingStrategy;
 import nl.tudelft.sem.template.example.models.FacultyResponseModel;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,7 @@ public class ProcessingJobsService {
 
     private final transient ScheduledInstanceRepository scheduledInstanceRepository;
     private final RestTemplate restTemplate;
+    private final ResourceGetter resourceGetter;
     private SchedulingStrategy schedulingStrategy;
 
     private String resourcesUrl = "http://localhost:8085";
@@ -35,6 +38,7 @@ public class ProcessingJobsService {
 
     public void setResources_url(String resourcesUrl) {
         this.resourcesUrl = resourcesUrl;
+        resourceGetter.setResourcesUrl(resourcesUrl);
     }
 
     public void setJobs_url(String jobsUrl) {
@@ -52,7 +56,8 @@ public class ProcessingJobsService {
     ProcessingJobsService(ScheduledInstanceRepository scheduledInstanceRepository, RestTemplate restTemplate) {
         this.scheduledInstanceRepository = scheduledInstanceRepository;
         this.restTemplate = restTemplate;
-        schedulingStrategy = new ScheduleBetweenClusters(new ResourceGetter(this.restTemplate, resourcesUrl),
+        this.resourceGetter = new ResourceGetter(this.restTemplate, resourcesUrl);
+        schedulingStrategy = new ScheduleBetweenClusters(this.resourceGetter,
                 this.scheduledInstanceRepository);
     }
 
@@ -160,5 +165,27 @@ public class ProcessingJobsService {
 
     public void setSchedulingStrategy(SchedulingStrategy schedulingStrategy) {
         this.schedulingStrategy = schedulingStrategy;
+    }
+
+    /**
+     * Sets specified scheduling strategy.
+     *
+     * @param strategy name of the strategy
+     */
+    public void setSchedulingStrategy(String strategy) throws InvalidStrategyNameException {
+        switch (strategy) {
+            case "one-cluster":
+                setSchedulingStrategy(new ScheduleOneCluster(resourceGetter, scheduledInstanceRepository));
+                break;
+            case "multiple-clusters":
+                setSchedulingStrategy(new ScheduleBetweenClusters(resourceGetter, scheduledInstanceRepository));
+                break;
+            case "multiple-clusters-most-resources-first":
+                setSchedulingStrategy(new ScheduleBetweenClustersMostResourcesFirst(resourceGetter,
+                        scheduledInstanceRepository));
+                break;
+            default:
+                throw new InvalidStrategyNameException(strategy);
+        }
     }
 }
