@@ -9,9 +9,14 @@ import commons.UpdateJob;
 import exceptions.ResourceBiggerThanCpuException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstance;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstanceRepository;
+import nl.tudelft.sem.template.example.domain.strategies.ScheduleBetweenClusters;
+import nl.tudelft.sem.template.example.domain.strategies.ScheduleBetweenClustersMostResourcesFirst;
+import nl.tudelft.sem.template.example.domain.strategies.ScheduleOneCluster;
+import nl.tudelft.sem.template.example.domain.strategies.SchedulingStrategy;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +35,9 @@ public class ProcessingJobsServiceTest {
     @MockBean
     private RestTemplate restTemplate;
 
+    @MockBean
+    private ScheduleBetweenClusters scheduleBetweenClusters;
+
     @Autowired
     private transient ProcessingJobsService processingJobsService;
 
@@ -41,176 +49,54 @@ public class ProcessingJobsServiceTest {
         String facultyConstant = "EEMCS";
         LocalDate dateConstant = LocalDate.now().plusDays(1);
 
-
-
-        FacultyResource fr = new FacultyResource();
-        fr.setFaculty(facultyConstant);
-        fr.setDate(dateConstant);
-        fr.setCpuUsage(10);
-        fr.setGpuUsage(10);
-        fr.setMemoryUsage(10);
-        FacultyResource[] s = {fr};
-
-        String url = processingJobsService.getResourcesUrl() + "/resources?faculty="
-                + facultyConstant + "&day=" + dateConstant;
-
-        Mockito.when(restTemplate.getForEntity(url, FacultyResource[].class))
-                .thenReturn(new ResponseEntity<>(s, HttpStatus.OK));
-
-
-        ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(1),
-            5, 2, 2);
-        processingJobsService.scheduleJob(scheduleJob);
-
-        Mockito.verify(restTemplate).postForEntity(processingJobsService.getJobsUrl() + "/updateStatus",
-                new UpdateJob(1, "scheduled", dateConstant), Void.class);
-
-        List<ScheduledInstance> fromDb = scheduledInstanceRepository.findAllByJobId(1L);
-
-        ScheduledInstance expected = new ScheduledInstance(1L, facultyConstant, 5, 2, 2, dateConstant);
-        assertThat(fromDb.size()).isEqualTo(1);
-        assertThat(compareScheduledInstances(fromDb.get(0), expected)).isEqualTo(true);
-    }
-
-    @Test
-    public void scheduleJob_forOtherDay_worksCorrectly() throws ResourceBiggerThanCpuException {
-        String facultyConstant = "EEMCS";
-        LocalDate dateConstant = LocalDate.now().plusDays(1);
-
-        ScheduledInstance toDb = new ScheduledInstance(4L, "EEMCS", 6, 5, 5, dateConstant);
-        scheduledInstanceRepository.save(toDb);
-
-        ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(5),
+        List<ScheduledInstance> scheduledInstances = List.of(
+            new ScheduledInstance(1L, facultyConstant, 5, 2, 2, dateConstant)
+        );
+        ScheduleJob scheduleJob = new ScheduleJob(1L, facultyConstant, dateConstant.plusDays(2),
                 5, 2, 2);
-
-        FacultyResource[] dayOne = {new FacultyResource(facultyConstant, dateConstant, 10, 7, 7)};
-        FacultyResource[] dayTwo = {new FacultyResource(facultyConstant, dateConstant.plusDays(1), 5, 2, 2)};
-
-        String url = processingJobsService.getResourcesUrl() + "/resources?faculty="
-                + facultyConstant + "&day=";
-
-        Mockito.when(restTemplate.getForEntity(url + dateConstant, FacultyResource[].class))
-                .thenReturn(new ResponseEntity<>(dayOne, HttpStatus.OK));
-        Mockito.when(restTemplate.getForEntity(url + dateConstant.plusDays(1), FacultyResource[].class))
-                .thenReturn(new ResponseEntity<>(dayTwo, HttpStatus.OK));
-
+        Mockito.when(scheduleBetweenClusters.scheduleBetween(Mockito.eq(scheduleJob),
+                        Mockito.any(LocalDate.class), Mockito.any(LocalDate.class))).thenReturn(scheduledInstances);
+        processingJobsService.setSchedulingStrategy(scheduleBetweenClusters);
         processingJobsService.scheduleJob(scheduleJob);
 
-        Mockito.verify(restTemplate).postForEntity(processingJobsService.getJobsUrl() + "/updateStatus",
-                new UpdateJob(1, "scheduled", dateConstant.plusDays(1)), Void.class);
-
-        List<ScheduledInstance> fromDb = scheduledInstanceRepository.findAllByJobId(1L);
-
-        ScheduledInstance expected = new ScheduledInstance(1L, facultyConstant, 5, 2, 2, dateConstant.plusDays(1));
-        assertThat(fromDb.size()).isEqualTo(1);
-        assertThat(compareScheduledInstances(fromDb.get(0), expected)).isEqualTo(true);
-    }
-
-    @Test
-    public void scheduleJob_splitBetweenFaculties_worksCorrectly() throws ResourceBiggerThanCpuException {
-        String facultyConstant = "EEMCS";
-        String facultyConstant2 = "3ME";
-        LocalDate dateConstant = LocalDate.now().plusDays(1);
-
-        ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(5),
-                5, 2, 2);
-
-        FacultyResource[] dayOne = {new FacultyResource(facultyConstant, dateConstant, 2, 1, 0),
-            new FacultyResource(facultyConstant2, dateConstant, 10, 10, 10)};
-
-        String url = processingJobsService.getResourcesUrl() + "/resources?faculty="
-                + facultyConstant + "&day=";
-
-        Mockito.when(restTemplate.getForEntity(url + dateConstant, FacultyResource[].class))
-                .thenReturn(new ResponseEntity<>(dayOne, HttpStatus.OK));
-
-        processingJobsService.scheduleJob(scheduleJob);
-
-        Mockito.verify(restTemplate).postForEntity(processingJobsService.getJobsUrl() + "/updateStatus",
-                new UpdateJob(1, "scheduled", dateConstant), Void.class);
-
-        List<ScheduledInstance> fromDb = scheduledInstanceRepository.findAllByJobId(1L);
-
-        ScheduledInstance expectedEemcs = new ScheduledInstance(1L, facultyConstant, 2, 1, 0, dateConstant);
-        ScheduledInstance expected3me = new ScheduledInstance(1L, facultyConstant2, 3, 1, 2, dateConstant);
-        assertThat(fromDb.size()).isEqualTo(2);
-        for (var si : fromDb) {
-            if (si.getFaculty().equals(facultyConstant)) {
-                assertThat(compareScheduledInstances(si, expectedEemcs)).isEqualTo(true);
-            } else if (si.getFaculty().equals(facultyConstant2)) {
-                assertThat(compareScheduledInstances(si, expected3me)).isEqualTo(true);
-            }
+        // verify that there was a proper call to the strategy
+        if (processingJobsService.isFiveMinutesBeforeDayStarts(LocalTime.now())) {
+            Mockito.verify(scheduleBetweenClusters).scheduleBetween(scheduleJob, dateConstant.plusDays(1),
+                    dateConstant.plusDays(2));
+        } else {
+            Mockito.verify(scheduleBetweenClusters).scheduleBetween(scheduleJob, dateConstant,
+                    dateConstant.plusDays(2));
         }
 
+        // verify that scheduledInstances were saved to the db
+        List<ScheduledInstance> inDb = scheduledInstanceRepository.findAll();
+        assertThat(inDb.size()).isEqualTo(1);
+        assertThat(compareScheduledInstances(scheduledInstances.get(0), inDb.get(0))).isEqualTo(true);
+
+        // verify that an update was sent
+        Mockito.verify(restTemplate).postForEntity(processingJobsService.getJobsUrl() + "/updateStatus",
+                new UpdateJob(1L, "scheduled", scheduledInstances.get(0).getDate()), Void.class);
     }
 
     @Test
-    public void scheduleJob_notAbleToSchedule_worksCorrectly() throws ResourceBiggerThanCpuException {
+    public void scheduleJob_couldNotSchedule_worksCorrectly() throws ResourceBiggerThanCpuException {
         String facultyConstant = "EEMCS";
-        String facultyConstant2 = "3ME";
         LocalDate dateConstant = LocalDate.now().plusDays(1);
 
-        ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(2),
-                50, 10, 2);
-
-        //CHECKSTYLE.OFF: Indentation
-        FacultyResource[] dayOne = {
-                new FacultyResource(facultyConstant, dateConstant, 2, 1, 0),
-                new FacultyResource(facultyConstant2, dateConstant, 10, 10, 10)};
-        //CHECKSTYLE.ON: Indentation
-        FacultyResource[] dayTwo = {new FacultyResource(facultyConstant, dateConstant.plusDays(1), 5, 2, 2)};
-
-        String url = processingJobsService.getResourcesUrl() + "/facultyResources?faculty="
-                + facultyConstant + "&day=";
-
-        Mockito.when(restTemplate.getForEntity(url + dateConstant, FacultyResource[].class))
-                .thenReturn(new ResponseEntity<>(dayOne, HttpStatus.OK));
-        Mockito.when(restTemplate.getForEntity(url + dateConstant.plusDays(1), FacultyResource[].class))
-                .thenReturn(new ResponseEntity<>(dayTwo, HttpStatus.OK));
-
+        ScheduleJob scheduleJob = new ScheduleJob(1L, facultyConstant, dateConstant.plusDays(2),
+                5, 2, 2);
+        Mockito.when(scheduleBetweenClusters.scheduleBetween(Mockito.eq(scheduleJob),
+                Mockito.any(LocalDate.class), Mockito.any(LocalDate.class))).thenReturn(new ArrayList<>());
+        processingJobsService.setSchedulingStrategy(scheduleBetweenClusters);
         processingJobsService.scheduleJob(scheduleJob);
 
+        // verify that NO scheduledInstances were saved to the db
+        List<ScheduledInstance> inDb = scheduledInstanceRepository.findAll();
+        assertThat(inDb.size()).isEqualTo(0);
+
+        // verify that an update was sent
         Mockito.verify(restTemplate).postForEntity(processingJobsService.getJobsUrl() + "/updateStatus",
-                new UpdateJob(1, "unscheduled", null), Void.class);
-
-        List<ScheduledInstance> fromDb = scheduledInstanceRepository.findAllByJobId(1L);
-        assertThat(fromDb.size()).isEqualTo(0);
-    }
-
-    @Test
-    public void scheduleJob_notAbleToSchedule_fullDay_worksCorrectly() throws ResourceBiggerThanCpuException {
-        String facultyConstant = "EEMCS";
-        String facultyConstant2 = "3ME";
-        LocalDate dateConstant = LocalDate.now().plusDays(1);
-
-        ScheduledInstance toDb = new ScheduledInstance(4L, "3ME", 7, 1, 1, dateConstant);
-        scheduledInstanceRepository.save(toDb);
-
-        //CHECKSTYLE.OFF: Indentation
-        FacultyResource[] dayOne = {
-                new FacultyResource(facultyConstant, dateConstant, 2, 1, 0),
-                new FacultyResource(facultyConstant2, dateConstant, 10, 10, 10)};
-        //CHECKSTYLE.ON: Indentation
-        FacultyResource[] dayTwo = {new FacultyResource(facultyConstant, dateConstant.plusDays(1), 5, 2, 2)};
-
-        String url = processingJobsService.getResourcesUrl() + "/facultyResources?faculty="
-                + facultyConstant + "&day=";
-
-        Mockito.when(restTemplate.getForEntity(url + dateConstant, FacultyResource[].class))
-                .thenReturn(new ResponseEntity<>(dayOne, HttpStatus.OK));
-        Mockito.when(restTemplate.getForEntity(url + dateConstant.plusDays(1), FacultyResource[].class))
-                .thenReturn(new ResponseEntity<>(dayTwo, HttpStatus.OK));
-
-        ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(2),
-                6, 2, 2);
-
-        processingJobsService.scheduleJob(scheduleJob);
-
-        Mockito.verify(restTemplate).postForEntity(processingJobsService.getJobsUrl() + "/updateStatus",
-                new UpdateJob(1, "unscheduled", null), Void.class);
-
-        List<ScheduledInstance> fromDb = scheduledInstanceRepository.findAllByJobId(1L);
-        assertThat(fromDb.size()).isEqualTo(0);
+                new UpdateJob(1L, "unscheduled", null), Void.class);
     }
 
     @Test
@@ -229,6 +115,21 @@ public class ProcessingJobsServiceTest {
         Exception e = assertThrows(ResourceBiggerThanCpuException.class,
                 () -> processingJobsService.scheduleJob(scheduleJob));
         assertThat(e.getMessage()).isEqualTo("Memory usage cannot be greater than the CPU usage.");
+    }
+
+    @Test
+    public void setSchedulingStrategyTest() throws InvalidStrategyNameException {
+        processingJobsService.setSchedulingStrategy("one-cluster");
+        assertThat(processingJobsService.getSchedulingStrategy() instanceof ScheduleOneCluster).isTrue();
+        processingJobsService.setSchedulingStrategy("multiple-clusters");
+        assertThat(processingJobsService.getSchedulingStrategy() instanceof ScheduleBetweenClusters).isTrue();
+        processingJobsService.setSchedulingStrategy("multiple-clusters-most-resources-first");
+        assertThat(processingJobsService.getSchedulingStrategy() instanceof ScheduleBetweenClustersMostResourcesFirst)
+                .isTrue();
+
+        Exception e = assertThrows(InvalidStrategyNameException.class,
+                () -> processingJobsService.setSchedulingStrategy("undefined-useless-string"));
+        assertThat(e.getMessage()).isEqualTo("Strategy undefined-useless-string does not exist.");
     }
 
     @Test
