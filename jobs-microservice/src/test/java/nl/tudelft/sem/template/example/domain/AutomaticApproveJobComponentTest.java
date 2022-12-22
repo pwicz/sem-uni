@@ -1,19 +1,13 @@
 package nl.tudelft.sem.template.example.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import commons.Faculty;
 import commons.Job;
 import commons.NetId;
-import commons.ScheduleJob;
 import commons.Status;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,6 +31,7 @@ class AutomaticApproveJobComponentTest {
 
     @Autowired
     private transient JobRepository jobRepository;
+
     @MockBean
     private transient JobService mockJobService;
 
@@ -70,10 +65,10 @@ class AutomaticApproveJobComponentTest {
         pendingJobs.add(job3); // due tomorrow
         pendingJobs.add(job4);
 
-        jobRepository.save(job5);
+        jobRepository.save(job5); // due tomorrow
         jobRepository.save(job2);
-        jobRepository.save(job1);
-        jobRepository.save(job3);
+        jobRepository.save(job1); // due tomorrow
+        jobRepository.save(job3); // due tomorrow
         jobRepository.save(job4);
     }
 
@@ -88,35 +83,6 @@ class AutomaticApproveJobComponentTest {
 
     @Test
     public void approveJobsAfter6pmTest() throws InvalidScheduleJobException {
-        //JobService mockJobService = Mockito.mock(JobService.class);
-
-        List<Job> pendingJobs = new ArrayList<>();
-
-        Job job1 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 10, 10, 10, LocalDate.now().plusDays(1));
-        job1.setStatus(Status.PENDING);
-        pendingJobs.add(job1);
-        Job job2 = new Job(new NetId("ppolitowicz"), new Faculty("EEMCS"), 1, 2, 3, LocalDate.now());
-        job2.setStatus(Status.PENDING);
-        pendingJobs.add(job2);
-        Job job3 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 20, 10, 1, LocalDate.now().plusDays(1));
-        job3.setStatus(Status.PENDING);
-        pendingJobs.add(job3);
-        Job job4 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 20, 10, 1, LocalDate.now().plusDays(2));
-        job4.setStatus(Status.PENDING);
-        pendingJobs.add(job4);
-        Job job5 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 20, 10, 1, LocalDate.now().plusDays(1));
-        job5.setStatus(Status.PENDING);
-        pendingJobs.add(job5);
-
-        // Configure the mock jobService to return a predefined list of pending jobs
-        //List<Job> pendingJobs = Arrays.asList(job1, job2, job3, job4, job5);
-
-        jobRepository.save(job1);
-        jobRepository.save(job2);
-        jobRepository.save(job3);
-        jobRepository.save(job4);
-        jobRepository.save(job5);
-
         Mockito.when(mockJobService.getAllPendingJobs()).thenReturn(pendingJobs);
 
         // Inject the mock jobService into the approveJobsAfter6pm method
