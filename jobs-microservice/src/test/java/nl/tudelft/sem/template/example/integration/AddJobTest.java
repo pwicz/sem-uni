@@ -1,11 +1,12 @@
 package nl.tudelft.sem.template.example.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import commons.Job;
 import commons.NetId;
+import commons.RoleValue;
 import commons.Status;
 import exceptions.InvalidNetIdException;
 import exceptions.ResourceBiggerThanCpuException;
@@ -81,16 +82,13 @@ public class AddJobTest {
 
     @Test
     public void addJobTest() throws Exception {
-        String url = jobService.getUrl() + "/addJob";
+        String url = "http://localhost:8083" + "/addJob";
 
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
-
-        jobService.createJob(u1, u1, 10, 10, 10, "employee", LocalDate.now());
-
+        jobService.createJob(u1, u1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
-
         j1.setJobId(fromDb.get(0).getJobId());
         assertThat(fromDb.size()).isEqualTo(1);
         assertThat(j1.equals(fromDb.get(0))).isEqualTo(true);
@@ -98,45 +96,38 @@ public class AddJobTest {
 
     @Test
     public void getAllJobsTest() throws Exception {
-        String url = jobService.getUrl() + "/addJob";
+        String url = "http://localhost:8083" + "/addJob";
 
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
-
-        jobService.createJob(u1, u1, 10, 10, 10, "employee", LocalDate.now());
-        jobService.createJob(new NetId("Tmp"), new NetId("Tmp"), 12, 10, 10, "employee", LocalDate.now());
-
+        jobService.createJob(u1, u1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+        jobService.createJob(new NetId("Tmp"), new NetId("Tmp"), 12, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
-
         assertThat(fromDb.size()).isEqualTo(2);
-
     }
 
 
     @Test
     public void getJobStatusTest() throws Exception {
-        String url = jobService.getUrl() + "/addJob";
+        String url = "http://localhost:8083" + "/addJob";
 
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
-
-        jobService.createJob(u1, u1, 10, 10, 10, "employee", LocalDate.now());
-        jobService.createJob(u2, u2, 12, 10, 10, "employee", LocalDate.now());
-
+        jobService.createJob(u1, u1,  10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+        jobService.createJob(u2, u2, 12, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
-
         j2.setJobId(2);
         j1.setJobId(1);
         assertThat(fromDb.size()).isEqualTo(2);
-        assertTrue(jobService.getJobStatus(u1, u1, fromDb.get(0).getJobId()) == Status.PENDING);
-        assertTrue(jobService.getJobStatus(u2, u2, fromDb.get(1).getJobId()) == Status.PENDING);
+        assertSame(jobService.getJobStatus(u1, u1, fromDb.get(0).getJobId()), Status.PENDING);
+        assertSame(jobService.getJobStatus(u2, u2, fromDb.get(1).getJobId()), Status.PENDING);
     }
 
     @Test
     public void getJobStatusTest_Exception() throws Exception {
-        String url = jobService.getUrl() + "/updateJob";
+        String url = "http://localhost:8083" + "/updateJob";
 
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
@@ -150,7 +141,7 @@ public class AddJobTest {
     @Test
     public void addJobWithGpuGreaterThanCpu_throwsException() {
         Exception e = assertThrows(ResourceBiggerThanCpuException.class, () -> {
-            jobService.createJob(u1, u1, 1, 2, 0, "employee", LocalDate.now());
+            jobService.createJob(u1, u1, 1, 2, 0, RoleValue.EMPLOYEE, LocalDate.now());
         });
         assertThat(e.getMessage()).isEqualTo("GPU usage cannot be greater than the CPU usage.");
     }
@@ -158,7 +149,7 @@ public class AddJobTest {
     @Test
     public void addJobWithMemoryGreaterThanCpu_throwsException() {
         Exception e = assertThrows(ResourceBiggerThanCpuException.class, () -> {
-            jobService.createJob(u1, u1, 1, 0, 2, "employee", LocalDate.now());
+            jobService.createJob(u1, u1, 1, 0, 2, RoleValue.EMPLOYEE, LocalDate.now());
         });
         assertThat(e.getMessage()).isEqualTo("Memory usage cannot be greater than the CPU usage.");
     }

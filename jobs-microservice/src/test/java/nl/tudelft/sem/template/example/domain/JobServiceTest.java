@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import commons.Job;
 import commons.NetId;
+import commons.RoleValue;
 import commons.ScheduleJob;
 import commons.Status;
 import exceptions.ResourceBiggerThanCpuException;
@@ -56,11 +57,6 @@ class JobServiceTest {
         jobRepository.save(job3);
         Job job2 = new Job(new NetId("ppolitowicz"), 1, 2, 3, LocalDate.now());
         jobRepository.save(job2);
-    }
-
-    @AfterEach
-    void after() {
-        jobRepository.deleteAll();
     }
 
     @Test
@@ -128,9 +124,10 @@ class JobServiceTest {
         int gpuUsage = 2;
         int memoryUsage = 3;
         try {
-            Job created = jobService.createJob(netId, netId, cpuUsage, gpuUsage, memoryUsage, "employee", LocalDate.now());
-            Job saved = jobRepository.save(created);
-            Optional<Job> jobOptional = jobRepository.findById(saved.getJobId());
+            Job created = jobService.createJob(netId, netId, cpuUsage,
+                    gpuUsage, memoryUsage, RoleValue.EMPLOYEE, LocalDate.now());
+            jobRepository.save(created);
+            Optional<Job> jobOptional = jobRepository.findById(created.getJobId());
             assertFalse(jobOptional.isEmpty());
             assertEquals(jobOptional.get(), created);
         } catch (Exception e) {
@@ -146,7 +143,7 @@ class JobServiceTest {
         int gpuUsage = 2;
         int memoryUsage = 3;
         assertThrows(ResourceBiggerThanCpuException.class, () -> {
-            Job created = jobService.createJob(netId, netId, cpuUsage, gpuUsage, memoryUsage, "employee", LocalDate.now());
+            jobService.createJob(netId, netId, cpuUsage, gpuUsage, memoryUsage, RoleValue.EMPLOYEE, LocalDate.now());
         });
     }
 

@@ -8,7 +8,8 @@ import org.junit.jupiter.api.Test;
 public class IdRequestModelTest {
     @Test
     void test() {
-        IdRequestModel fr = new IdRequestModel(53);
+        IdRequestModel fr = new IdRequestModel();
+        fr.setId(53);
         assertThat(fr.getId()).isEqualTo(53);
     }
 }
