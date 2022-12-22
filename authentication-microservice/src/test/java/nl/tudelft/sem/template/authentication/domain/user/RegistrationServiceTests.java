@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import commons.Faculty;
 import commons.NetId;
+import commons.Role;
 import commons.RoleValue;
 import java.util.ArrayList;
 import nl.tudelft.sem.template.authentication.profiles.MockPasswordEncoderProfile;

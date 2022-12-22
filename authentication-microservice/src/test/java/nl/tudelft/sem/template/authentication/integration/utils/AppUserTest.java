@@ -4,10 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import commons.Faculty;
 import commons.NetId;
+import commons.Role;
 import java.util.ArrayList;
 import nl.tudelft.sem.template.authentication.domain.user.AppUser;
 import nl.tudelft.sem.template.authentication.domain.user.HashedPassword;
-import nl.tudelft.sem.template.authentication.domain.user.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,7 +25,7 @@ public class AppUserTest {
     void init() {
         netId = new NetId("user1");
         password = new HashedPassword("pwd");
-        role = new Role("employee");
+        role = new Role("EMPLOYEE");
 
         Faculty faculty1 = new Faculty("EEMCS");
         Faculty faculty2 = new Faculty("3ME");
@@ -50,7 +50,7 @@ public class AppUserTest {
 
     @Test
     public void getRoleTest() {
-        assertThat(user.getRole()).isEqualTo(new Role("employee"));
+        assertThat(user.getRole()).isEqualTo(new Role("EMPLOYEE"));
     }
 
     @Test
