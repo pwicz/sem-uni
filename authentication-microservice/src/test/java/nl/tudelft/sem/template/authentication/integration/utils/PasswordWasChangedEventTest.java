@@ -4,12 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import commons.Faculty;
 import commons.NetId;
+import commons.Role;
 import commons.RoleValue;
 import java.util.ArrayList;
 import nl.tudelft.sem.template.authentication.domain.user.AppUser;
 import nl.tudelft.sem.template.authentication.domain.user.HashedPassword;
 import nl.tudelft.sem.template.authentication.domain.user.PasswordWasChangedEvent;
-import nl.tudelft.sem.template.authentication.domain.user.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

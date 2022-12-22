@@ -2,8 +2,8 @@ package nl.tudelft.sem.template.authentication.integration.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import commons.Role;
 import commons.RoleValue;
-import nl.tudelft.sem.template.authentication.domain.user.Role;
 import nl.tudelft.sem.template.authentication.domain.user.RoleAttributeConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

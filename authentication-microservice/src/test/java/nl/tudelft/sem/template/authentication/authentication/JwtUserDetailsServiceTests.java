@@ -5,11 +5,11 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import commons.Faculty;
 import commons.NetId;
+import commons.Role;
 import commons.RoleValue;
 import java.util.ArrayList;
 import nl.tudelft.sem.template.authentication.domain.user.AppUser;
 import nl.tudelft.sem.template.authentication.domain.user.HashedPassword;
-import nl.tudelft.sem.template.authentication.domain.user.Role;
 import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
