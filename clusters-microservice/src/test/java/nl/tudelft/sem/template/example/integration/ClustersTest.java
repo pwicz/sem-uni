@@ -66,6 +66,7 @@ public class ClustersTest {
      */
     @BeforeEach
     public void init() throws JsonProcessingException {
+        nodeRepository.deleteAll();
         when(mockTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockTokenVerifier.getNetIdFromToken(anyString())).thenReturn("SomeUser");
         when(mockAuthManager.getNetId()).thenReturn("SomeUser");
@@ -77,23 +78,20 @@ public class ClustersTest {
      *
      * @throws Exception an exception
      */
-    public void resourcesTest() throws Exception {
+    public void addNodeTest() throws Exception {
         // Arrange
         final NetId testUser = new NetId("SomeUser");
         final Faculty faculty = new Faculty("EEMCS");
 
-        final Node node1 = new Node("SomeUser", "url", "EEMCS", "token", 10, 10, 10);
+        final Node node1 = new Node(testUser.toString(), "url", "EEMCS", "token", 10, 10, 10);
         final Node node2 = new Node("SomeUser", "url", "EE", "token", 30, 15, 10);
 
         when(mockAuthManager.getRole()).thenReturn("admin");
 
         nodeRepository.save(node1);
-        nodeRepository.save(node2);
-
-
 
         // Act
-        ResultActions resultActions = mockMvc.perform(get("/cluster/addNode")
+        ResultActions resultActions = mockMvc.perform(post("/cluster/addNode")
             .contentType(MediaType.APPLICATION_JSON)
             .content(JsonUtil.serialize(node1))
             .header("Authorization", "Bearer MockedToken")
@@ -107,8 +105,8 @@ public class ClustersTest {
         assertThat(savedNodes.size()).isEqualTo(1);
         Node firstNode = savedNodes.get(0);
 
-        assertThat(firstNode.getName()).isEqualTo(testUser);
-        assertThat(firstNode.getFaculty()).isEqualTo("EEMCS");
+        assertThat(firstNode.getName()).isEqualTo(testUser.toString());
+        assertThat(firstNode.getFaculty()).isEqualTo("FreePool");
     }
 
 }
