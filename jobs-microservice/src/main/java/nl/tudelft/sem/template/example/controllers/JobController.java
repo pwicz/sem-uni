@@ -1,8 +1,8 @@
 package nl.tudelft.sem.template.example.controllers;
 
-
 import commons.Job;
 import commons.NetId;
+import commons.RoleValue;
 import commons.Status;
 import commons.UpdateJob;
 import exceptions.InvalidIdException;
@@ -15,7 +15,6 @@ import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.JobRepository;
 import nl.tudelft.sem.template.example.domain.JobService;
 import nl.tudelft.sem.template.example.models.IdRequestModel;
-import nl.tudelft.sem.template.example.models.JobNotificationResponseModel;
 import nl.tudelft.sem.template.example.models.JobRequestModel;
 import nl.tudelft.sem.template.example.models.JobResponseModel;
 import nl.tudelft.sem.template.example.models.NetIdRequestModel;
@@ -81,7 +80,8 @@ public class JobController {
 
             List<Job> jobs = this.jobService.getAllJobs(netId, authNetId, role);
             List<JobResponseModel> responseModels = jobs.stream()
-                    .map(x -> new JobResponseModel(x.getNetId().toString(), x.getStatus())).collect(Collectors.toList());
+                    .map(x -> jobService.populateJobResponseModel(x.getJobId(), x.getStatus(), x.getNetId().toString()))
+                .collect(Collectors.toList());
             return ResponseEntity.ok(responseModels);
         } catch (InvalidNetIdException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, invalidId, e);
@@ -102,7 +102,8 @@ public class JobController {
             NetId authNetId = new NetId(authManager.getNetId());
             long jobId = request.getId();
             Status status = this.jobService.getJobStatus(authNetId, authNetId, jobId);
-            StatusResponseModel statusResponseModel = new StatusResponseModel(status);
+            StatusResponseModel statusResponseModel = new StatusResponseModel();
+            statusResponseModel.setStatus(status.toString());
             return ResponseEntity.ok(statusResponseModel);
         } catch (InvalidNetIdException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, invalidId, e);
@@ -122,7 +123,8 @@ public class JobController {
             NetId authNetId = new NetId(authManager.getNetId());
             List<Job> jobs = this.jobService.collectJobsByNetId(netId, authNetId);
             List<JobResponseModel> responseModels = jobs.stream()
-                .map(x -> new JobResponseModel(x.getNetId().toString(), x.getStatus())).collect(Collectors.toList());
+                .map(x -> jobService.populateJobResponseModel(x.getJobId(), x.getStatus(), x.getNetId().toString()))
+                .collect(Collectors.toList());
 
             return ResponseEntity.ok(responseModels);
         } catch (InvalidNetIdException e) {
@@ -147,14 +149,14 @@ public class JobController {
             int cpuUsage = request.getCpuUsage();
             int gpuUsage = request.getGpuUsage();
             int memoryUsage = request.getMemoryUsage();
-            String role = (String) authManager.getRole();
+            RoleValue role = (RoleValue) authManager.getRole();
+            //String role = (String) authManager.getRole();
             LocalDate preferredDate = LocalDate.now();
-            System.out.println(role);
             Job createdJob = this.jobService.createJob(jobNetId, authNetId, cpuUsage,
                     gpuUsage, memoryUsage, role, preferredDate);
 
-            JobResponseModel jobResponseModel = new JobResponseModel(createdJob.getNetId().toString(), Status.PENDING);
-
+            JobResponseModel jobResponseModel = jobService.populateJobResponseModel(createdJob.getJobId(),
+                Status.PENDING, createdJob.getNetId().toString());
             return ResponseEntity.ok(jobResponseModel);
         } catch (InvalidNetIdException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, invalidId, e);

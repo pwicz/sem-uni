@@ -162,7 +162,9 @@ public class AuthenticationController {
     @GetMapping("/faculties")
     public ResponseEntity<FacultyResponseModel> retrieveFaculties() {
         List<String> all = getFacultyService.getFaculties();
-        return ResponseEntity.ok(new FacultyResponseModel(all));
+        FacultyResponseModel facultyResponseModel = new FacultyResponseModel();
+        facultyResponseModel.setFaculty(all);
+        return ResponseEntity.ok(facultyResponseModel);
     }
 
     /**
@@ -181,7 +183,7 @@ public class AuthenticationController {
         try {
             NetId netId = new NetId(request.getNetId());
             List<Faculty> faculties =
-                Arrays.stream(request.getFaculty().split(";")).map(s -> new Faculty(s)).collect(Collectors.toList());
+                Arrays.stream(request.getFaculty().split(";")).map(Faculty::new).collect(Collectors.toList());
             getFacultyService.changeFaculty(netId, faculties);
             return ResponseEntity.ok().build();
         } catch (Exception e) {

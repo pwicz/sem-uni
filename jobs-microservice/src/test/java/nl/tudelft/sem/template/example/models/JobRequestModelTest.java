@@ -12,7 +12,11 @@ public class JobRequestModelTest {
 
     @BeforeEach
     void init() {
-        jm = new JobRequestModel("filip", 10, 4, 3);
+        jm = new JobRequestModel();
+        jm.setNetId("filip");
+        jm.setCpuUsage(10);
+        jm.setGpuUsage(4);
+        jm.setMemoryUsage(3);
     }
 
     @Test

@@ -1,11 +1,13 @@
 package nl.tudelft.sem.template.example.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import commons.Job;
 import commons.NetId;
+import commons.RoleValue;
 import commons.Status;
 import exceptions.InvalidIdException;
 import java.time.LocalDate;
@@ -82,7 +84,7 @@ public class JobsServiceTest {
 
     @Test
     public void getAllScheduledJobsTest() throws Exception {
-        String url = jobService.getUrl() + "/addJob";
+        String url = "http://localhost:8083" + "/addJob";
 
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
@@ -91,20 +93,20 @@ public class JobsServiceTest {
 
         j1.setStatus(Status.ACCEPTED);
         j3.setStatus(Status.ACCEPTED);
-        jobService.createJob(u1, j1, "employee");
-        jobService.createJob(u2, j3, "employee");
+        jobService.createJob(u1, j1, RoleValue.EMPLOYEE);
+        jobService.createJob(u2, j3, RoleValue.EMPLOYEE);
 
-        jobService.createJob(u2, j2, "employee");
+        jobService.createJob(u2, j2, RoleValue.EMPLOYEE);
 
         List<Job> fromDb = jobService.getAllScheduledJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(2);
-        assertTrue(fromDb.get(0).getStatus() == Status.ACCEPTED);
-        assertTrue(fromDb.get(1).getStatus() == Status.ACCEPTED);
+        assertSame(fromDb.get(0).getStatus(), Status.ACCEPTED);
+        assertSame(fromDb.get(1).getStatus(), Status.ACCEPTED);
     }
 
     @Test
     public void updateJobTest_Exception() throws Exception {
-        String url = jobService.getUrl() + "/updateJob";
+        String url = "http://localhost:8083" + "/updateJob";
 
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
@@ -117,36 +119,37 @@ public class JobsServiceTest {
 
     @Test
     public void updateJobTest_Ok() throws Exception {
-        String url = jobService.getUrl() + "/addJob";
-
-        JobRequestModel model = new JobRequestModel(u1.toString(), 10, 10, 10);
-
+        JobRequestModel model = new JobRequestModel();
+        model.setNetId(u1.toString());
+        model.setCpuUsage(10);
+        model.setGpuUsage(10);
+        model.setMemoryUsage(10);
+        String url = "http://localhost:8083" + "/addJob";
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
-
-        jobService.createJob(u1, u1, 10, 10, 10, "employee", LocalDate.now());
+        jobService.createJob(u1, u1,  10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+        jobService.createJob(u1, u1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
-        assertThat(fromDb.size()).isEqualTo(1);
-        assertTrue(fromDb.get(0).getStatus() == Status.PENDING);
+        assertThat(fromDb.size()).isEqualTo(2);
+        assertSame(fromDb.get(0).getStatus(), Status.PENDING);
 
         jobService.updateJob(fromDb.get(0).getJobId(), Status.ACCEPTED, dateConstant);
         fromDb = jobService.getAllJobs(u1, u1, "admin");
-        assertThat(fromDb.size()).isEqualTo(1);
-        assertTrue(fromDb.get(0).getStatus() == Status.ACCEPTED);
+        assertThat(fromDb.size()).isEqualTo(2);
+        assertSame(fromDb.get(0).getStatus(), Status.ACCEPTED);
     }
 
     @Test
     public void deleteJobTest() throws Exception {
-        String url = jobService.getUrl() + "/addJob";
+        String url = "http://localhost:8083" + "/addJob";
 
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
-
-        jobService.createJob(u1, u1, 10, 10, 10, "employee", LocalDate.now());
-        jobService.createJob(u2, u2, 12, 10, 10, "employee", LocalDate.now());
+        jobService.createJob(u1, u1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+        jobService.createJob(u2, u2, 12, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(2);
@@ -161,14 +164,12 @@ public class JobsServiceTest {
 
     @Test
     public void deleteJobTest_Exception() throws Exception {
-        String url = jobService.getUrl() + "/addJob";
+        String url = "http://localhost:8083" + "/addJob";
 
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
-
-        jobService.createJob(u1, u1, 10, 10, 10, "employee", LocalDate.now());
-
+        jobService.createJob(u1, u1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(1);
 
@@ -179,16 +180,13 @@ public class JobsServiceTest {
 
     @Test
     public void collectJobsByNetIdTest() throws Exception {
-        String url = jobService.getUrl() + "/addJob";
+        String url = "http://localhost:8083" + "/addJob";
 
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
-
-        jobService.createJob(u1, u1, 10, 10, 10, "employee", LocalDate.now());
-        jobService.createJob(u2, u2, 12, 10, 10, "employee", LocalDate.now());
-
-
+        jobService.createJob(u1, u1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+        jobService.createJob(u2, u2, 12, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
 
         List<Job> fromDb = jobService.collectJobsByNetId(u1, u1);
         j1.setJobId(fromDb.get(0).getJobId());

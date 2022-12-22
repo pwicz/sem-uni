@@ -10,7 +10,8 @@ import org.junit.jupiter.api.Test;
 public class NetIdRequestModelTest {
     @Test
     void test() {
-        NetIdRequestModel jm = new NetIdRequestModel("filip");
+        NetIdRequestModel jm = new NetIdRequestModel();
+        jm.setNetId("filip");
         assertThat(jm.getNetId()).isEqualTo("filip");
     }
 }

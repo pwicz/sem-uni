@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.example.domain;
 
 import commons.Job;
 import commons.NetId;
+import commons.RoleValue;
 import commons.ScheduleJob;
 import commons.Status;
 import exceptions.InvalidIdException;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import nl.tudelft.sem.template.example.models.JobResponseModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
@@ -29,25 +31,8 @@ public class JobService {
     private final transient RestTemplate restTemplate;
     private static final String nullValue = "null";
 
-    private String schedulerUrl = "http://localhost:8084";
-    private String url = "http://localhost:8083";
-
-    public String getSchedulerUrl() {
-        return schedulerUrl;
-    }
-
-    public void setSchedulerUrl(String schedulerUrl) {
-        this.schedulerUrl = schedulerUrl;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
+    private final transient String schedulerUrl = "http://localhost:8084";
+    private final transient String url = "http://localhost:8083";
 
     /**
      * Instantiates a new JobService.
@@ -68,7 +53,7 @@ public class JobService {
      */
     public String scheduleJob(ScheduleJob scheduleJob) throws InvalidScheduleJobException {
         if (scheduleJob == null) {
-            throw new InvalidScheduleJobException(scheduleJob);
+            throw new InvalidScheduleJobException(null);
         }
 
         ResponseEntity<String> response = restTemplate
@@ -92,8 +77,9 @@ public class JobService {
      * @return a new Job
      * @throws Exception if the resources of NetId are invalid
      */
+
     public Job createJob(NetId netId, NetId authNetId, int cpuUsage, int gpuUsage,
-                         int memoryUsage, String role, LocalDate preferredDate) throws Exception {
+                         int memoryUsage, RoleValue role, LocalDate preferredDate) throws Exception {
         if (cpuUsage < 0 || gpuUsage < 0 || memoryUsage < 0) {
             throw new InvalidResourcesException(Math.min(cpuUsage, Math.min(gpuUsage, memoryUsage)));
         }
@@ -107,9 +93,9 @@ public class JobService {
         if (!netId.toString().equals(authNetId.toString())) {
             throw new InvalidNetIdException(netId.toString());
         }
-        if (!role.equals("employee")) {
+        if (!role.equals(RoleValue.EMPLOYEE)) {
             System.out.println(role);
-            throw new BadCredentialsException(role);
+            throw new BadCredentialsException(role.toString());
         }
 
         Job newJob = new Job(netId, cpuUsage, gpuUsage, memoryUsage, preferredDate);
@@ -127,7 +113,7 @@ public class JobService {
      * @return a new Job
      * @throws Exception if the resources of NetId are invalid
      */
-    public Job createJob(NetId authNetId, Job job, String role) throws Exception {
+    public Job createJob(NetId authNetId, Job job, RoleValue role) throws Exception {
         if (job.getCpuUsage() < 0 || job.getGpuUsage() < 0 || job.getMemoryUsage() < 0) {
             throw new InvalidResourcesException(Math.min(job.getCpuUsage(),
                     Math.min(job.getGpuUsage(), job.getMemoryUsage())));
@@ -138,9 +124,9 @@ public class JobService {
         if (!job.getNetId().toString().equals(authNetId.toString())) {
             throw new InvalidNetIdException(job.getNetId().toString());
         }
-        if (!role.equals("employee")) {
+        if (!role.equals(RoleValue.EMPLOYEE)) {
             System.out.println(role);
-            throw new BadCredentialsException(role);
+            throw new BadCredentialsException(role.toString());
         }
 
         jobRepository.save(job);
@@ -268,4 +254,19 @@ public class JobService {
         jobRepository.save(job);
     }
 
+    /**
+     * Populate a JobResponseModel DTO.
+     *
+     * @param id id of the Job
+     * @param status status of the Job
+     * @param netId netId of the user that created the Job
+     * @return JobResponseModel
+     */
+    public JobResponseModel populateJobResponseModel(long id, Status status, String netId) {
+        JobResponseModel jobResponseModel = new JobResponseModel();
+        jobResponseModel.setId(id);
+        jobResponseModel.setStatus(status);
+        jobResponseModel.setNetId(netId);
+        return jobResponseModel;
+    }
 }
