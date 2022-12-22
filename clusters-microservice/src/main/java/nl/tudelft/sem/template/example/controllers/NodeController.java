@@ -191,7 +191,7 @@ public class NodeController {
     public ResponseEntity<String> releaseFaculty(@RequestBody ReleaseFacultyModel releaseModel)
                                                 throws JsonProcessingException {
         if (!authManager.getRole().equals("FacultyAccount")) {
-            System.out.println("Account is not facculty account. Current: " + getFaculty(authManager.getNetId()));
+            System.out.println("Account is not faculty account. Current: " + getFaculty(authManager.getNetId()));
             return ResponseEntity.badRequest().build();
         }
         if (releaseModel.getDate() == null || releaseModel.getFaculty() == null
@@ -200,7 +200,7 @@ public class NodeController {
             return ResponseEntity.badRequest().build();
         }
         if (!getFaculty(authManager.getNetId()).contains(releaseModel.getFaculty())) {
-            System.out.println("Releasing someone elses faculty");
+            System.out.println("Releasing someone else's faculty");
             return ResponseEntity.badRequest().build();
         }
         repo.updateRelease(releaseModel.getFaculty(), releaseModel.getDate(),

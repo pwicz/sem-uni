@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.authentication.domain.user;
 
+import commons.Role;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 

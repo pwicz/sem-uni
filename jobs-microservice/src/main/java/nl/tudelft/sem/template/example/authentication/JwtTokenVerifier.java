@@ -19,6 +19,7 @@ public class JwtTokenVerifier {
      * Validate the JWT token for expiration.
      */
     public boolean validateToken(String token) {
+        System.out.println(token);
         return !isTokenExpired(token);
     }
 

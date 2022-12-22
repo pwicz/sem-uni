@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import commons.Role;
 import commons.Faculties;
 import commons.Faculty;
 import commons.RoleValue;
@@ -15,7 +16,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import nl.tudelft.sem.template.authentication.domain.providers.TimeProvider;
-import nl.tudelft.sem.template.authentication.domain.user.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.GrantedAuthority;
