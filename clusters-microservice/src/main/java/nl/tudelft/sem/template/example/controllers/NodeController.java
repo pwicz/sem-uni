@@ -7,6 +7,7 @@ import commons.FacultyResourceModel;
 import commons.FacultyResponseModel;
 import commons.NetId;
 import commons.Resource;
+import commons.RoleValue;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,9 +77,9 @@ public class NodeController {
         return ResponseEntity.ok(r);
     }
 
-    //This is onyl needed to fix PMD
+    //This is only needed to fix PMD
     private boolean checkIfAdmin() {
-        return authManager.getRole().toString().equals("admin");
+        return authManager.getRole().getRoleValue() == RoleValue.ADMIN;
     }
 
     /**
@@ -130,15 +131,14 @@ public class NodeController {
             facultyResources.setGpuUsage(r.getGpu());
             facultyResources.setMemoryUsage(r.getMem());
             return ResponseEntity.ok(facultyResources);
-        } else {
-            FacultyResource facultyResources = new FacultyResource();
-            facultyResources.setFaculty(facDay.getFaculty());
-            facultyResources.setDate(facDay.getDate());
-            facultyResources.setCpuUsage(0);
-            facultyResources.setGpuUsage(0);
-            facultyResources.setMemoryUsage(0);
-            return ResponseEntity.ok(facultyResources);
         }
+        FacultyResource facultyResources = new FacultyResource();
+        facultyResources.setFaculty(facDay.getFaculty());
+        facultyResources.setDate(facDay.getDate());
+        facultyResources.setCpuUsage(0);
+        facultyResources.setGpuUsage(0);
+        facultyResources.setMemoryUsage(0);
+        return ResponseEntity.ok(facultyResources);
     }
 
     /**
@@ -191,7 +191,7 @@ public class NodeController {
     @PostMapping("/releaseFaculty")
     public ResponseEntity<String> releaseFaculty(@RequestBody ReleaseFacultyModel releaseModel)
                                                 throws JsonProcessingException {
-        if (!authManager.getRole().equals("FacultyAccount")) {
+        if (authManager.getRole().getRoleValue() != RoleValue.FAC_ACC) {
             System.out.println("Account is not faculty account. Current: " + getFaculty());
             return ResponseEntity.badRequest().build();
         }
@@ -250,7 +250,7 @@ public class NodeController {
         List<String> faculties = getFaculty();
         if (!checkIfAdmin() && !faculties.contains(
                 repo.getNodeByToken(token.getToken()).get().getFaculty())) {
-            System.out.println("Facultys dont match");
+            System.out.println("Faculties don't match");
             return ResponseEntity.badRequest().build();
         }
 
@@ -296,11 +296,6 @@ public class NodeController {
      */
     @GetMapping(path = "/resourcesNextDay")
     public ResponseEntity<List<FacultyResource>> getResourcesNextDay() throws Exception {
-        String role = authManager.getRole().toString();
-        if (!role.equals("EMPLOYEE") && !role.equals("ADMIN") && !role.equals("FAC_ACC")) {
-            return ResponseEntity.badRequest().build();
-        }
-
         ResponseEntity<String[]> facultyType = restTemplate.postForEntity(usersUrl
                 + "/faculty", new NetId(authManager.getNetId()), String[].class);
 

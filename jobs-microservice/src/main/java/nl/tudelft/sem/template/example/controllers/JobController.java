@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.example.controllers;
 
 import commons.Job;
 import commons.NetId;
+import commons.Role;
 import commons.RoleValue;
 import commons.Status;
 import commons.UpdateJob;
@@ -149,11 +150,11 @@ public class JobController {
             int cpuUsage = request.getCpuUsage();
             int gpuUsage = request.getGpuUsage();
             int memoryUsage = request.getMemoryUsage();
-            RoleValue role = (RoleValue) authManager.getRole();
+            Role role = authManager.getRole();
             //String role = (String) authManager.getRole();
             LocalDate preferredDate = LocalDate.now();
             Job createdJob = this.jobService.createJob(jobNetId, authNetId, cpuUsage,
-                    gpuUsage, memoryUsage, role, preferredDate);
+                    gpuUsage, memoryUsage, role.getRoleValue(), preferredDate);
 
             JobResponseModel jobResponseModel = jobService.populateJobResponseModel(createdJob.getJobId(),
                 Status.PENDING, createdJob.getNetId().toString());

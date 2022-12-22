@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.authentication;
 
 import commons.Faculties;
+import commons.Role;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
@@ -26,8 +27,9 @@ public class AuthManager {
      *
      * @return The role of the user.
      */
-    public Object getRole() {
-        return SecurityContextHolder.getContext().getAuthentication().getCredentials();
+    public Role getRole() {
+        Role r = new Role(SecurityContextHolder.getContext().getAuthentication().getCredentials().toString());
+        return r;
     }
 
     /**

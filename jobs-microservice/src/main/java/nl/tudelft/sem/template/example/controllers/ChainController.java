@@ -42,9 +42,9 @@ public class ChainController {
         System.out.println(request.getId());
         try {
             NetId netId = new NetId(authManager.getNetId());
-            RoleValue role = (RoleValue) authManager.getRole();
+            Role role = authManager.getRole();
             Long id = request.getId();
-            Job approvedJob = chainService.approveJob(netId, role, id);
+            Job approvedJob = chainService.approveJob(netId, role.getRoleValue(), id);
             JobResponseModel jobResponseModel = new JobResponseModel();
             jobResponseModel.setId(id);
             jobResponseModel.setStatus(approvedJob.getStatus());
@@ -69,10 +69,10 @@ public class ChainController {
     public ResponseEntity<JobResponseModel> rejectJob(@RequestBody RejectRequestModel request) {
         try {
             NetId netId = new NetId(authManager.getNetId());
-            RoleValue role = (RoleValue) authManager.getRole();
+            Role role = authManager.getRole();
             Long id = request.getId();
 
-            Job rejectedJob = chainService.rejectJob(netId, role, id);
+            Job rejectedJob = chainService.rejectJob(netId, role.getRoleValue(), id);
             JobResponseModel jobResponseModel = new JobResponseModel();
             jobResponseModel.setNetId(rejectedJob.getNetId().toString());
             jobResponseModel.setStatus(rejectedJob.getStatus());

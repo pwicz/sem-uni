@@ -13,8 +13,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import commons.Faculties;
 import commons.Faculty;
+import commons.FacultyResourceModel;
 import commons.NetId;
+import commons.Role;
+import commons.RoleValue;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -70,25 +75,20 @@ public class ClustersTest {
         when(mockTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockTokenVerifier.getNetIdFromToken(anyString())).thenReturn("SomeUser");
         when(mockAuthManager.getNetId()).thenReturn("SomeUser");
+        when(mockAuthManager.getFaculty()).thenReturn(new Faculties("EEMCS"));
+
 
     }
 
-    /**
-     *  not working test to add a Node because we make a request from addNode method to faculties which cant be mocked.
-     *
-     * @throws Exception an exception
-     */
-    public void addNodeTest() throws Exception {
+    @Test
+    public void addNodeTest_to_free_pool() throws Exception {
         // Arrange
         final NetId testUser = new NetId("SomeUser");
         final Faculty faculty = new Faculty("EEMCS");
 
         final Node node1 = new Node(testUser.toString(), "url", "EEMCS", "token", 10, 10, 10);
-        final Node node2 = new Node("SomeUser", "url", "EE", "token", 30, 15, 10);
 
-        when(mockAuthManager.getRole()).thenReturn("admin");
-
-        nodeRepository.save(node1);
+        when(mockAuthManager.getRole()).thenReturn(new Role(RoleValue.ADMIN));
 
         // Act
         ResultActions resultActions = mockMvc.perform(post("/cluster/addNode")
@@ -107,6 +107,78 @@ public class ClustersTest {
 
         assertThat(firstNode.getName()).isEqualTo(testUser.toString());
         assertThat(firstNode.getFaculty()).isEqualTo("FreePool");
+    }
+
+    @Test
+    public void addNodeTest_to_faculty() throws Exception {
+        // Arrange
+        final NetId testUser = new NetId("SomeUser");
+        final Faculty faculty = new Faculty("EEMCS");
+
+        final Node node1 = new Node(testUser.toString(), "url", "EEMCS", "token", 10, 10, 10);
+
+        when(mockAuthManager.getRole()).thenReturn(new Role(RoleValue.EMPLOYEE));
+
+        // Act
+        ResultActions resultActions = mockMvc.perform(post("/cluster/addNode")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(JsonUtil.serialize(node1))
+            .header("Authorization", "Bearer MockedToken")
+        );
+
+        // Assert
+        resultActions.andExpect(status().isOk());
+
+        List<Node> savedNodes = nodeRepository.getAllNodes().orElseThrow();
+
+        assertThat(savedNodes.size()).isEqualTo(1);
+        Node firstNode = savedNodes.get(0);
+
+        assertThat(firstNode.getName()).isEqualTo(testUser.toString());
+        assertThat(firstNode.getFaculty()).isEqualTo("EEMCS");
+    }
+
+    /**
+     * Not yet working test to get all resources.
+     *
+     * @throws Exception exception.
+     */
+    public void resourcesTest() throws Exception {
+        // Arrange
+        final NetId testUser = new NetId("SomeUser");
+
+        final Node node1 = new Node(testUser.toString(), "url", "EEMCS", "token", 10, 10, 10);
+        final Node node2 = new Node("SomeUser", "url", "EE", "token", 30, 15, 10);
+
+        when(mockAuthManager.getRole()).thenReturn(new Role(RoleValue.ADMIN));
+
+        nodeRepository.save(node1);
+        nodeRepository.save(node2);
+
+        LocalDate date = LocalDate.now();
+
+        FacultyResourceModel fr = new FacultyResourceModel();
+        fr.setFaculty("EE");
+        fr.setDate(date);
+
+        ResultActions r1 = mockMvc.perform(post("/cluster/addNode")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(JsonUtil.serialize(node1))
+            .header("Authorization", "Bearer MockedToken")
+        );
+        ResultActions r2 = mockMvc.perform(post("/cluster/addNode")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(JsonUtil.serialize(node2))
+            .header("Authorization", "Bearer MockedToken")
+        );
+        // Act
+        ResultActions resultActions = mockMvc.perform(get("/cluster/resources")
+            .header("Authorization", "Bearer MockedToken")
+        );
+
+        // Assert
+        resultActions.andExpect(status().isOk());
+
     }
 
 }
