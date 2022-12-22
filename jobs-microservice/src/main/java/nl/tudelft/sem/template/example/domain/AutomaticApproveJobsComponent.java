@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.example.domain;
 import commons.Job;
 import commons.ScheduleJob;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +14,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class AutomaticApproveJobsComponent {
 
-    public final transient JobService jobService;
+    public transient JobService jobService;
 
     @Autowired
     public AutomaticApproveJobsComponent(JobService jobService) {
+        this.jobService = jobService;
+    }
+
+    public void setJobService(JobService jobservice) {
         this.jobService = jobService;
     }
 
@@ -46,6 +51,7 @@ public class AutomaticApproveJobsComponent {
     }
 
     /**
+     * Filter the pending jobs only.
      *
      * @param pendingJobs list of Jobs that have the status "PENDING"
      * @return a sorted (according to creationDate) list of jobs that are due tomorrow

@@ -137,16 +137,26 @@ class JobServiceTest {
 
     @Test
     void collectJobsByNetId() {
-        NetId netId = new NetId("mlica");
-        Job expected1 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 10, 10, 10, LocalDate.now());
-        Job expected2 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 20, 10, 1, LocalDate.now());
+        //        NetId netId = new NetId("mlica");
+        //        Job expected1 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 10, 10, 10, LocalDate.now());
+        //        Job expected2 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 20, 10, 1, LocalDate.now());
+
+        NetId netId = new NetId("itomov");
+        Job expected1 = new Job(new NetId("itomov"), new Faculty("EEMCS"), 10, 10, 10, LocalDate.now());
+        Job expected2 = new Job(new NetId("itomov"), new Faculty("EEMCS"), 20, 10, 1, LocalDate.now());
         try {
+            jobRepository.save(expected1);
+            jobRepository.save(expected2);
+
             List<Job> jobs = jobService.collectJobsByNetId(netId, netId);
             expected1.setJobId(jobs.get(0).getJobId());
             expected2.setJobId(jobs.get(1).getJobId());
             assertEquals(jobs.size(), 2);
             assertEquals(jobs.get(0), expected1);
             assertEquals(jobs.get(1), expected2);
+
+            //            assertThat(jobs.get(0).equals(expected1)).isTrue();
+            //            assertThat(jobs.get(1).equals(expected2)).isTrue();
         } catch (Exception e) {
             fail();
         }
