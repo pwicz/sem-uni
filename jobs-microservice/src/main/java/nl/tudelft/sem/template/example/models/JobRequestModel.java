@@ -8,7 +8,6 @@ import lombok.Data;
  */
 @Data
 public class JobRequestModel {
-
     private String netId;
     private String faculty;
     private int cpuUsage;

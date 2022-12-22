@@ -1,4 +1,4 @@
-package commons.exceptions;
+package exceptions;
 
 public class ResourceBiggerThanCpuException extends Exception {
 

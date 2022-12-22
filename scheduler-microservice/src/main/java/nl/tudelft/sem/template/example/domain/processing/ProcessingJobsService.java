@@ -1,10 +1,10 @@
 package nl.tudelft.sem.template.example.domain.processing;
 
 import commons.FacultyResource;
-import commons.NetId;
+import commons.FacultyTotalResource;
 import commons.ScheduleJob;
 import commons.UpdateJob;
-import commons.exceptions.ResourceBiggerThanCpuException;
+import exceptions.ResourceBiggerThanCpuException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -13,10 +13,8 @@ import java.util.List;
 import lombok.Synchronized;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstance;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstanceRepository;
-import nl.tudelft.sem.template.example.models.FacultyRequestModel;
 import nl.tudelft.sem.template.example.models.FacultyResponseModel;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -161,21 +159,21 @@ public class ProcessingJobsService {
 
      * @return  List of faculty resource
      */
-    public List<FacultyResource> getAllResourcesNextDay() {
+    public List<FacultyTotalResource> getAllResourcesNextDay() {
 
         ResponseEntity<FacultyResponseModel> fac = restTemplate.getForEntity(authUrl
                 + "/faculties", FacultyResponseModel.class);
 
         List<String> faculties = Arrays.asList(fac.getBody().getFaculties());
 
-        List<FacultyResource> res = new ArrayList<>();
+        List<FacultyTotalResource> res = new ArrayList<>();
 
         LocalDate tmrw = LocalDate.now().plusDays(1);
         for (String f : faculties) {
             ResponseEntity<FacultyResource> facultyResourcesResponse = restTemplate.getForEntity(resourcesUrl
                     + "/resources?faculty=" + f + "&day=" + tmrw, FacultyResource.class);
 
-            FacultyResource total  = facultyResourcesResponse.getBody();
+
             if (facultyResourcesResponse.getBody() == null) {
                 continue;
             }
@@ -185,10 +183,16 @@ public class ProcessingJobsService {
             int gpuUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getGpuUsage).sum();
             int memoryUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getMemoryUsage).sum();
 
-            FacultyResource fr = new FacultyResource(f, tmrw,
-                    cpuUsageSum, gpuUsageSum, memoryUsageSum,
-                    total.getCpuUsageTotal(), total.getGpuUsageTotal(), total.getMemoryUsageTotal()
-            );
+            FacultyResource total  = facultyResourcesResponse.getBody();
+            FacultyTotalResource fr = new FacultyTotalResource();
+            fr.setFaculty(f);
+            fr.setDate(tmrw);
+            fr.setCpuUsageTotal(cpuUsageSum);
+            fr.setGpuUsageTotal(gpuUsageSum);
+            fr.setMemoryUsageTotal(memoryUsageSum);
+            fr.setCpuUsage(total.getCpuUsage());
+            fr.setGpuUsage(total.getGpuUsage());
+            fr.setMemoryUsage(total.getMemoryUsage());
             res.add(fr);
         }
         return res;

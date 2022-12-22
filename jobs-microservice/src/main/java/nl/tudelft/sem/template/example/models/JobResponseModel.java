@@ -12,9 +12,5 @@ public class JobResponseModel {
 
     private String netId;
     private Status status;
-
-    public JobResponseModel(String netId, Status status) {
-        this.netId = netId;
-        this.status = status;
-    }
+    private Long id;
 }

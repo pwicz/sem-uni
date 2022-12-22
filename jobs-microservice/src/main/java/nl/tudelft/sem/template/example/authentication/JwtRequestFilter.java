@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.authentication;
 
+import commons.RoleValue;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import java.io.IOException;
@@ -66,10 +67,17 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         String netId = jwtTokenVerifier.getNetIdFromToken(token);
                         String role = jwtTokenVerifier.getRoleFromToken(token);
 
-
+                        RoleValue roleValue;
+                        if (role.equals("EMPLOYEE")) {
+                            roleValue = RoleValue.EMPLOYEE;
+                        } else if (role.equals("ADMIN")) {
+                            roleValue = RoleValue.ADMIN;
+                        } else {
+                            roleValue = RoleValue.FAC_ACC;
+                        }
                         var authenticationToken = new UsernamePasswordAuthenticationToken(
                                 netId,
-                                role, List.of()
+                                roleValue, List.of()
                         );
                         authenticationToken.setDetails(new WebAuthenticationDetailsSource()
                                 .buildDetails(request));

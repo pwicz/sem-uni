@@ -1,6 +1,7 @@
 package commons;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,8 +15,33 @@ class FacultyResourceTest {
     @BeforeEach
     void setUp() {
         LocalDate today = LocalDate.now();
-        fr = new FacultyResource("EEMCS", today, 3, 2, 1);
+        fr = new FacultyResource();
+        fr.setFaculty("EEMCS");
+        fr.setDate(today);
+        fr.setCpuUsage(3);
+        fr.setGpuUsage(2);
+        fr.setMemoryUsage(1);
     }
+
+    @Test
+    void constructorTest() {
+        LocalDate tmrw = LocalDate.now().plusDays(1);
+        fr = new FacultyResource();
+        fr.setFaculty("EE");
+        fr.setDate(tmrw);
+        fr.setCpuUsage(10);
+        fr.setGpuUsage(2);
+        fr.setMemoryUsage(1);
+
+        assertNotNull(fr);
+
+        assertThat(fr.getFaculty()).isEqualTo("EE");
+        assertThat(fr.getDate()).isEqualTo(tmrw);
+        assertThat(fr.getCpuUsage()).isEqualTo(10);
+        assertThat(fr.getGpuUsage()).isEqualTo(2);
+        assertThat(fr.getMemoryUsage()).isEqualTo(1);
+    }
+
 
     @Test
     void getFaculty() {

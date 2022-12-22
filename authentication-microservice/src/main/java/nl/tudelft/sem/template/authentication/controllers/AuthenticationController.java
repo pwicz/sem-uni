@@ -1,6 +1,8 @@
 package nl.tudelft.sem.template.authentication.controllers;
 
 import commons.Faculty;
+import commons.FacultyRequestModel;
+import commons.FacultyResponseModel;
 import commons.NetId;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,8 +20,6 @@ import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import nl.tudelft.sem.template.authentication.models.AuthenticationRequestModel;
 import nl.tudelft.sem.template.authentication.models.AuthenticationResponseModel;
 import nl.tudelft.sem.template.authentication.models.ChangeFacultyRequestModel;
-import nl.tudelft.sem.template.authentication.models.FacultyRequestModel;
-import nl.tudelft.sem.template.authentication.models.FacultyResponseModel;
 import nl.tudelft.sem.template.authentication.models.RegistrationRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -138,14 +138,16 @@ public class AuthenticationController {
      *
      * @param request The registration model
      * @return 200 OK if the registration is successful
-     * @throws Exception if a user with this netid already exists
+     * @throws Exception if a user with this netId already exists
      */
-    @PostMapping("/faculty")
+    @PostMapping ("/faculty")
     public ResponseEntity<FacultyResponseModel> retrieveFaculty(@RequestBody FacultyRequestModel request) throws Exception {
         try {
             NetId netId = new NetId(request.getNetId());
-            List<Faculty> faculties = getFacultyService.getFaculty(netId);
-            return ResponseEntity.ok(new FacultyResponseModel(faculties.toString()));
+            List<Faculty> faculty = getFacultyService.getFaculty(netId);
+            FacultyResponseModel facultyResponseModel = new FacultyResponseModel();
+            facultyResponseModel.setFaculty(faculty.stream().map(Faculty::toString).collect(Collectors.toList()));
+            return ResponseEntity.ok(facultyResponseModel);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -160,8 +162,9 @@ public class AuthenticationController {
     @GetMapping("/faculties")
     public ResponseEntity<FacultyResponseModel> retrieveFaculties() {
         List<String> all = getFacultyService.getFaculties();
-
-        return ResponseEntity.ok(new FacultyResponseModel(all.toString()));
+        FacultyResponseModel facultyResponseModel = new FacultyResponseModel();
+        facultyResponseModel.setFaculty(all);
+        return ResponseEntity.ok(facultyResponseModel);
     }
 
     /**
@@ -180,7 +183,7 @@ public class AuthenticationController {
         try {
             NetId netId = new NetId(request.getNetId());
             List<Faculty> faculties =
-                Arrays.stream(request.getFaculty().split(";")).map(s -> new Faculty(s)).collect(Collectors.toList());
+                Arrays.stream(request.getFaculty().split(";")).map(Faculty::new).collect(Collectors.toList());
             getFacultyService.changeFaculty(netId, faculties);
             return ResponseEntity.ok().build();
         } catch (Exception e) {

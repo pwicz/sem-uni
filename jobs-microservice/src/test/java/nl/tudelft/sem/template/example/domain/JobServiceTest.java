@@ -9,13 +9,13 @@ import static org.junit.jupiter.api.Assertions.fail;
 import commons.Faculty;
 import commons.Job;
 import commons.NetId;
+import commons.RoleValue;
 import commons.ScheduleJob;
 import commons.Status;
-import commons.exceptions.ResourceBiggerThanCpuException;
+import exceptions.ResourceBiggerThanCpuException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,11 +55,6 @@ class JobServiceTest {
         jobRepository.save(job2);
     }
 
-    @AfterEach
-    void after() {
-        jobRepository.deleteAll();
-    }
-
     @Test
     void scheduleJobSuccess() throws InvalidScheduleJobException {
         //Job job1 = new Job(new NetId("ageist"), 10, 10, 10);
@@ -95,7 +90,7 @@ class JobServiceTest {
         int memoryUsage = 3;
         try {
             Job created = jobService.createJob(netId, netId, faculty,
-                    cpuUsage, gpuUsage, memoryUsage, "employee", LocalDate.now());
+                    cpuUsage, gpuUsage, memoryUsage, RoleValue.EMPLOYEE, LocalDate.now());
             Job saved = jobRepository.save(created);
             Optional<Job> jobOptional = jobRepository.findById(saved.getJobId());
             assertFalse(jobOptional.isEmpty());
@@ -114,8 +109,7 @@ class JobServiceTest {
         int gpuUsage = 2;
         int memoryUsage = 3;
         assertThrows(ResourceBiggerThanCpuException.class, () -> {
-            Job created = jobService.createJob(netId, netId, faculty,
-                    cpuUsage, gpuUsage, memoryUsage, "employee", LocalDate.now());
+            jobService.createJob(netId, netId, cpuUsage, gpuUsage, memoryUsage, RoleValue.EMPLOYEE, LocalDate.now());
         });
     }
 
