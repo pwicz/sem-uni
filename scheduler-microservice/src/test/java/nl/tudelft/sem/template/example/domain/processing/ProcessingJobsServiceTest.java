@@ -14,6 +14,8 @@ import java.util.List;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstance;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstanceRepository;
 import nl.tudelft.sem.template.example.domain.strategies.ScheduleBetweenClusters;
+import nl.tudelft.sem.template.example.domain.strategies.ScheduleBetweenClustersMostResourcesFirst;
+import nl.tudelft.sem.template.example.domain.strategies.ScheduleOneCluster;
 import nl.tudelft.sem.template.example.domain.strategies.SchedulingStrategy;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -113,6 +115,21 @@ public class ProcessingJobsServiceTest {
         Exception e = assertThrows(ResourceBiggerThanCpuException.class,
                 () -> processingJobsService.scheduleJob(scheduleJob));
         assertThat(e.getMessage()).isEqualTo("Memory usage cannot be greater than the CPU usage.");
+    }
+
+    @Test
+    public void setSchedulingStrategyTest() throws InvalidStrategyNameException {
+        processingJobsService.setSchedulingStrategy("one-cluster");
+        assertThat(processingJobsService.getSchedulingStrategy() instanceof ScheduleOneCluster).isTrue();
+        processingJobsService.setSchedulingStrategy("multiple-clusters");
+        assertThat(processingJobsService.getSchedulingStrategy() instanceof ScheduleBetweenClusters).isTrue();
+        processingJobsService.setSchedulingStrategy("multiple-clusters-most-resources-first");
+        assertThat(processingJobsService.getSchedulingStrategy() instanceof ScheduleBetweenClustersMostResourcesFirst)
+                .isTrue();
+
+        Exception e = assertThrows(InvalidStrategyNameException.class,
+                () -> processingJobsService.setSchedulingStrategy("undefined-useless-string"));
+        assertThat(e.getMessage()).isEqualTo("Strategy undefined-useless-string does not exist.");
     }
 
     @Test
