@@ -20,4 +20,9 @@ public class AuthManager {
     public Object getRole() {
         return SecurityContextHolder.getContext().getAuthentication().getCredentials();
     }
+
+    public Object getFaculty() {
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+    }
+
 }

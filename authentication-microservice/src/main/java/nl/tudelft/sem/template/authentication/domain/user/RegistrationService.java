@@ -34,6 +34,7 @@ public class RegistrationService {
      */
     public AppUser registerUser(NetId netId, Password password, Role role, ArrayList<Faculty> faculty) throws Exception {
 
+        System.out.println(checkNetIdIsUnique(netId));
         if (checkNetIdIsUnique(netId)) {
             // Hash password
             HashedPassword hashedPassword = passwordHashingService.hash(password);

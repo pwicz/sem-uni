@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import commons.Faculties;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,8 @@ public class DefaultController {
      */
     @GetMapping("/hello")
     public ResponseEntity<String> helloWorld() {
-        return ResponseEntity.ok("Hello " + authManager.getNetId());
+        Faculties f = authManager.getFaculty();
+        return ResponseEntity.ok("Hello " + f.getAuthority());
     }
 
 }

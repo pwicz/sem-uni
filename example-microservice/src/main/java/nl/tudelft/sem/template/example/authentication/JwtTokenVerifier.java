@@ -49,4 +49,8 @@ public class JwtTokenVerifier {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
     }
 
+    public String getFacultyFromToken(String token) {
+        Claims claims = getClaims(token);
+        return claims.get("faculty").toString();
+    }
 }

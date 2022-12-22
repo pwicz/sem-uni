@@ -47,7 +47,11 @@ public class JwtTokenGenerator {
         Map<String, Object> claims = new HashMap<>();
         ArrayList<GrantedAuthority> authorities = new ArrayList<>(userDetails.getAuthorities());
 
-        claims.put("role", authorities.get(0).getAuthority());
+        String role = authorities.get(0).getAuthority();
+        String faculty = authorities.get(1).getAuthority();
+
+        claims.put("role", role);
+        claims.put("faculty", faculty);
         return Jwts.builder().setClaims(claims).setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(timeProvider.getCurrentTime().toEpochMilli()))
                 .setExpiration(new Date(timeProvider.getCurrentTime().toEpochMilli() + JWT_TOKEN_VALIDITY))
