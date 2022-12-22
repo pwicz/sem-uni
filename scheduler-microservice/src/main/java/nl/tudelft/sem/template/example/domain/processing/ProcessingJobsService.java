@@ -11,8 +11,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Synchronized;
+import nl.tudelft.sem.template.example.domain.ResourceGetter;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstance;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstanceRepository;
+import nl.tudelft.sem.template.example.domain.strategies.ScheduleBetweenClusters;
+import nl.tudelft.sem.template.example.domain.strategies.ScheduleBetweenClustersMostResourcesFirst;
+import nl.tudelft.sem.template.example.domain.strategies.ScheduleOneCluster;
+import nl.tudelft.sem.template.example.domain.strategies.SchedulingStrategy;
 import nl.tudelft.sem.template.example.models.FacultyResponseModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,6 +29,8 @@ public class ProcessingJobsService {
 
     private final transient ScheduledInstanceRepository scheduledInstanceRepository;
     private final RestTemplate restTemplate;
+    private final ResourceGetter resourceGetter;
+    private SchedulingStrategy schedulingStrategy;
 
     private String resourcesUrl = "http://localhost:8085";
     private String jobsUrl = "http://localhost:8083";
@@ -31,6 +38,7 @@ public class ProcessingJobsService {
 
     public void setResources_url(String resourcesUrl) {
         this.resourcesUrl = resourcesUrl;
+        resourceGetter.setResourcesUrl(resourcesUrl);
     }
 
     public void setJobs_url(String jobsUrl) {
@@ -48,6 +56,9 @@ public class ProcessingJobsService {
     ProcessingJobsService(ScheduledInstanceRepository scheduledInstanceRepository, RestTemplate restTemplate) {
         this.scheduledInstanceRepository = scheduledInstanceRepository;
         this.restTemplate = restTemplate;
+        this.resourceGetter = new ResourceGetter(this.restTemplate, resourcesUrl);
+        schedulingStrategy = new ScheduleBetweenClusters(this.resourceGetter,
+                this.scheduledInstanceRepository);
     }
 
     /**
@@ -73,7 +84,7 @@ public class ProcessingJobsService {
         }
 
         List<ScheduledInstance> scheduledInstances =
-                trySchedulingBetween(j, LocalDate.now().plusDays(possibleInXdays), j.getScheduleBefore());
+                schedulingStrategy.scheduleBetween(j, LocalDate.now().plusDays(possibleInXdays), j.getScheduleBefore());
 
         if (scheduledInstances.isEmpty()) {
             // inform the Job microservice that the job was not scheduled
@@ -94,69 +105,9 @@ public class ProcessingJobsService {
         System.out.println("saved!");
     }
 
-    protected List<ScheduledInstance> trySchedulingBetween(ScheduleJob job, LocalDate start, LocalDate end) {
-        LocalDate currentDate = start;
-        while (currentDate.isBefore(end)) {
-            // 1. Make a request to Clusters microservice to check available resources for a given day
-            int cpuToSchedule = job.getCpuUsage();
-            int gpuToSchedule = job.getGpuUsage();
-            int memoryToSchedule = job.getMemoryUsage();
-
-            List<FacultyResource> facultyResources = getAvailableResources(job.getFaculty(), currentDate);
-            List<ScheduledInstance> scheduledInstances = new ArrayList<>();
-            for (var r : facultyResources) {
-                if (!(cpuToSchedule > 0 || gpuToSchedule > 0 || memoryToSchedule > 0)) {
-                    break;
-                }
-                // 2. Compare it with already used resources (sum all usage from ScheduledInstances in the db)
-                List<ScheduledInstance> instancesInDb =
-                        scheduledInstanceRepository.findByDateAndFaculty(r.getDate(), r.getFaculty());
-                int cpuUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getCpuUsage).sum();
-                int gpuUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getGpuUsage).sum();
-                int memoryUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getMemoryUsage).sum();
-
-                int cpuFree = r.getCpuUsage() - cpuUsageSum;
-                int gpuFree = r.getGpuUsage() - gpuUsageSum;
-                int memoryFree = r.getMemoryUsage() - memoryUsageSum;
-
-                int providedCpu = Math.min(cpuToSchedule, cpuFree);
-                int providedGpu = Math.min(gpuToSchedule, gpuFree);
-                int providedMemory = Math.min(memoryToSchedule, memoryFree);
-                cpuToSchedule -= providedCpu;
-                gpuToSchedule -= providedGpu;
-                memoryToSchedule -= providedMemory;
-                scheduledInstances.add(new ScheduledInstance(job.getJobId(), job.getFaculty(), r.getFaculty(),
-                        providedCpu, providedGpu, providedMemory, currentDate));
-            }
-
-            if (cpuToSchedule == 0 && gpuToSchedule == 0 && memoryToSchedule == 0) {
-                // success!
-                return scheduledInstances;
-            }
-
-            // 3. If a day is full, try another one.
-            currentDate = currentDate.plusDays(1);
-        }
-
-        return new ArrayList<>();
-    }
-
-    private List<FacultyResource> getAvailableResources(String faculty, LocalDate date) {
-
-        ResponseEntity<FacultyResource[]> facultyResourcesResponse = restTemplate.getForEntity(resourcesUrl
-                + "/resources?faculty=" + faculty + "&day=" + date.toString(), FacultyResource[].class);
-
-        if (facultyResourcesResponse == null) {
-            return new ArrayList<>();
-        }
-
-        return Arrays.asList(facultyResourcesResponse.getBody());
-    }
-
     /**
      * Gets the number of available resources out of total resources for the next day. Only admin can access it.
-
-
+     *
      * @return  List of faculty resource
      */
     public List<FacultyTotalResource> getAllResourcesNextDay() {
@@ -206,5 +157,35 @@ public class ProcessingJobsService {
     public boolean isFiveMinutesBeforeDayStarts(LocalTime currentTime) {
         LocalTime startTime = LocalTime.of(23, 55);
         return currentTime.isAfter(startTime) || currentTime.equals(startTime);
+    }
+
+    public SchedulingStrategy getSchedulingStrategy() {
+        return schedulingStrategy;
+    }
+
+    public void setSchedulingStrategy(SchedulingStrategy schedulingStrategy) {
+        this.schedulingStrategy = schedulingStrategy;
+    }
+
+    /**
+     * Sets specified scheduling strategy.
+     *
+     * @param strategy name of the strategy
+     */
+    public void setSchedulingStrategy(String strategy) throws InvalidStrategyNameException {
+        switch (strategy) {
+            case "one-cluster":
+                setSchedulingStrategy(new ScheduleOneCluster(resourceGetter, scheduledInstanceRepository));
+                break;
+            case "multiple-clusters":
+                setSchedulingStrategy(new ScheduleBetweenClusters(resourceGetter, scheduledInstanceRepository));
+                break;
+            case "multiple-clusters-most-resources-first":
+                setSchedulingStrategy(new ScheduleBetweenClustersMostResourcesFirst(resourceGetter,
+                        scheduledInstanceRepository));
+                break;
+            default:
+                throw new InvalidStrategyNameException(strategy);
+        }
     }
 }

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstance;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstanceRepository;
+import nl.tudelft.sem.template.example.domain.strategies.ScheduleBetweenClusters;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,11 @@ class UpdatingJobsServiceTest {
     @MockBean
     private RestTemplate restTemplate;
 
-    @MockBean
+    @Autowired
     private ProcessingJobsService processingJobsService;
+
+    @MockBean
+    private ScheduleBetweenClusters scheduleBetweenClusters;
 
     @Autowired
     private transient ScheduledInstanceRepository scheduledInstanceRepository;
@@ -73,9 +77,10 @@ class UpdatingJobsServiceTest {
 
         List<ScheduledInstance> scheduledInstanceList = List.of(
                 new ScheduledInstance(4L, "3ME", 10, 0, 1, LocalDate.now().plusDays(1)));
-        Mockito.when(processingJobsService.trySchedulingBetween(Mockito.any(ScheduleJob.class),
+        Mockito.when(scheduleBetweenClusters.scheduleBetween(Mockito.any(ScheduleJob.class),
                 Mockito.eq(LocalDate.now().plusDays(1)),
                 Mockito.eq(LocalDate.now().plusDays(2)))).thenReturn(scheduledInstanceList);
+        processingJobsService.setSchedulingStrategy(scheduleBetweenClusters);
 
         FacultyResource update = new FacultyResource("EEMCS", LocalDate.now().plusDays(1), 25, 25, 15);
         updatingJobsService.updateSchedule(update);
@@ -108,20 +113,21 @@ class UpdatingJobsServiceTest {
         scheduledInstanceRepository.save(
                 new ScheduledInstance(4L, "EEMCS", "EEMCS", 10, 2, 2, LocalDate.now().plusDays(2)));
 
-        Mockito.when(processingJobsService.trySchedulingBetween(Mockito.any(ScheduleJob.class),
+        Mockito.when(scheduleBetweenClusters.scheduleBetween(Mockito.any(ScheduleJob.class),
                 Mockito.eq(LocalDate.now().plusDays(1)),
                 Mockito.eq(LocalDate.now().plusDays(2)))).thenReturn(new ArrayList<>());
-        Mockito.when(processingJobsService.trySchedulingBetween(Mockito.any(ScheduleJob.class),
+        Mockito.when(scheduleBetweenClusters.scheduleBetween(Mockito.any(ScheduleJob.class),
                 Mockito.eq(LocalDate.now().plusDays(2)),
                 Mockito.eq(LocalDate.now().plusDays(3)))).thenReturn(new ArrayList<>());
-        Mockito.when(processingJobsService.getJobsUrl()).thenReturn("TEST-URL");
 
+        processingJobsService.setSchedulingStrategy(scheduleBetweenClusters);
         FacultyResource update = new FacultyResource("EEMCS", LocalDate.now().plusDays(1), 10, 5, 3);
         updatingJobsService.updateSchedule(update);
 
-        Mockito.verify(restTemplate).postForEntity("TEST-URL/updateStatus",
+        String url = processingJobsService.getJobsUrl();
+        Mockito.verify(restTemplate).postForEntity(url + "/updateStatus",
                 new UpdateJob(3L, "cancelled", null), Void.class);
-        Mockito.verify(restTemplate).postForEntity("TEST-URL/updateStatus",
+        Mockito.verify(restTemplate).postForEntity(url + "/updateStatus",
                 new UpdateJob(4L, "cancelled", null), Void.class);
 
         assertThat(scheduledInstanceRepository.findAll().size()).isEqualTo(2);

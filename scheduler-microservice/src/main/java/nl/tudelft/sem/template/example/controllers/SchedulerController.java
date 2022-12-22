@@ -6,9 +6,11 @@ import commons.Job;
 import commons.ScheduleJob;
 import java.util.List;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
+import nl.tudelft.sem.template.example.domain.dto.ChangeSchedulingStrategy;
 import nl.tudelft.sem.template.example.domain.processing.ProcessingJobsService;
 import nl.tudelft.sem.template.example.domain.processing.RemovingJobsService;
 import nl.tudelft.sem.template.example.domain.processing.UpdatingJobsService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -85,7 +87,7 @@ public class SchedulerController {
      * @return list of Jobs to be scheduled
      */
     @GetMapping(path = "/allResourcesNextDay")
-    public ResponseEntity<List<FacultyTotalResource>> getAllResourcesNextDay() throws Exception {
+    public ResponseEntity<List<FacultyTotalResource>> getAllResourcesNextDay() {
         String role = authManager.getRole().toString();
         if (!role.equals("admin")) {
             return ResponseEntity.badRequest().build();
@@ -98,5 +100,29 @@ public class SchedulerController {
     public ResponseEntity<String> updateScheduledJobs(@RequestBody FacultyResource facultyResource) {
         updatingJobsService.updateSchedule(facultyResource);
         return ResponseEntity.ok("Updated");
+    }
+
+    /**
+     * Allows users with ADMIN role to change the scheduling strategy used by the
+     * scheduler.
+     *
+     * @param changeSchedulingStrategy DTO with a strategy name
+     * @return OK if successfully changed, error otherwise.
+     */
+    @PostMapping("/change-scheduling-strategy")
+    public ResponseEntity<String> changeSchedulingStrategy(@RequestBody ChangeSchedulingStrategy
+                                                                       changeSchedulingStrategy) {
+        System.out.println("GOT HER!");
+        if (!authManager.getRole().toString().equals("ADMIN")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        try {
+            processingJobsService.setSchedulingStrategy(changeSchedulingStrategy.getStrategy());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+
+        return ResponseEntity.ok("Changed");
     }
 }

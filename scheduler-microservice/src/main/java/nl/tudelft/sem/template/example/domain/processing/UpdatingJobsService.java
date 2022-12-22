@@ -121,7 +121,7 @@ public class UpdatingJobsService {
 
     private boolean rescheduleJob(ScheduleJob job, LocalDate date) {
         List<ScheduledInstance> scheduledInstances =
-                processingJobsService.trySchedulingBetween(job, date, date.plusDays(1));
+                processingJobsService.getSchedulingStrategy().scheduleBetween(job, date, date.plusDays(1));
 
         if (scheduledInstances.size() == 0) {
             return false;
