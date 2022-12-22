@@ -42,10 +42,8 @@ public class ProcessingJobsServiceTest {
         Faculty facultyConstant = new Faculty("EEMCS");
         LocalDate dateConstant = LocalDate.now().plusDays(1);
 
-
-
         FacultyResource fr = new FacultyResource();
-        fr.setFaculty(facultyConstant);
+        fr.setFaculty(facultyConstant.toString());
         fr.setDate(dateConstant);
         fr.setCpuUsage(10);
         fr.setGpuUsage(10);

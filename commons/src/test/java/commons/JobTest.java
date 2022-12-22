@@ -20,14 +20,14 @@ class JobTest {
     void setUp() throws Exception {
         netId1 = new NetId("ageist");
         pref = LocalDate.now();
-        job1 = new Job(netId1, 3, 2, 1, pref);
+        faculty1 = new Faculty("EEMCS");
+        job1 = new Job(netId1, faculty1, 3, 2, 1, pref);
     }
 
     @Test
     void constructorTest() {
-        job1 = new Job(netId1, 3, 2, 1, LocalDate.now());
+        job1 = new Job(netId1, faculty1, 3, 2, 1, LocalDate.now());
         assertNotNull(job1);
-        faculty1 = new Faculty("EEMCS");
         job1 = new Job(netId1, faculty1, 3, 2, 1, LocalDate.now());
     }
 
