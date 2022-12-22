@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.domain;
 
 import commons.FacultyResource;
+import commons.FacultyResourceModel;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,8 +28,9 @@ public class ResourceGetter {
      * @return list of available resources
      */
     public List<FacultyResource> getAvailableResources(String faculty, LocalDate day) {
-        ResponseEntity<FacultyResource[]> facultyResourcesResponse = restTemplate.getForEntity(resourcesUrl
-                + "/resources?faculty=" + faculty + "&day=" + day, FacultyResource[].class);
+        FacultyResourceModel facultyResourceModel = new FacultyResourceModel(faculty, day);
+        ResponseEntity<FacultyResource[]> facultyResourcesResponse = restTemplate.postForEntity(resourcesUrl
+                + "/cluster/facultyDayResource", facultyResourceModel, FacultyResource[].class);
 
         if (!facultyResourcesResponse.hasBody()) {
             return new ArrayList<>();
