@@ -78,10 +78,8 @@ public class JobService {
      * @throws Exception if the resources of NetId are invalid
      */
 
-    public Job createJob(NetId netId, NetId authNetId, int cpuUsage, int gpuUsage,
-                         int memoryUsage, RoleValue role, LocalDate preferredDate) throws Exception {
     public Job createJob(NetId netId, NetId authNetId, Faculty faculty, int cpuUsage, int gpuUsage,
-                         int memoryUsage, String role, LocalDate preferredDate) throws Exception {
+                         int memoryUsage, RoleValue role, LocalDate preferredDate) throws Exception {
         if (cpuUsage < 0 || gpuUsage < 0 || memoryUsage < 0) {
             throw new InvalidResourcesException(Math.min(cpuUsage, Math.min(gpuUsage, memoryUsage)));
         }

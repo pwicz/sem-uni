@@ -109,7 +109,7 @@ class JobServiceTest {
         int gpuUsage = 2;
         int memoryUsage = 3;
         assertThrows(ResourceBiggerThanCpuException.class, () -> {
-            jobService.createJob(netId, netId, cpuUsage, gpuUsage, memoryUsage, RoleValue.EMPLOYEE, LocalDate.now());
+            jobService.createJob(netId, netId, faculty, cpuUsage, gpuUsage, memoryUsage, RoleValue.EMPLOYEE, LocalDate.now());
         });
     }
 

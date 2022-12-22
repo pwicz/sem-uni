@@ -105,8 +105,8 @@ public class AddJobTest {
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
 
-        jobService.createJob(u1, u1, 10, 10, 10, "employee", LocalDate.now());
-        jobService.createJob(new NetId("Tmp"), new NetId("Tmp"), 12, 10, 10, "employee", LocalDate.now());
+        jobService.createJob(u1, u1, f1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+        jobService.createJob(new NetId("Tmp"), new NetId("Tmp"), f1, 12, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(2);
@@ -121,8 +121,8 @@ public class AddJobTest {
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
 
-        jobService.createJob(u1, u1, 10, 10, 10, "employee", LocalDate.now());
-        jobService.createJob(u2, u2, 12, 10, 10, "employee", LocalDate.now());
+        jobService.createJob(u1, u1, f1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+        jobService.createJob(u2, u2, f1, 12, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
         j2.setJobId(2);
@@ -148,7 +148,7 @@ public class AddJobTest {
     @Test
     public void addJobWithGpuGreaterThanCpu_throwsException() {
         Exception e = assertThrows(ResourceBiggerThanCpuException.class, () -> {
-            jobService.createJob(u1, u1, 1, 2, 0, "employee", LocalDate.now());
+            jobService.createJob(u1, u1, f1, 1, 2, 0, RoleValue.EMPLOYEE, LocalDate.now());
         });
         assertThat(e.getMessage()).isEqualTo("GPU usage cannot be greater than the CPU usage.");
     }
@@ -156,7 +156,7 @@ public class AddJobTest {
     @Test
     public void addJobWithMemoryGreaterThanCpu_throwsException() {
         Exception e = assertThrows(ResourceBiggerThanCpuException.class, () -> {
-            jobService.createJob(u1, u1, 1, 0, 2, "employee", LocalDate.now());
+            jobService.createJob(u1, u1, f1, 1, 0, 2, RoleValue.EMPLOYEE, LocalDate.now());
         });
         assertThat(e.getMessage()).isEqualTo("Memory usage cannot be greater than the CPU usage.");
     }

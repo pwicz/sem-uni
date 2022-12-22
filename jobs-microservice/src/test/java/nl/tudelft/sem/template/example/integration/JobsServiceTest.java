@@ -131,10 +131,8 @@ public class JobsServiceTest {
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
-        jobService.createJob(u1, u1,  10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
-        jobService.createJob(u1, u1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
-
-        jobService.createJob(u1, u1, f1, 10, 10, 10, "employee", LocalDate.now());
+        jobService.createJob(u1, u1, f1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+        jobService.createJob(u1, u1, f1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(2);
@@ -153,11 +151,8 @@ public class JobsServiceTest {
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
-        jobService.createJob(u1, u1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
-        jobService.createJob(u2, u2, 12, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
-
-        jobService.createJob(u1, u1, 10, 10, 10, "employee", LocalDate.now());
-        jobService.createJob(u2, u2, 12, 10, 10, "employee", LocalDate.now());
+        jobService.createJob(u1, u1, f1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+        jobService.createJob(u2, u2, f1, 12, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(2);
@@ -178,7 +173,7 @@ public class JobsServiceTest {
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
 
-        jobService.createJob(u1, u1, 10, 10, 10, "employee", LocalDate.now());
+        jobService.createJob(u1, u1, f1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
 
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(1);
@@ -195,12 +190,8 @@ public class JobsServiceTest {
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
-        jobService.createJob(u1, u1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
-        jobService.createJob(u2, u2, 12, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
-
-        jobService.createJob(u1, u1, 10, 10, 10, "employee", LocalDate.now());
-        jobService.createJob(u2, u2, 12, 10, 10, "employee", LocalDate.now());
-
+        jobService.createJob(u1, u1, f1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+        jobService.createJob(u2, u2, f1, 12, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
 
 
         List<Job> fromDb = jobService.collectJobsByNetId(u1, u1);
