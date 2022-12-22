@@ -165,7 +165,8 @@ public class NodeController {
             System.out.println("Node doesnt belong to " + node.getName());
             return ResponseEntity.badRequest().build();
         }
-        List<String> faculties = getFaculty(authManager.getNetId());
+        List<String> faculties = getFaculty();
+        System.out.println(faculties);
         if (!(faculties.contains(node.getFaculty()))) {
             System.out.println("failed after get faculty");
             return ResponseEntity.badRequest().build();
@@ -191,7 +192,7 @@ public class NodeController {
     public ResponseEntity<String> releaseFaculty(@RequestBody ReleaseFacultyModel releaseModel)
                                                 throws JsonProcessingException {
         if (!authManager.getRole().equals("FacultyAccount")) {
-            System.out.println("Account is not faculty account. Current: " + getFaculty(authManager.getNetId()));
+            System.out.println("Account is not faculty account. Current: " + getFaculty());
             return ResponseEntity.badRequest().build();
         }
         if (releaseModel.getDate() == null || releaseModel.getFaculty() == null
@@ -199,7 +200,7 @@ public class NodeController {
             System.out.println("Null or date is before today or length is less than 1");
             return ResponseEntity.badRequest().build();
         }
-        if (!getFaculty(authManager.getNetId()).contains(releaseModel.getFaculty())) {
+        if (!getFaculty().contains(releaseModel.getFaculty())) {
             System.out.println("Releasing someone else's faculty");
             return ResponseEntity.badRequest().build();
         }
@@ -209,10 +210,9 @@ public class NodeController {
                 + " to " + releaseModel.getDate().plusDays(releaseModel.getDays()));
     }
 
-    private List<String> getFaculty(String netId) throws JsonProcessingException {
+    private List<String> getFaculty2(String netId) throws JsonProcessingException {
         String usersUrl = "http://localhost:8081/faculty"; //authentication microservice
         HttpHeaders headers = new HttpHeaders();
-        //headers.setBearerAuth(authManager.getToken());
         headers.setContentType(MediaType.APPLICATION_JSON);
         FacultyRequestModel f = new FacultyRequestModel();
         f.setNetId(netId);
@@ -223,8 +223,12 @@ public class NodeController {
         if (facultyType.getBody() == null) {
             return new ArrayList<>();
         }
-        //System.out.println("Faculty = " + facultyType.getBody().getFaculty().toString());
         return facultyType.getBody().getFaculty();
+    }
+
+    private List<String> getFaculty() {
+        String facultiesString = authManager.getFaculty().getAuthority();
+        return new ArrayList<>(Arrays.asList(facultiesString.split(";")));
     }
 
     /**
@@ -243,7 +247,7 @@ public class NodeController {
             System.out.println("Repo is empty");
             return ResponseEntity.badRequest().build();
         }
-        List<String> faculties = getFaculty(authManager.getNetId());
+        List<String> faculties = getFaculty();
         if (!checkIfAdmin() && !faculties.contains(
                 repo.getNodeByToken(token.getToken()).get().getFaculty())) {
             System.out.println("Facultys dont match");

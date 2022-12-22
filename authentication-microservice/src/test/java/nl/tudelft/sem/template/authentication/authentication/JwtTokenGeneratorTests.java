@@ -4,9 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import commons.Role;
 import commons.Faculties;
-import commons.Faculty;
+import commons.Role;
 import commons.RoleValue;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
