@@ -1,5 +1,10 @@
 package nl.tudelft.sem.template.example.authentication;
 
+import commons.Faculties;
+import commons.Role;
+import java.util.ArrayList;
+import java.util.List;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -22,8 +27,19 @@ public class AuthManager {
      *
      * @return The role of the user.
      */
-    public Object getRole() {
-        return SecurityContextHolder.getContext().getAuthentication().getCredentials();
+    public Role getRole() {
+        Role r = new Role(SecurityContextHolder.getContext().getAuthentication().getCredentials().toString());
+        return r;
     }
 
+    /**
+     * Interfaces with spring security to get the faculties of the user in the current context.
+     *
+     * @return The faculties of the user.
+     */
+    public Faculties getFaculty() {
+        List<? extends GrantedAuthority> f =
+            new ArrayList<>(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+        return (Faculties) f.get(0);
+    }
 }

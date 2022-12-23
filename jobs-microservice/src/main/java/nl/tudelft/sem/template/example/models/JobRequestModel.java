@@ -1,6 +1,5 @@
 package nl.tudelft.sem.template.example.models;
 
-import commons.Faculty;
 import lombok.Data;
 
 /**
@@ -10,6 +9,7 @@ import lombok.Data;
 public class JobRequestModel {
     private String netId;
     private String faculty;
+    private String description;
     private int cpuUsage;
     private int gpuUsage;
     private int memoryUsage;

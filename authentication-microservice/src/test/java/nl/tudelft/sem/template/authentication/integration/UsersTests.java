@@ -206,7 +206,7 @@ public class UsersTests {
         ))).thenThrow(new UsernameNotFoundException("User not found"));
 
         final String testToken = "testJWTToken";
-        when(mockAuthManager.getRole()).thenReturn(RoleValue.ADMIN);
+        when(mockAuthManager.getRole()).thenReturn(new Role(RoleValue.ADMIN));
 
         AppUser appUser = new AppUser(testUser, testHashedPassword, role, faculties);
         userRepository.save(appUser);

@@ -23,7 +23,7 @@ public class JobChainModelTest {
     @BeforeEach
     public void init() {
         model = new JobChainModel();
-        model.setJob(new Job(new NetId("itomov"), new Faculty("EEMCS"), 10, 10, 10, LocalDate.now()));
+        model.setJob(new Job(new NetId("itomov"), new Faculty("EEMCS"), "d", 10, 10, 10, LocalDate.now()));
         model.setAuthRole(RoleValue.EMPLOYEE);
 
         List<Faculty> faculties = new ArrayList<>();
@@ -37,7 +37,7 @@ public class JobChainModelTest {
     @Test
     public void constructorTest() {
         model = new JobChainModel();
-        model.setJob(new Job(new NetId("itomov"), new Faculty("EEMCS"), 10, 10, 10, LocalDate.now()));
+        model.setJob(new Job(new NetId("itomov"), new Faculty("EEMCS"), "d", 10, 10, 10, LocalDate.now()));
         model.setAuthRole(RoleValue.EMPLOYEE);
 
         List<Faculty> faculties = new ArrayList<>();
@@ -49,7 +49,7 @@ public class JobChainModelTest {
 
         assertNotNull(model);
         assertThat(model.getJob()).isEqualTo(new Job(new NetId("itomov"),
-                new Faculty("EEMCS"), 10, 10, 10, LocalDate.now()));
+                new Faculty("EEMCS"), "d", 10, 10, 10, LocalDate.now()));
         assertThat(model.getAuthRole()).isEqualTo(RoleValue.EMPLOYEE);
         assertThat(model.getAuthFaculty()).isEqualTo(faculties);
         assertThat(model.getDirectiveJob()).isEqualTo(DirectiveJob.Approve);
@@ -58,7 +58,7 @@ public class JobChainModelTest {
     @Test
     public void getJobTest() {
         assertThat(model.getJob()).isEqualTo(new Job(new NetId("itomov"),
-                new Faculty("EEMCS"), 10, 10, 10, LocalDate.now()));
+                new Faculty("EEMCS"), "d", 10, 10, 10, LocalDate.now()));
     }
 
     @Test

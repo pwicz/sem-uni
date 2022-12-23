@@ -117,15 +117,18 @@ public class AuthenticationController {
     public ResponseEntity register(@RequestBody RegistrationRequestModel request) throws Exception {
 
         try {
-            NetId netId = new NetId(request.getNetId());
-            Password password = new Password(request.getPassword());
             Role role = new Role(request.getRole());
             ArrayList<Faculty> faculties = new ArrayList<>();
             for (String f : request.getFaculty().split(";")) {
                 faculties.add(new Faculty(f));
             }
+            System.out.println(faculties);
+            System.out.println(role.toString());
+            NetId netId = new NetId(request.getNetId());
+            Password password = new Password(request.getPassword());
             registrationService.registerUser(netId, password, role, faculties);
         } catch (Exception e) {
+            System.out.println(e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
 

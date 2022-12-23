@@ -19,6 +19,10 @@ public class Role implements GrantedAuthority {
         roleValue = RoleValue.valueOf(role);
     }
 
+    public RoleValue getRoleValue() {
+        return roleValue;
+    }
+
     @Override
     public String getAuthority() {
         return roleValue.toString();

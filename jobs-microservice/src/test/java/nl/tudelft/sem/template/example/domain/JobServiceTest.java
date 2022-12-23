@@ -51,13 +51,13 @@ class JobServiceTest {
 
     @BeforeEach
     void setUp() {
-        Job job1 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 10, 10, 10, LocalDate.now());
+        Job job1 = new Job(new NetId("mlica"), new Faculty("EEMCS"), "d", 10, 10, 10, LocalDate.now());
         job1.setStatus(Status.PENDING);
         jobRepository.save(job1);
-        Job job2 = new Job(new NetId("ppolitowicz"), new Faculty("EEMCS"), 1, 2, 3, LocalDate.now());
+        Job job2 = new Job(new NetId("ppolitowicz"), new Faculty("EEMCS"), "d", 1, 2, 3, LocalDate.now());
         job2.setStatus(Status.PENDING);
         jobRepository.save(job2);
-        Job job3 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 20, 10, 1, LocalDate.now());
+        Job job3 = new Job(new NetId("mlica"), new Faculty("EEMCS"), "d", 20, 10, 1, LocalDate.now());
         job3.setStatus(Status.ACCEPTED);
         jobRepository.save(job3);
     }
@@ -91,35 +91,6 @@ class JobServiceTest {
     }
 
     @Test
-    void unscheduleJobSuccess() throws ResponseEntityException {
-        //        ScheduledInstance scheduledInstance1 =
-        //                new ScheduledInstance(1L, "EEMCS", 10, 10, 10, LocalDate.now());
-        //
-        //        scheduledInstanceRepository.save(scheduledInstance1);
-
-        Mockito.when(restTemplate.postForEntity("http://localhost:8084/unschedule", new JobIdRequestModel(1L), String.class))
-                .thenReturn(new ResponseEntity<String>("processing", HttpStatus.OK));
-        String responseText = jobService.unscheduleJob(new JobIdRequestModel(1L));
-        assertThat(responseText).isEqualTo("processing");
-        //assertThat(scheduledInstanceRepository.existsById(1L)).isFalse();
-    }
-
-    @Test
-    void unscheduleJobProblem() {
-        //        ScheduledInstance scheduledInstance1 =
-        //                new ScheduledInstance(1L, "EEMCS", 10, 10, 10, LocalDate.now());
-        //
-        //        scheduledInstanceRepository.save(scheduledInstance1);
-
-        Mockito.when(restTemplate.postForEntity("http://localhost:8084/unschedule", new JobIdRequestModel(1L), String.class))
-                .thenReturn(new ResponseEntity<String>((String) null, HttpStatus.OK));
-
-        Assertions.assertThrows(ResponseEntityException.class, () -> {
-            jobService.unscheduleJob(new JobIdRequestModel(1L));
-        });
-    }
-
-    @Test
     void createJob() {
         NetId netId = new NetId("test");
         Faculty faculty = new Faculty("EEMCS");
@@ -127,7 +98,7 @@ class JobServiceTest {
         int gpuUsage = 2;
         int memoryUsage = 3;
         try {
-            Job created = jobService.createJob(netId, netId, faculty,
+            Job created = jobService.createJob(netId, netId, faculty, "d",
                     cpuUsage, gpuUsage, memoryUsage, RoleValue.EMPLOYEE, LocalDate.now());
             Job saved = jobRepository.save(created);
             Optional<Job> jobOptional = jobRepository.findById(saved.getJobId());
@@ -147,7 +118,7 @@ class JobServiceTest {
         int gpuUsage = 2;
         int memoryUsage = 3;
         assertThrows(ResourceBiggerThanCpuException.class, () -> {
-            jobService.createJob(netId, netId, faculty, cpuUsage,
+            jobService.createJob(netId, netId, faculty, "d", cpuUsage,
                     gpuUsage, memoryUsage, RoleValue.EMPLOYEE, LocalDate.now());
         });
     }
@@ -162,7 +133,7 @@ class JobServiceTest {
         }
         try {
             assert j != null;
-            jobService.deleteJob(j.getJobId());
+            jobService.deleteJob(netId.toString(), RoleValue.ADMIN, j.getJobId());
             assertFalse(jobRepository.existsById(j.getJobId()));
         } catch (Exception e) {
             fail();
@@ -176,8 +147,8 @@ class JobServiceTest {
         //        Job expected2 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 20, 10, 1, LocalDate.now());
 
         NetId netId = new NetId("itomov");
-        Job expected1 = new Job(new NetId("itomov"), new Faculty("EEMCS"), 10, 10, 10, LocalDate.now());
-        Job expected2 = new Job(new NetId("itomov"), new Faculty("EEMCS"), 20, 10, 1, LocalDate.now());
+        Job expected1 = new Job(new NetId("itomov"), new Faculty("EEMCS"), "d", 10, 10, 10, LocalDate.now());
+        Job expected2 = new Job(new NetId("itomov"), new Faculty("EEMCS"), "d", 20, 10, 1, LocalDate.now());
         try {
             jobRepository.save(expected1);
             jobRepository.save(expected2);
@@ -217,7 +188,7 @@ class JobServiceTest {
     void getAllJobs() {
         NetId netId = new NetId("administrator");
         try {
-            List<Job> jobs = jobService.getAllJobs(netId, netId, "admin");
+            List<Job> jobs = jobService.getAllJobs(netId, netId, RoleValue.ADMIN);
             assertEquals(jobs.size(), 3);
         } catch (Exception e) {
             fail();

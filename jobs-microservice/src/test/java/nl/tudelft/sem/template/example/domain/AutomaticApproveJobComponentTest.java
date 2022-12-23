@@ -47,15 +47,15 @@ class AutomaticApproveJobComponentTest {
 
     @BeforeEach
     void setUp() {
-        job1 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 10, 10, 10, LocalDate.now().plusDays(1));
+        job1 = new Job(new NetId("mlica"), new Faculty("EEMCS"), "d", 10, 10, 10, LocalDate.now().plusDays(1));
         job1.setStatus(Status.PENDING);
-        job2 = new Job(new NetId("ppolitowicz"), new Faculty("EEMCS"), 1, 2, 3, LocalDate.now().plusDays(1));
+        job2 = new Job(new NetId("ppolitowicz"), new Faculty("EEMCS"), "d", 1, 2, 3, LocalDate.now().plusDays(1));
         job2.setStatus(Status.PENDING);
-        job3 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 20, 10, 1, LocalDate.now().plusDays(1));
+        job3 = new Job(new NetId("mlica"), new Faculty("EEMCS"), "d", 20, 10, 1, LocalDate.now().plusDays(1));
         job3.setStatus(Status.PENDING);
-        job4 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 20, 10, 1, LocalDate.now().plusDays(1));
+        job4 = new Job(new NetId("mlica"), new Faculty("EEMCS"), "d", 20, 10, 1, LocalDate.now().plusDays(1));
         job4.setStatus(Status.PENDING);
-        job5 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 20, 10, 1, LocalDate.now().plusDays(1));
+        job5 = new Job(new NetId("mlica"), new Faculty("EEMCS"), "d", 20, 10, 1, LocalDate.now().plusDays(1));
         job5.setStatus(Status.PENDING);
 
         pendingJobs = new ArrayList<>();

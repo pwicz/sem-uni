@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.authentication;
 
+import commons.Faculties;
 import commons.RoleValue;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -75,9 +76,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         } else {
                             roleValue = RoleValue.FAC_ACC;
                         }
+                        Faculties faculty = new Faculties(jwtTokenVerifier.getFacultyFromToken(token));
+
                         var authenticationToken = new UsernamePasswordAuthenticationToken(
                                 netId,
-                                roleValue, List.of()
+                                roleValue, List.of(faculty)
                         );
                         authenticationToken.setDetails(new WebAuthenticationDetailsSource()
                                 .buildDetails(request));

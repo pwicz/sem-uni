@@ -4,6 +4,7 @@ package nl.tudelft.sem.template.example.controllers;
 import commons.Faculty;
 import commons.Job;
 import commons.NetId;
+import commons.Role;
 import commons.RoleValue;
 import commons.Status;
 import commons.UpdateJob;
@@ -79,7 +80,7 @@ public class JobController {
         try {
             NetId netId = new NetId(authManager.getNetId());
             NetId authNetId = new NetId(authManager.getNetId());
-            String role = authManager.getRole().toString();
+            RoleValue role = authManager.getRole().getRoleValue();
 
             List<Job> jobs = this.jobService.getAllJobs(netId, authNetId, role);
             List<JobResponseModel> responseModels = jobs.stream()
@@ -149,16 +150,16 @@ public class JobController {
         try {
             NetId jobNetId = new NetId(request.getNetId());
             NetId authNetId = new NetId(authManager.getNetId());
+            String desc = request.getDescription();
             Faculty faculty = new Faculty(request.getFaculty());
             int cpuUsage = request.getCpuUsage();
             int gpuUsage = request.getGpuUsage();
             int memoryUsage = request.getMemoryUsage();
-            RoleValue role = (RoleValue) authManager.getRole();
-            //String role = (String) authManager.getRole();
+            Role role = authManager.getRole();
             LocalDate preferredDate = LocalDate.now();
-            System.out.println(role);
-            Job createdJob = this.jobService.createJob(jobNetId, authNetId, faculty, cpuUsage,
-                    gpuUsage, memoryUsage, role, preferredDate);
+
+            Job createdJob = this.jobService.createJob(jobNetId, authNetId, faculty, desc, cpuUsage,
+                    gpuUsage, memoryUsage, role.getRoleValue(), preferredDate);
 
             JobResponseModel jobResponseModel = jobService.populateJobResponseModel(createdJob.getJobId(),
                 Status.PENDING, createdJob.getNetId().toString());
@@ -180,7 +181,7 @@ public class JobController {
     @PostMapping("/deleteJob")
     public ResponseEntity deleteJob(@RequestBody long jobId) throws Exception {
         try {
-            this.jobService.deleteJob(jobId);
+            this.jobService.deleteJob(authManager.getNetId(), authManager.getRole().getRoleValue(), jobId);
         } catch (InvalidIdException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, invalidId, e);
         }
@@ -218,7 +219,7 @@ public class JobController {
         try {
             NetId netId = new NetId(authManager.getNetId());
             NetId authNetId = new NetId(authManager.getNetId());
-            String role = authManager.getRole().toString();
+            RoleValue role = authManager.getRole().getRoleValue();
 
             List<Job> jobs = this.jobService.getAllScheduledJobs(netId, authNetId, role);
             return ResponseEntity.ok(jobs);

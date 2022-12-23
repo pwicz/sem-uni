@@ -1,5 +1,7 @@
 package nl.tudelft.sem.template.authentication.authentication;
 
+import commons.Faculties;
+import commons.Faculty;
 import commons.NetId;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +45,11 @@ public class JwtUserDetailsService implements UserDetailsService {
         var user = optionalUser.get();
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(user.getRole());
+        String s = "";
+        for (Faculty f : user.getFaculty()) {
+            s += f.toString() + ";";
+        }
+        authorities.add(new Faculties(s));
         return new User(user.getNetId().toString(), user.getPassword().toString(),
                 authorities);
     }

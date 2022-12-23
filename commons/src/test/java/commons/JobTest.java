@@ -21,14 +21,14 @@ class JobTest {
         netId1 = new NetId("ageist");
         pref = LocalDate.now();
         faculty1 = new Faculty("EEMCS");
-        job1 = new Job(netId1, faculty1, 3, 2, 1, pref);
+        job1 = new Job(netId1, faculty1, "d", 3, 2, 1, pref);
     }
 
     @Test
     void constructorTest() {
-        job1 = new Job(netId1, faculty1, 3, 2, 1, LocalDate.now());
+        job1 = new Job(netId1, faculty1, "d", 3, 2, 1, LocalDate.now());
         assertNotNull(job1);
-        job1 = new Job(netId1, faculty1, 3, 2, 1, LocalDate.now());
+        job1 = new Job(netId1, faculty1, "d", 3, 2, 1, LocalDate.now());
     }
 
     @Test
@@ -140,7 +140,7 @@ class JobTest {
 
     @Test
     void equals() {
-        Job job2 = new Job(netId1, faculty1, 3, 2, 1, LocalDate.now());
+        Job job2 = new Job(netId1, faculty1, "d", 3, 2, 1, LocalDate.now());
         assertTrue(job1.equals(job2));
 
         job2.setPreferredDate(LocalDate.now().plusDays(3));
@@ -149,10 +149,10 @@ class JobTest {
         Job job3 = null;
         assertFalse(job1.equals(job3));
 
-        Job job4 = new Job(netId1, faculty1, 2, 2, 1, LocalDate.now());
+        Job job4 = new Job(netId1, faculty1, "d", 2, 2, 1, LocalDate.now());
         assertFalse(job1.equals(job4));
 
-        Job job5 = new Job(netId1, faculty1, 1, 2, 1, LocalDate.now());
+        Job job5 = new Job(netId1, faculty1, "d", 1, 2, 1, LocalDate.now());
         assertFalse(job1.equals(job4));
 
         Job job6 = job1;

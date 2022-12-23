@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.authentication.authentication;
 
+import commons.Role;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +18,13 @@ public class AuthManager {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
-    public Object getRole() {
-        return SecurityContextHolder.getContext().getAuthentication().getCredentials();
+    public Role getRole() {
+        Role r = new Role(SecurityContextHolder.getContext().getAuthentication().getCredentials().toString());
+        return r;
     }
+
+    public Object getFaculty() {
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+    }
+
 }

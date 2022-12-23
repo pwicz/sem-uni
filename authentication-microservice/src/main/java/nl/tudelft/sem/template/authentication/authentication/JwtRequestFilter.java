@@ -1,5 +1,7 @@
 package nl.tudelft.sem.template.authentication.authentication;
 
+import commons.Faculties;
+import commons.Faculty;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import java.io.IOException;
@@ -65,10 +67,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     if (jwtTokenVerifier.validateToken(token)) {
                         String netId = jwtTokenVerifier.getNetIdFromToken(token);
                         String role = jwtTokenVerifier.getRoleFromToken(token);
+                        Faculties faculty = new Faculties(jwtTokenVerifier.getFacultyFromToken(token));
 
                         var authenticationToken = new UsernamePasswordAuthenticationToken(
                                 netId,
-                                role, List.of() // no credentials and no authorities
+                                role, List.of(faculty) // no credentials and no authorities
                         );
                         authenticationToken.setDetails(new WebAuthenticationDetailsSource()
                                 .buildDetails(request));

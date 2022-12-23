@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import commons.Faculties;
 import commons.Role;
 import commons.RoleValue;
 import io.jsonwebtoken.Claims;
@@ -42,6 +43,7 @@ public class JwtTokenGeneratorTests {
         this.injectSecret(secret);
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new Role(RoleValue.EMPLOYEE));
+        authorities.add(new Faculties("EEMCS"));
         user = new User(netId, "someHash", authorities);
     }
 
