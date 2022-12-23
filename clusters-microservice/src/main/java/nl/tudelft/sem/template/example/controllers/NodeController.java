@@ -96,7 +96,7 @@ public class NodeController {
     public ResponseEntity<List<Node>> getAllNodes() {
         if (!checkIfAdmin()) {
             System.out.println("Admin privileges required. Current Role:" + authManager.getRole().toString());
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         if (repo.getAllNodes().isEmpty()) {
             System.out.println("Db is empty");
@@ -211,37 +211,46 @@ public class NodeController {
 
     /**
      * Marks Node with the id as deleted.
-     * Later when databse clearner is called it will actually delete from database.
+     * Later when database clearer is called it will actually delete it from database.
      *
      * @param token token of access
      */
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteNode(@RequestBody ToaRequestModel token) {
         //Node n = repo.getNodeById(id).get();
-        if (token == null) {
+        if (token == null || token.getToken() == null) {
             return ResponseEntity.badRequest().build();
         }
-        if (repo.getNodeByToken(token.getToken()).isEmpty()) {
+        Optional<Node> nodeOptional = repo.getNodeByToken(token.getToken());
+        if (nodeOptional.isEmpty()) {
             System.out.println("Repo is empty");
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+        if (!checkIfAdmin() && !nodeOptional.get().getName().equals(authManager.getNetId())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         List<String> faculties = getFaculty();
         if (!checkIfAdmin() && !faculties.contains(
-                repo.getNodeByToken(token.getToken()).get().getFaculty())) {
+                nodeOptional.get().getFaculty())) {
             System.out.println("Faculties don't match");
             return ResponseEntity.badRequest().build();
         }
 
         repo.setAsDeleted(token.getToken(), LocalDate.now().plusDays(1L));
-        Node n = repo.getNodeByToken(token.getToken()).get();
+        Node n = nodeOptional.get();
 
         //n.setRemovedDate(LocalDate.now().plusDays(1L)); // not updated forever in the database
         try {
             String response = notifySchedulerOfResourceChange(LocalDate.now().plusDays(1L), n.getFaculty());
-            return ResponseEntity.ok(response + " " + n.getRemovedDate());
+            return ResponseEntity.ok("Node(s) with token " + token.getToken() + " removed from "
+                    + LocalDate.now().plusDays(1L));
         } catch (Exception e) {
+            String problem = "Failed Notify: " + n.getRemovedDate().toString() + " updated remove date";
+            System.err.println(problem);
             e.printStackTrace();
-            return ResponseEntity.ok("Failed Notify: " + n.getRemovedDate().toString() + " updated remove date");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed Notify: " + n.getRemovedDate().toString() + " updated remove date");
         }
     }
 
