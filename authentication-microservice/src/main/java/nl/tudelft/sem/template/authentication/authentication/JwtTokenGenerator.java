@@ -1,5 +1,7 @@
 package nl.tudelft.sem.template.authentication.authentication;
 
+import commons.Faculties;
+import commons.Role;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.ArrayList;
@@ -43,12 +45,22 @@ public class JwtTokenGenerator {
      * @param userDetails The user details
      * @return the JWT token
      */
+    @SuppressWarnings("PMD")
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         ArrayList<GrantedAuthority> authorities = new ArrayList<>(userDetails.getAuthorities());
 
-        String role = authorities.get(1).getAuthority();
-        String faculty = authorities.get(0).getAuthority();
+        String role = "";
+        String faculty = "";
+
+        for (GrantedAuthority g : authorities) {
+            if (g instanceof Faculties) {
+                faculty = g.getAuthority();
+            }
+            if (g instanceof Role) {
+                role = g.getAuthority();
+            }
+        }
 
         claims.put("role", role);
         claims.put("faculty", faculty);

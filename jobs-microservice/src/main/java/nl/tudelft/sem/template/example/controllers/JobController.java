@@ -146,7 +146,6 @@ public class JobController {
      */
     @PostMapping("/addJob")
     public ResponseEntity addJob(@RequestBody JobRequestModel request) throws Exception {
-
         try {
             NetId jobNetId = new NetId(request.getNetId());
             NetId authNetId = new NetId(authManager.getNetId());

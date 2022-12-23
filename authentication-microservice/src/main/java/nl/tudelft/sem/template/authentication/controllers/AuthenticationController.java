@@ -91,6 +91,7 @@ public class AuthenticationController {
             throws Exception {
 
         try {
+
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getNetId(),
@@ -178,8 +179,8 @@ public class AuthenticationController {
      */
     @PostMapping("/changeFaculty")
     public ResponseEntity changeFaculty(@RequestBody ChangeFacultyRequestModel request) throws Exception {
-
-        if (!authManager.getRole().equals("admin")) {
+        System.out.println(authManager.getRole().getRoleValue());
+        if (!authManager.getRole().isAdmin()) {
             return ResponseEntity.badRequest().body("Unauthorized");
         }
         try {
