@@ -21,9 +21,9 @@ class FacultyTotalResourceTest {
         fr.setCpuUsage(3);
         fr.setGpuUsage(2);
         fr.setMemoryUsage(1);
-        fr.setMemoryUsageTotal(10);
-        fr.setCpuUsageTotal(10);
-        fr.setGpuUsageTotal(10);
+        fr.setMemoryTotal(10);
+        fr.setCpuTotal(10);
+        fr.setGpuTotal(10);
     }
 
     @Test
@@ -36,9 +36,9 @@ class FacultyTotalResourceTest {
         fr.setCpuUsage(10);
         fr.setGpuUsage(2);
         fr.setMemoryUsage(1);
-        fr.setMemoryUsageTotal(10);
-        fr.setCpuUsageTotal(10);
-        fr.setGpuUsageTotal(10);
+        fr.setMemoryTotal(10);
+        fr.setCpuTotal(10);
+        fr.setGpuTotal(10);
 
         assertNotNull(fr);
 
@@ -47,9 +47,9 @@ class FacultyTotalResourceTest {
         assertThat(fr.getCpuUsage()).isEqualTo(10);
         assertThat(fr.getGpuUsage()).isEqualTo(2);
         assertThat(fr.getMemoryUsage()).isEqualTo(1);
-        assertThat(fr.getMemoryUsageTotal()).isEqualTo(10);
-        assertThat(fr.getMemoryUsageTotal()).isEqualTo(10);
-        assertThat(fr.getMemoryUsageTotal()).isEqualTo(10);
+        assertThat(fr.getMemoryTotal()).isEqualTo(10);
+        assertThat(fr.getCpuTotal()).isEqualTo(10);
+        assertThat(fr.getGpuTotal()).isEqualTo(10);
     }
 
 
@@ -80,16 +80,16 @@ class FacultyTotalResourceTest {
 
     @Test
     void getCpuUsageT() {
-        assertThat(fr.getCpuUsageTotal()).isEqualTo(10);
+        assertThat(fr.getCpuTotal()).isEqualTo(10);
     }
 
     @Test
     void getGpuUsageT() {
-        assertThat(fr.getGpuUsageTotal()).isEqualTo(10);
+        assertThat(fr.getGpuTotal()).isEqualTo(10);
     }
 
     @Test
     void getMemoryUsageT() {
-        assertThat(fr.getMemoryUsageTotal()).isEqualTo(10);
+        assertThat(fr.getMemoryTotal()).isEqualTo(10);
     }
 }
