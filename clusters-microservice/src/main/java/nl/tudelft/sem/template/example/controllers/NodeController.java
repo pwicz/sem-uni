@@ -277,29 +277,27 @@ public class NodeController {
     }
 
     /**
-     * The api GET endpoint to get all Jobs in the database.
+     * The api GET endpoint to get a list of all resources in all clusters that are available
+     * to the user.
      *
-     * @return list of Jobs to be scheduled
+     * @return list of all resources in all clusters available to the user.
      */
     @GetMapping(path = "/resourcesNextDay")
     public ResponseEntity<List<FacultyResource>> getResourcesNextDay() {
-        ResponseEntity<String[]> facultyType = restTemplate.postForEntity(usersUrl
-                + "/faculty", new NetId(authManager.getNetId()), String[].class);
-
-        List<String> faculties = Arrays.asList(Objects.requireNonNull(facultyType.getBody()));
+        List<String> faculties = getFaculty();
         System.out.println(faculties);
 
         List<FacultyResource> res = new ArrayList<>();
 
         for (String f : faculties) {
-            List<Node> n = repo.getAvailableResources(f, LocalDate.now().plusDays(1)).get();
+            Optional<List<Node>> optionalNodeList = repo.getAvailableResources(f, LocalDate.now().plusDays(1));
+            if (optionalNodeList.isEmpty()) {
+                continue;
+            }
+            List<Node> n = optionalNodeList.get();
             Resource r = resourceCreator(n);
-            FacultyResource facultyResources = new FacultyResource();
-            facultyResources.setFaculty(f);
-            facultyResources.setDate(LocalDate.now().plusDays(1));
-            facultyResources.setCpuUsage(r.getCpu());
-            facultyResources.setGpuUsage(r.getGpu());
-            facultyResources.setMemoryUsage(r.getMem());
+            FacultyResource facultyResources =
+                    new FacultyResource(f, LocalDate.now().plusDays(1), r.getCpu(), r.getGpu(), r.getMem());
             res.add(facultyResources);
         }
         return ResponseEntity.ok(res);
