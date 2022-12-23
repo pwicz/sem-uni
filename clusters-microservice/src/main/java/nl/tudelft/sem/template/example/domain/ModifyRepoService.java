@@ -17,7 +17,7 @@ import org.springframework.web.client.RestTemplate;
 public class ModifyRepoService {
 
     private final transient NodeRepository repo;
-    private final RestTemplate restTemplate;
+    private final transient RestTemplate restTemplate;
 
     ModifyRepoService(NodeRepository repo, RestTemplate restTemplate) {
         this.repo = repo;
