@@ -15,7 +15,7 @@ public class PoolResourceValidator extends BaseResourceValidator {
         Job job = jobChainModel.getJob();
         List<Faculty> faculty = jobChainModel.getAuthFaculty();
         faculty.add(new Faculty("Pool"));
-        LocalDate localDate = LocalDate.now(); // TODO: this has to be changed to job schedule time
+        LocalDate localDate = job.getPreferredDate();
         List<FacultyResource> resources = getFacultyResources(faculty, localDate);
         int cpuAvailable = resources.stream().mapToInt(FacultyResource::getCpuUsage).sum();
         int gpuAvailable = resources.stream().mapToInt(FacultyResource::getGpuUsage).sum();
