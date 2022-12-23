@@ -1,19 +1,19 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import commons.FacultyRequestModel;
 import commons.FacultyResource;
 import commons.FacultyResourceModel;
 import commons.FacultyResponseModel;
-import commons.NetId;
 import commons.Resource;
 import commons.RoleValue;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.Node;
 import nl.tudelft.sem.template.example.domain.NodeRepository;
@@ -114,16 +114,19 @@ public class NodeController {
      * @param facDay request model for faculty and date
      */
     @PostMapping(path = {"/facultyDayResource"})
-    public ResponseEntity<FacultyResource> getFacultyAvailableResourcesForDay(@RequestBody FacultyResourceModel facDay) {
+    public ResponseEntity<Object[]> getFacultyAvailableResourcesForDay(@RequestBody FacultyResourceModel facDay) {
+        List<FacultyResource> answer = new ArrayList<>();
+
         if (repo.getAvailableResources(facDay.getFaculty(), facDay.getDate()).isPresent()) {
             List<Node> n = repo.getAvailableResources(facDay.getFaculty(), facDay.getDate()).get();
-            Resource r = resourceCreator(n);
-            FacultyResource facultyResources =
-                    new FacultyResource(facDay.getFaculty(), facDay.getDate(), r.getCpu(), r.getGpu(), r.getMem());
-            return ResponseEntity.ok(facultyResources);
+            List<Resource> resources = resourceCreatorForDifferentClusters(n);
+
+            for (Resource r : resources) {
+                answer.add(new FacultyResource(facDay.getFaculty(), facDay.getDate(), r.getCpu(), r.getGpu(), r.getMem()));
+            }
         }
-        FacultyResource facultyResources = new FacultyResource(facDay.getFaculty(), facDay.getDate(), 0, 0, 0);
-        return ResponseEntity.ok(facultyResources);
+
+        return ResponseEntity.ok(answer.toArray());
     }
 
     /**
@@ -316,6 +319,29 @@ public class NodeController {
             mem += n.getMemory();
         }
         return new Resource(cpu, gpu, mem);
+    }
+
+    private List<Resource> resourceCreatorForDifferentClusters(List<Node> nodes) {
+        List<Resource> answer = new ArrayList<>();
+        if (nodes == null) {
+            return answer;
+        }
+
+        Set<String> faculties = new HashSet<>();
+        for (Node n : nodes) {
+            faculties.add(n.getFaculty());
+        }
+
+        for (String faculty : faculties) {
+            List<Node> nodesOfFaculty = nodes.stream().filter(n -> n.getFaculty().equals(faculty))
+                    .collect(Collectors.toList());
+            int cpuSum = nodesOfFaculty.stream().mapToInt(Node::getCpu).sum();
+            int gpuSum = nodesOfFaculty.stream().mapToInt(Node::getGpu).sum();
+            int memorySum = nodesOfFaculty.stream().mapToInt(Node::getMemory).sum();
+
+            answer.add(new Resource(cpuSum, gpuSum, memorySum));
+        }
+        return answer;
     }
 }
 

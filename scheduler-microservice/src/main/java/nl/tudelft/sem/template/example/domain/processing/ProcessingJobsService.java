@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.example.domain.processing;
 
 import commons.FacultyResource;
+import commons.FacultyResponseModel;
 import commons.FacultyTotalResource;
 import commons.ScheduleJob;
 import commons.UpdateJob;
@@ -18,7 +19,6 @@ import nl.tudelft.sem.template.example.domain.strategies.ScheduleBetweenClusters
 import nl.tudelft.sem.template.example.domain.strategies.ScheduleBetweenClustersMostResourcesFirst;
 import nl.tudelft.sem.template.example.domain.strategies.ScheduleOneCluster;
 import nl.tudelft.sem.template.example.domain.strategies.SchedulingStrategy;
-import nl.tudelft.sem.template.example.models.FacultyResponseModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -115,35 +115,28 @@ public class ProcessingJobsService {
         ResponseEntity<FacultyResponseModel> fac = restTemplate.getForEntity(authUrl
                 + "/faculties", FacultyResponseModel.class);
 
-        List<String> faculties = Arrays.asList(fac.getBody().getFaculties());
+        List<String> faculties = new ArrayList<>();
+        if (fac.hasBody()) {
+            faculties = fac.getBody().getFaculty();
+        }
 
         List<FacultyTotalResource> res = new ArrayList<>();
 
         LocalDate tmrw = LocalDate.now().plusDays(1);
         for (String f : faculties) {
-            ResponseEntity<FacultyResource> facultyResourcesResponse = restTemplate.getForEntity(resourcesUrl
-                    + "/resources?faculty=" + f + "&day=" + tmrw, FacultyResource.class);
-
-
-            if (facultyResourcesResponse.getBody() == null) {
-                continue;
-            }
             List<ScheduledInstance> instancesInDb =
                     scheduledInstanceRepository.findByDateAndFaculty(tmrw, f);
             int cpuUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getCpuUsage).sum();
             int gpuUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getGpuUsage).sum();
             int memoryUsageSum = instancesInDb.stream().mapToInt(ScheduledInstance::getMemoryUsage).sum();
 
-            FacultyResource total  = facultyResourcesResponse.getBody();
-            FacultyTotalResource fr = new FacultyTotalResource();
-            fr.setFaculty(f);
-            fr.setDate(tmrw);
-            fr.setCpuUsageTotal(cpuUsageSum);
-            fr.setGpuUsageTotal(gpuUsageSum);
-            fr.setMemoryUsageTotal(memoryUsageSum);
-            fr.setCpuUsage(total.getCpuUsage());
-            fr.setGpuUsage(total.getGpuUsage());
-            fr.setMemoryUsage(total.getMemoryUsage());
+            List<FacultyResource> availableResources = resourceGetter.getAvailableResources(f, tmrw);
+            int cpuAvailableSum = availableResources.stream().mapToInt(FacultyResource::getCpuUsage).sum();
+            int gpuAvailableSum = availableResources.stream().mapToInt(FacultyResource::getGpuUsage).sum();
+            int memoryAvailableSum = availableResources.stream().mapToInt(FacultyResource::getMemoryUsage).sum();
+
+            FacultyTotalResource fr = new FacultyTotalResource(f, tmrw, cpuUsageSum, gpuUsageSum, memoryUsageSum,
+                    cpuAvailableSum, gpuAvailableSum, memoryAvailableSum);
             res.add(fr);
         }
         return res;
