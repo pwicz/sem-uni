@@ -13,14 +13,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.Node;
 import nl.tudelft.sem.template.example.domain.NodeRepository;
+import nl.tudelft.sem.template.example.dtos.AddNode;
 import nl.tudelft.sem.template.example.models.ReleaseFacultyModel;
 import nl.tudelft.sem.template.example.models.ToaRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -71,8 +74,12 @@ public class NodeController {
             return ResponseEntity.badRequest().build();
         }
 
-        List<Node> facultyNodes = repo.getNodesByFaculty(faculty).get();
+        Optional<List<Node>> facultyNodesOptional = repo.getNodesByFaculty(faculty);
+        if (facultyNodesOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
 
+        List<Node> facultyNodes = facultyNodesOptional.get();
         Resource r = resourceCreator(facultyNodes);
         return ResponseEntity.ok(r);
     }
@@ -86,14 +93,14 @@ public class NodeController {
      * Returns all the nodes available for admin to see.
      */
     @GetMapping(path = {"/resources"})
-    public ResponseEntity<List<Node>> getAllNodes(@RequestBody String token) {
+    public ResponseEntity<List<Node>> getAllNodes() {
         if (!checkIfAdmin()) {
             System.out.println("Admin privileges required. Current Role:" + authManager.getRole().toString());
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         if (repo.getAllNodes().isEmpty()) {
             System.out.println("Db is empty");
-            return ResponseEntity.ok(new ArrayList<Node>());
+            return ResponseEntity.ok(new ArrayList<>());
         }
         List<Node> nodes = repo.getAllNodes().get();
 
@@ -101,20 +108,7 @@ public class NodeController {
     }
 
     /**
-     * Test to see what role you currently are.
-     */
-    @GetMapping(path = {"/role"})
-    public ResponseEntity<String> userRole() {
-        if (authManager.getRole() == null) {
-            System.out.println("user has null role");
-            return ResponseEntity.badRequest().build();
-        }
-        System.out.println(repo.getTest1().toString());
-        return ResponseEntity.ok(authManager.getRole().toString());
-    }
-
-    /**
-     * Gets the number of free resources available for facculty and day.
+     * Gets the number of free resources available for faculty and day.
      * Only allowed to access if you belong to the faculty.
      *
      * @param facDay request model for faculty and date
@@ -124,57 +118,43 @@ public class NodeController {
         if (repo.getAvailableResources(facDay.getFaculty(), facDay.getDate()).isPresent()) {
             List<Node> n = repo.getAvailableResources(facDay.getFaculty(), facDay.getDate()).get();
             Resource r = resourceCreator(n);
-            FacultyResource facultyResources = new FacultyResource();
-            facultyResources.setFaculty(facDay.getFaculty());
-            facultyResources.setDate(facDay.getDate());
-            facultyResources.setCpuUsage(r.getCpu());
-            facultyResources.setGpuUsage(r.getGpu());
-            facultyResources.setMemoryUsage(r.getMem());
+            FacultyResource facultyResources =
+                    new FacultyResource(facDay.getFaculty(), facDay.getDate(), r.getCpu(), r.getGpu(), r.getMem());
             return ResponseEntity.ok(facultyResources);
         }
-        FacultyResource facultyResources = new FacultyResource();
-        facultyResources.setFaculty(facDay.getFaculty());
-        facultyResources.setDate(facDay.getDate());
-        facultyResources.setCpuUsage(0);
-        facultyResources.setGpuUsage(0);
-        facultyResources.setMemoryUsage(0);
+        FacultyResource facultyResources = new FacultyResource(facDay.getFaculty(), facDay.getDate(), 0, 0, 0);
         return ResponseEntity.ok(facultyResources);
     }
 
     /**
      * Endpoint where you can add node.
-     * The node has to belongto the facculty you are in
-     * The nodes resources has to match cpu >= gpu || cpu >= mem
+     * The node has to belong to the faculty you are in
+     * The nodes resources has to match cpu >= gpu && cpu >= mem
      *
      * @param node you want to add
      */
     @PostMapping(path = {"/addNode"})
-    public ResponseEntity<Node> addNode(@RequestBody Node node) throws JsonProcessingException {
-        if (node.getName() == null || node.getUrl() == null
-                || node.getFaculty() == null
-                || node.getToken() == null) {
+    public ResponseEntity<Node> addNode(@RequestBody AddNode node) {
+        Node n = Node.nodeCreator(node, authManager.getNetId());
+        if (n == null) {
             System.out.println("Value is null");
             return ResponseEntity.badRequest().build();
         }
-        if (node.getCpu() < node.getGpu()
-                || node.getCpu() < node.getMemory()) {
+        if (n.getCpu() < n.getGpu()
+                || n.getCpu() < n.getMemory()) {
             System.out.println("CPU resource smaller than GPU or MEMORY");
-            return ResponseEntity.badRequest().build();
-        }
-        if (!node.getName().equals(authManager.getNetId())) {
-            System.out.println("Node doesnt belong to " + node.getName());
             return ResponseEntity.badRequest().build();
         }
         List<String> faculties = getFaculty();
         System.out.println(faculties);
-        if (!(faculties.contains(node.getFaculty()))) {
+        if (!(faculties.contains(n.getFaculty()))) {
             System.out.println("failed after get faculty");
             return ResponseEntity.badRequest().build();
         } else if (checkIfAdmin()) {
-            node.setFaculty("FreePool");
+            n.setFaculty("FreePool");
         }
         try {
-            Node newNode = repo.save(node);
+            Node newNode = repo.save(n);
             return ResponseEntity.ok(newNode);
         } catch (Exception e) {
             System.out.println("failed to add node\n");
@@ -188,8 +168,7 @@ public class NodeController {
      * Only sets the date its released from and till
      */
     @PostMapping("/releaseFaculty")
-    public ResponseEntity<String> releaseFaculty(@RequestBody ReleaseFacultyModel releaseModel)
-                                                throws JsonProcessingException {
+    public ResponseEntity<String> releaseFaculty(@RequestBody ReleaseFacultyModel releaseModel) {
         if (authManager.getRole().getRoleValue() != RoleValue.FAC_ACC) {
             System.out.println("Account is not faculty account. Current: " + getFaculty());
             return ResponseEntity.badRequest().build();
@@ -209,7 +188,7 @@ public class NodeController {
                 + " to " + releaseModel.getDate().plusDays(releaseModel.getDays()));
     }
 
-    private List<String> getFaculty2(String netId) throws JsonProcessingException {
+    private List<String> getFaculty2(String netId) {
         String usersUrl = "http://localhost:8081/faculty"; //authentication microservice
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -232,37 +211,46 @@ public class NodeController {
 
     /**
      * Marks Node with the id as deleted.
-     * Later when databse clearner is called it will actually delete from database.
+     * Later when database clearer is called it will actually delete it from database.
      *
      * @param token token of access
      */
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteNode(@RequestBody ToaRequestModel token) throws JsonProcessingException {
+    public ResponseEntity<String> deleteNode(@RequestBody ToaRequestModel token) {
         //Node n = repo.getNodeById(id).get();
-        if (token == null) {
+        if (token == null || token.getToken() == null) {
             return ResponseEntity.badRequest().build();
         }
-        if (repo.getNodeByToken(token.getToken()).isEmpty()) {
+        Optional<Node> nodeOptional = repo.getNodeByToken(token.getToken());
+        if (nodeOptional.isEmpty()) {
             System.out.println("Repo is empty");
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+        if (!checkIfAdmin() && !nodeOptional.get().getName().equals(authManager.getNetId())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         List<String> faculties = getFaculty();
         if (!checkIfAdmin() && !faculties.contains(
-                repo.getNodeByToken(token.getToken()).get().getFaculty())) {
+                nodeOptional.get().getFaculty())) {
             System.out.println("Faculties don't match");
             return ResponseEntity.badRequest().build();
         }
 
         repo.setAsDeleted(token.getToken(), LocalDate.now().plusDays(1L));
-        Node n = repo.getNodeByToken(token.getToken()).get();
+        Node n = nodeOptional.get();
 
         //n.setRemovedDate(LocalDate.now().plusDays(1L)); // not updated forever in the database
         try {
-            String response = notifySchedulerOfResourceChange(LocalDate.now().plusDays(1L), n.getFaculty());
-            return ResponseEntity.ok(response + " " + n.getRemovedDate());
+            notifySchedulerOfResourceChange(LocalDate.now().plusDays(1L), n.getFaculty());
+            return ResponseEntity.ok("Node(s) with token " + token.getToken() + " removed from "
+                    + LocalDate.now().plusDays(1L));
         } catch (Exception e) {
+            String problem = "Failed Notify: " + n.getRemovedDate().toString() + " updated remove date";
+            System.err.println(problem);
             e.printStackTrace();
-            return ResponseEntity.ok("Failed Notify: " + n.getRemovedDate().toString() + " updated remove date");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed Notify: " + n.getRemovedDate().toString() + " updated remove date");
         }
     }
 
@@ -289,29 +277,27 @@ public class NodeController {
     }
 
     /**
-     * The api GET endpoint to get all Jobs in the database.
+     * The api GET endpoint to get a list of all resources in all clusters that are available
+     * to the user.
      *
-     * @return list of Jobs to be scheduled
+     * @return list of all resources in all clusters available to the user.
      */
     @GetMapping(path = "/resourcesNextDay")
-    public ResponseEntity<List<FacultyResource>> getResourcesNextDay() throws Exception {
-        ResponseEntity<String[]> facultyType = restTemplate.postForEntity(usersUrl
-                + "/faculty", new NetId(authManager.getNetId()), String[].class);
-
-        List<String> faculties = Arrays.asList(Objects.requireNonNull(facultyType.getBody()));
+    public ResponseEntity<List<FacultyResource>> getResourcesNextDay() {
+        List<String> faculties = getFaculty();
         System.out.println(faculties);
 
         List<FacultyResource> res = new ArrayList<>();
 
         for (String f : faculties) {
-            List<Node> n = repo.getAvailableResources(f, LocalDate.now().plusDays(1)).get();
+            Optional<List<Node>> optionalNodeList = repo.getAvailableResources(f, LocalDate.now().plusDays(1));
+            if (optionalNodeList.isEmpty()) {
+                continue;
+            }
+            List<Node> n = optionalNodeList.get();
             Resource r = resourceCreator(n);
-            FacultyResource facultyResources = new FacultyResource();
-            facultyResources.setFaculty(f);
-            facultyResources.setDate(LocalDate.now().plusDays(1));
-            facultyResources.setCpuUsage(r.getCpu());
-            facultyResources.setGpuUsage(r.getGpu());
-            facultyResources.setMemoryUsage(r.getMem());
+            FacultyResource facultyResources =
+                    new FacultyResource(f, LocalDate.now().plusDays(1), r.getCpu(), r.getGpu(), r.getMem());
             res.add(facultyResources);
         }
         return ResponseEntity.ok(res);
