@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.example.domain.strategies;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import commons.Faculty;
 import commons.FacultyResource;
 import commons.ScheduleJob;
 import java.time.LocalDate;
@@ -45,7 +46,7 @@ public class ScheduleBetweenClustersTest {
         Mockito.when(resourceGetter.getAvailableResources(facultyConstant, dateConstant))
                 .thenReturn(dayOne);
 
-        ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(1),
+        ScheduleJob scheduleJob = new ScheduleJob(1, new Faculty(facultyConstant), dateConstant.plusDays(1),
                 5, 2, 2);
         List<ScheduledInstance> answer = scheduleBetweenClusters.scheduleBetween(scheduleJob,
                 dateConstant, dateConstant.plusDays(1));
@@ -78,7 +79,7 @@ public class ScheduleBetweenClustersTest {
         );
         scheduledInstanceRepository.saveAll(inDb);
 
-        ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(2),
+        ScheduleJob scheduleJob = new ScheduleJob(1, new Faculty(facultyConstant), dateConstant.plusDays(2),
                 5, 2, 2);
         List<ScheduledInstance> answer = scheduleBetweenClusters.scheduleBetween(scheduleJob,
                 dateConstant, dateConstant.plusDays(2));
@@ -101,7 +102,7 @@ public class ScheduleBetweenClustersTest {
         Mockito.when(resourceGetter.getAvailableResources(facultyConstant, dateConstant))
                 .thenReturn(dayOne);
 
-        ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(1),
+        ScheduleJob scheduleJob = new ScheduleJob(1, new Faculty(facultyConstant), dateConstant.plusDays(1),
                 5, 2, 2);
         List<ScheduledInstance> answer = scheduleBetweenClusters.scheduleBetween(scheduleJob,
                 dateConstant, dateConstant.plusDays(1));
@@ -137,7 +138,7 @@ public class ScheduleBetweenClustersTest {
         Mockito.when(resourceGetter.getAvailableResources(facultyConstant, dateConstant.plusDays(1)))
                 .thenReturn(dayTwo);
 
-        ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(1),
+        ScheduleJob scheduleJob = new ScheduleJob(1, new Faculty(facultyConstant), dateConstant.plusDays(1),
                 11, 2, 2);
         List<ScheduledInstance> answer = scheduleBetweenClusters.scheduleBetween(scheduleJob,
                 dateConstant, dateConstant.plusDays(1));

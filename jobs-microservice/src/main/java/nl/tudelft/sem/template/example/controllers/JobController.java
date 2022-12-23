@@ -1,5 +1,7 @@
 package nl.tudelft.sem.template.example.controllers;
 
+
+import commons.Faculty;
 import commons.Job;
 import commons.NetId;
 import commons.Role;
@@ -16,6 +18,7 @@ import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.JobRepository;
 import nl.tudelft.sem.template.example.domain.JobService;
 import nl.tudelft.sem.template.example.models.IdRequestModel;
+import nl.tudelft.sem.template.example.models.JobNotificationResponseModel;
 import nl.tudelft.sem.template.example.models.JobRequestModel;
 import nl.tudelft.sem.template.example.models.JobResponseModel;
 import nl.tudelft.sem.template.example.models.NetIdRequestModel;
@@ -148,13 +151,14 @@ public class JobController {
             NetId jobNetId = new NetId(request.getNetId());
             NetId authNetId = new NetId(authManager.getNetId());
             String desc = request.getDescription();
+            Faculty faculty = new Faculty(request.getFaculty());
             int cpuUsage = request.getCpuUsage();
             int gpuUsage = request.getGpuUsage();
             int memoryUsage = request.getMemoryUsage();
             Role role = authManager.getRole();
             LocalDate preferredDate = LocalDate.now();
 
-            Job createdJob = this.jobService.createJob(jobNetId, authNetId, desc, cpuUsage,
+            Job createdJob = this.jobService.createJob(jobNetId, authNetId, faculty, desc, cpuUsage,
                     gpuUsage, memoryUsage, role.getRoleValue(), preferredDate);
 
             JobResponseModel jobResponseModel = jobService.populateJobResponseModel(createdJob.getJobId(),
@@ -219,6 +223,31 @@ public class JobController {
 
             List<Job> jobs = this.jobService.getAllScheduledJobs(netId, authNetId, role);
             return ResponseEntity.ok(jobs);
+        } catch (InvalidNetIdException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, invalidId, e);
+        } catch (BadCredentialsException e) {
+            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "BAD_CREDENTIALS", e);
+        }
+    }
+
+
+    /**
+     * The api GET endpoint to notify the User about the Job status and schedule date.
+     *
+     * @return list of Jobs to be scheduled
+     */
+    @GetMapping(path = "/getJobNotification")
+    public ResponseEntity<List<JobNotificationResponseModel>> getJobNotification() throws Exception {
+        try {
+            NetId netId = new NetId(authManager.getNetId());
+            NetId authNetId = new NetId(authManager.getNetId());
+
+            List<Job> jobs = this.jobService.collectJobsByNetId(netId, authNetId);
+            List<JobNotificationResponseModel> responseModels = jobs.stream()
+                    .map(x -> new JobNotificationResponseModel(x.getJobId(),
+                            x.getStatus(), x.getPreferredDate())).collect(Collectors.toList());
+
+            return ResponseEntity.ok(responseModels);
         } catch (InvalidNetIdException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, invalidId, e);
         } catch (BadCredentialsException e) {

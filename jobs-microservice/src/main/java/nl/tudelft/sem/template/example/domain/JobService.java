@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.domain;
 
+import commons.Faculty;
 import commons.Job;
 import commons.NetId;
 import commons.Role;
@@ -14,12 +15,12 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import nl.tudelft.sem.template.example.models.JobIdRequestModel;
 import nl.tudelft.sem.template.example.models.JobResponseModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /**
  * A DDD service for handling jobs.
@@ -27,7 +28,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @Service
 public class JobService {
-
     private final transient JobRepository jobRepository;
     private final transient RestTemplate restTemplate;
     private static final String nullValue = "null";
@@ -38,8 +38,8 @@ public class JobService {
     /**
      * Instantiates a new JobService.
      *
-     * @param restTemplate the template to make REST API calls
-     * @param jobRepository the job repository
+     * @param jobRepository               the job repository
+     * @param restTemplate                the template to make REST API calls
      */
     public JobService(JobRepository jobRepository, RestTemplate restTemplate) {
         this.jobRepository = jobRepository;
@@ -51,8 +51,9 @@ public class JobService {
      *
      * @param scheduleJob the Job object to be scheduled
      * @return the response message of the Scheduler
+     * @throws InvalidScheduleJobException if scheduleJob is null
      */
-    public String scheduleJob(ScheduleJob scheduleJob) throws InvalidScheduleJobException {
+    public String scheduleJob(ScheduleJob scheduleJob) throws InvalidScheduleJobException, ResponseEntityException {
         if (scheduleJob == null) {
             throw new InvalidScheduleJobException(null);
         }
@@ -61,8 +62,24 @@ public class JobService {
                 .postForEntity(schedulerUrl + "/schedule", scheduleJob, String.class);
 
         if (response.getBody() == null) {
-            //TODO: why is response null?
-            return "Problem: ResponseEntity was null!";
+            throw new ResponseEntityException();
+        }
+        return response.getBody();
+    }
+
+    /**
+     * Makes a POST request to the Scheduler to unschedule Jobs.
+     *
+     * @param jobId - the id of the job to be unscheduled
+     * @return the response message of the scheduler
+     * @throws ResponseEntityException - exception that handles empty response from the Scheduler
+     */
+    public String unscheduleJob(JobIdRequestModel jobId) throws ResponseEntityException {
+        ResponseEntity<String> response = restTemplate
+                .postForEntity(schedulerUrl + "/unschedule", jobId, String.class);
+
+        if (response.getBody() == null) {
+            throw new ResponseEntityException();
         }
         return response.getBody();
     }
@@ -79,7 +96,7 @@ public class JobService {
      * @throws Exception if the resources of NetId are invalid
      */
 
-    public Job createJob(NetId netId, NetId authNetId, String desc, int cpuUsage, int gpuUsage,
+    public Job createJob(NetId netId, NetId authNetId, Faculty faculty, String desc, int cpuUsage, int gpuUsage,
                          int memoryUsage, RoleValue role, LocalDate preferredDate) throws Exception {
         if (cpuUsage < 0 || gpuUsage < 0 || memoryUsage < 0) {
             throw new InvalidResourcesException(Math.min(cpuUsage, Math.min(gpuUsage, memoryUsage)));
@@ -98,7 +115,7 @@ public class JobService {
             throw new BadCredentialsException(role.toString());
         }
 
-        Job newJob = new Job(netId, desc, cpuUsage, gpuUsage, memoryUsage, preferredDate);
+        Job newJob = new Job(netId, faculty, desc, cpuUsage, gpuUsage, memoryUsage, preferredDate);
         jobRepository.save(newJob);
 
         return newJob;
@@ -224,7 +241,7 @@ public class JobService {
      * @param netId NetId of the request creator
      * @param authNetId NetId of the authenticated user
      * @param role role of the request creator
-     * @return a list of Job entities containing all jobs in the database.
+     * @return a list of Job entities containing all "ACCEPTED" jobs in the database.
      * @throws Exception if the NetId is invalid or the creator of the request does not have the admin role.
      */
     public List<Job> getAllScheduledJobs(NetId netId, NetId authNetId, RoleValue role) throws Exception {

@@ -43,7 +43,7 @@ public abstract class ScheduleWithClusterPriority {
             int memoryToSchedule = job.getMemoryUsage();
 
             List<FacultyResource> facultyResources = new ArrayList<>(
-                    resourceGetter.getAvailableResources(job.getFaculty(), currentDate));
+                    resourceGetter.getAvailableResources(job.getFaculty().toString(), currentDate));
             facultyResources.sort(comp);
             List<ScheduledInstance> scheduledInstances = new ArrayList<>();
             for (var r : facultyResources) {
@@ -67,7 +67,7 @@ public abstract class ScheduleWithClusterPriority {
                 cpuToSchedule -= providedCpu;
                 gpuToSchedule -= providedGpu;
                 memoryToSchedule -= providedMemory;
-                scheduledInstances.add(new ScheduledInstance(job.getJobId(), job.getFaculty(), r.getFaculty(),
+                scheduledInstances.add(new ScheduledInstance(job.getJobId(), job.getFaculty().toString(), r.getFaculty(),
                         providedCpu, providedGpu, providedMemory, currentDate));
             }
 
