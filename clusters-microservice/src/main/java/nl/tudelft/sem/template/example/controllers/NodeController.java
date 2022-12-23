@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.Node;
 import nl.tudelft.sem.template.example.domain.NodeRepository;
@@ -21,6 +23,7 @@ import nl.tudelft.sem.template.example.models.ToaRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -71,8 +74,12 @@ public class NodeController {
             return ResponseEntity.badRequest().build();
         }
 
-        List<Node> facultyNodes = repo.getNodesByFaculty(faculty).get();
+        Optional<List<Node>> facultyNodesOptional = repo.getNodesByFaculty(faculty);
+        if (facultyNodesOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
 
+        List<Node> facultyNodes = facultyNodesOptional.get();
         Resource r = resourceCreator(facultyNodes);
         return ResponseEntity.ok(r);
     }
@@ -93,7 +100,7 @@ public class NodeController {
         }
         if (repo.getAllNodes().isEmpty()) {
             System.out.println("Db is empty");
-            return ResponseEntity.ok(new ArrayList<Node>());
+            return ResponseEntity.ok(new ArrayList<>());
         }
         List<Node> nodes = repo.getAllNodes().get();
 
@@ -136,7 +143,7 @@ public class NodeController {
      * @param node you want to add
      */
     @PostMapping(path = {"/addNode"})
-    public ResponseEntity<Node> addNode(@RequestBody Node node) throws JsonProcessingException {
+    public ResponseEntity<Node> addNode(@RequestBody Node node) {
         if (node.getName() == null || node.getUrl() == null
                 || node.getFaculty() == null
                 || node.getToken() == null) {
@@ -176,8 +183,7 @@ public class NodeController {
      * Only sets the date its released from and till
      */
     @PostMapping("/releaseFaculty")
-    public ResponseEntity<String> releaseFaculty(@RequestBody ReleaseFacultyModel releaseModel)
-                                                throws JsonProcessingException {
+    public ResponseEntity<String> releaseFaculty(@RequestBody ReleaseFacultyModel releaseModel) {
         if (authManager.getRole().getRoleValue() != RoleValue.FAC_ACC) {
             System.out.println("Account is not faculty account. Current: " + getFaculty());
             return ResponseEntity.badRequest().build();
@@ -197,7 +203,7 @@ public class NodeController {
                 + " to " + releaseModel.getDate().plusDays(releaseModel.getDays()));
     }
 
-    private List<String> getFaculty2(String netId) throws JsonProcessingException {
+    private List<String> getFaculty2(String netId) {
         String usersUrl = "http://localhost:8081/faculty"; //authentication microservice
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -225,7 +231,7 @@ public class NodeController {
      * @param token token of access
      */
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteNode(@RequestBody ToaRequestModel token) throws JsonProcessingException {
+    public ResponseEntity<String> deleteNode(@RequestBody ToaRequestModel token) {
         //Node n = repo.getNodeById(id).get();
         if (token == null) {
             return ResponseEntity.badRequest().build();
@@ -282,7 +288,7 @@ public class NodeController {
      * @return list of Jobs to be scheduled
      */
     @GetMapping(path = "/resourcesNextDay")
-    public ResponseEntity<List<FacultyResource>> getResourcesNextDay() throws Exception {
+    public ResponseEntity<List<FacultyResource>> getResourcesNextDay() {
         ResponseEntity<String[]> facultyType = restTemplate.postForEntity(usersUrl
                 + "/faculty", new NetId(authManager.getNetId()), String[].class);
 
