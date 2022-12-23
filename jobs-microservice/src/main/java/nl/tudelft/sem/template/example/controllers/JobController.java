@@ -48,7 +48,7 @@ public class JobController {
      * Constructor of the Job controller.
      *
      * @param repository  the job database
-     * @param jobService  the service which handles the communication with the database
+     * @param jobService  the service which handles the communication with the database & scheduler microservice
      * @param authManager Spring Security component used to authenticate and authorize the user
      */
     @Autowired

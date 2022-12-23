@@ -3,11 +3,13 @@ package nl.tudelft.sem.template.example.controllers;
 import commons.Job;
 import commons.NetId;
 import commons.Role;
-import commons.RoleValue;
+import commons.ScheduleJob;
+import commons.Status;
 import exceptions.InvalidIdException;
 import exceptions.InvalidNetIdException;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.chain.ChainService;
+import nl.tudelft.sem.template.example.domain.JobService;
 import nl.tudelft.sem.template.example.models.ApproveRequestModel;
 import nl.tudelft.sem.template.example.models.JobResponseModel;
 import nl.tudelft.sem.template.example.models.RejectRequestModel;
@@ -24,11 +26,20 @@ public class ChainController {
 
     private final transient AuthManager authManager;
     private final transient ChainService chainService;
+    private final transient JobService jobService;
 
+    /**
+     * Constructor of the Chain controller.
+     *
+     * @param authManager Spring Security component used to authenticate and authorize the user
+     * @param chainService the service which handles the approval/rejection of jobs
+     * @param jobService  the service which handles the communication with the database & scheduler microservice
+     */
     @Autowired
-    public ChainController(AuthManager authManager, ChainService chainService) {
+    public ChainController(AuthManager authManager, ChainService chainService, JobService jobService) {
         this.authManager = authManager;
         this.chainService = chainService;
+        this.jobService = jobService;
     }
 
     /**
@@ -45,6 +56,12 @@ public class ChainController {
             Role role = authManager.getRole();
             Long id = request.getId();
             Job approvedJob = chainService.approveJob(netId, role.getRoleValue(), id);
+            if (approvedJob.getStatus() == Status.ACCEPTED) {
+                ScheduleJob scheduleJob = new ScheduleJob(id, approvedJob.getFaculty(),
+                        approvedJob.getPreferredDate(), approvedJob.getCpuUsage(), approvedJob.getGpuUsage(),
+                        approvedJob.getMemoryUsage());
+                jobService.scheduleJob(scheduleJob);
+            }
             JobResponseModel jobResponseModel = new JobResponseModel();
             jobResponseModel.setId(id);
             jobResponseModel.setStatus(approvedJob.getStatus());
