@@ -59,18 +59,6 @@ public class JobController {
     }
 
     /**
-     * The api POST endpoint to test adding a Job.
-     *
-     * @return 200 ok
-     */
-    @PostMapping(path = "testAdd")
-    public ResponseEntity<JobResponseModel> testAdd() {
-        Job job = new Job(1);
-        repository.save(job);
-        return ResponseEntity.ok().build();
-    }
-
-    /**
      * The api GET endpoint to get all Jobs in the database.
      *
      * @return list of Jobs to be scheduled

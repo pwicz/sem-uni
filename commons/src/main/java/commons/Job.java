@@ -72,20 +72,6 @@ public class Job {
         this.dateCreated = LocalDate.now();
     }
 
-    /**
-     * TEST CONSTRUCTOR.
-     */
-    public Job(int temp) {
-        this.netId = new NetId("test");
-        description = "desc";
-        this.faculty = new Faculty("EEMCS");
-        cpuUsage = 0;
-        gpuUsage = 0;
-        memoryUsage = 0;
-        this.status = Status.ACCEPTED;
-        this.preferredDate = LocalDate.now().plusDays(3);
-    }
-
     public String getDescription() {
         return description;
     }
