@@ -5,25 +5,23 @@ import commons.FacultyRequestModel;
 import commons.FacultyResource;
 import commons.FacultyResourceModel;
 import commons.FacultyResponseModel;
-import commons.NetId;
 import commons.Resource;
 import commons.RoleValue;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
+import nl.tudelft.sem.template.example.domain.GetResourceService;
+import nl.tudelft.sem.template.example.domain.ModifyRepoService;
 import nl.tudelft.sem.template.example.domain.Node;
-import nl.tudelft.sem.template.example.domain.NodeRepository;
 import nl.tudelft.sem.template.example.models.ReleaseFacultyModel;
 import nl.tudelft.sem.template.example.models.ToaRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,25 +36,24 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/cluster")
 public class NodeController {
     private final transient RestTemplate restTemplate;
-    private final transient NodeRepository repo;
     private final transient AuthManager authManager;
-    private final transient JasonUtil jsonUtil;
-
-    private final transient String usersUrl = "http://localhost:8081";
+    private final transient ModifyRepoService modifyRepoService;
+    private final transient GetResourceService getResourceService;
 
     /**
      * Constructor for the NodeController.
      *
-     * @param repo         the repository interface
      * @param authManager  contains details about the user
      * @param restTemplate RestTemplate to send requests
      */
     @Autowired
-    public NodeController(NodeRepository repo, AuthManager authManager, RestTemplate restTemplate, JasonUtil jsonUtil) {
-        this.repo = repo;
+    public NodeController(AuthManager authManager, RestTemplate restTemplate,
+                          ModifyRepoService modifyRepoService,
+                          GetResourceService getResourceService) {
         this.authManager = authManager;
         this.restTemplate = restTemplate;
-        this.jsonUtil = jsonUtil;
+        this.modifyRepoService = modifyRepoService;
+        this.getResourceService = getResourceService;
     }
 
     /**
@@ -70,10 +67,7 @@ public class NodeController {
             System.out.println("Needed Admin permissions.Current: " + authManager.getRole().toString());
             return ResponseEntity.badRequest().build();
         }
-
-        List<Node> facultyNodes = repo.getNodesByFaculty(faculty).get();
-
-        Resource r = resourceCreator(facultyNodes);
+        Resource r = getResourceService.getTotalResourcesForFaculty(faculty);
         return ResponseEntity.ok(r);
     }
 
@@ -91,12 +85,7 @@ public class NodeController {
             System.out.println("Admin privileges required. Current Role:" + authManager.getRole().toString());
             return ResponseEntity.badRequest().build();
         }
-        if (repo.getAllNodes().isEmpty()) {
-            System.out.println("Db is empty");
-            return ResponseEntity.ok(new ArrayList<Node>());
-        }
-        List<Node> nodes = repo.getAllNodes().get();
-
+        List<Node> nodes = getResourceService.getAllNodes();
         return ResponseEntity.ok(nodes);
     }
 
@@ -109,35 +98,18 @@ public class NodeController {
             System.out.println("user has null role");
             return ResponseEntity.badRequest().build();
         }
-        System.out.println(repo.getTest1().toString());
         return ResponseEntity.ok(authManager.getRole().toString());
     }
 
     /**
      * Gets the number of free resources available for facculty and day.
-     * Only allowed to access if you belong to the faculty.
      *
      * @param facDay request model for faculty and date
      */
     @PostMapping(path = {"/facultyDayResource"})
     public ResponseEntity<FacultyResource> getFacultyAvailableResourcesForDay(@RequestBody FacultyResourceModel facDay) {
-        if (repo.getAvailableResources(facDay.getFaculty(), facDay.getDate()).isPresent()) {
-            List<Node> n = repo.getAvailableResources(facDay.getFaculty(), facDay.getDate()).get();
-            Resource r = resourceCreator(n);
-            FacultyResource facultyResources = new FacultyResource();
-            facultyResources.setFaculty(facDay.getFaculty());
-            facultyResources.setDate(facDay.getDate());
-            facultyResources.setCpuUsage(r.getCpu());
-            facultyResources.setGpuUsage(r.getGpu());
-            facultyResources.setMemoryUsage(r.getMem());
-            return ResponseEntity.ok(facultyResources);
-        }
-        FacultyResource facultyResources = new FacultyResource();
-        facultyResources.setFaculty(facDay.getFaculty());
-        facultyResources.setDate(facDay.getDate());
-        facultyResources.setCpuUsage(0);
-        facultyResources.setGpuUsage(0);
-        facultyResources.setMemoryUsage(0);
+        FacultyResource facultyResources = getResourceService.getFacultyAvailableResourcesForDay(
+                facDay.getFaculty(), facDay.getDate());
         return ResponseEntity.ok(facultyResources);
     }
 
@@ -150,36 +122,14 @@ public class NodeController {
      */
     @PostMapping(path = {"/addNode"})
     public ResponseEntity<Node> addNode(@RequestBody Node node) throws JsonProcessingException {
-        if (node.getName() == null || node.getUrl() == null
-                || node.getFaculty() == null
-                || node.getToken() == null) {
-            System.out.println("Value is null");
-            return ResponseEntity.badRequest().build();
-        }
-        if (node.getCpu() < node.getGpu()
-                || node.getCpu() < node.getMemory()) {
-            System.out.println("CPU resource smaller than GPU or MEMORY");
-            return ResponseEntity.badRequest().build();
-        }
-        if (!node.getName().equals(authManager.getNetId())) {
-            System.out.println("Node doesnt belong to " + node.getName());
-            return ResponseEntity.badRequest().build();
-        }
-        List<String> faculties = getFaculty();
-        System.out.println(faculties);
-        if (!(faculties.contains(node.getFaculty()))) {
-            System.out.println("failed after get faculty");
-            return ResponseEntity.badRequest().build();
-        } else if (checkIfAdmin()) {
+        if (checkIfAdmin()) {
             node.setFaculty("FreePool");
         }
-        try {
-            Node newNode = repo.save(node);
-            return ResponseEntity.ok(newNode);
-        } catch (Exception e) {
-            System.out.println("failed to add node\n");
+        Node newNode = modifyRepoService.addNode(node, authManager.getNetId(), getFaculty());
+        if (newNode == null) {
             return ResponseEntity.badRequest().build();
         }
+        return ResponseEntity.ok(newNode);
     }
 
     /**
@@ -194,19 +144,12 @@ public class NodeController {
             System.out.println("Account is not faculty account. Current: " + getFaculty());
             return ResponseEntity.badRequest().build();
         }
-        if (releaseModel.getDate() == null || releaseModel.getFaculty() == null
-                || releaseModel.getDate().isBefore(LocalDate.now()) || releaseModel.getDays() < 1) {
-            System.out.println("Null or date is before today or length is less than 1");
+        String response = modifyRepoService.releaseFaculty(releaseModel.getFaculty(),
+                releaseModel.getDate(), releaseModel.getDays(), getFaculty());
+        if (response == null) {
             return ResponseEntity.badRequest().build();
         }
-        if (!getFaculty().contains(releaseModel.getFaculty())) {
-            System.out.println("Releasing someone else's faculty");
-            return ResponseEntity.badRequest().build();
-        }
-        repo.updateRelease(releaseModel.getFaculty(), releaseModel.getDate(),
-                releaseModel.getDate().plusDays(releaseModel.getDays()));
-        return ResponseEntity.ok("Released from " + releaseModel.getDate()
-                + " to " + releaseModel.getDate().plusDays(releaseModel.getDays()));
+        return ResponseEntity.ok(response);
     }
 
     private List<String> getFaculty2(String netId) throws JsonProcessingException {
@@ -232,60 +175,21 @@ public class NodeController {
 
     /**
      * Marks Node with the id as deleted.
-     * Later when databse clearner is called it will actually delete from database.
+     * Later when database cleaner is called it will actually delete from database.
      *
      * @param token token of access
      */
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteNode(@RequestBody ToaRequestModel token) throws JsonProcessingException {
-        //Node n = repo.getNodeById(id).get();
+    @PostMapping("/delete")
+    public ResponseEntity<String> deleteNode(@RequestBody ToaRequestModel token) {
         if (token == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        if (repo.getNodeByToken(token.getToken()).isEmpty()) {
-            System.out.println("Repo is empty");
-            return ResponseEntity.badRequest().build();
+            return new ResponseEntity<>("No token of access provided", HttpStatus.BAD_REQUEST);
         }
         List<String> faculties = getFaculty();
-        if (!checkIfAdmin() && !faculties.contains(
-                repo.getNodeByToken(token.getToken()).get().getFaculty())) {
-            System.out.println("Faculties don't match");
-            return ResponseEntity.badRequest().build();
+        String response = modifyRepoService.disableNodeFromRepo(token.getToken(), faculties);
+        if (response == null) {
+            return new ResponseEntity<>("Failed to notify", HttpStatus.BAD_REQUEST);
         }
-
-        repo.setAsDeleted(token.getToken(), LocalDate.now().plusDays(1L));
-        Node n = repo.getNodeByToken(token.getToken()).get();
-
-        //n.setRemovedDate(LocalDate.now().plusDays(1L)); // not updated forever in the database
-        try {
-            String response = notifySchedulerOfResourceChange(LocalDate.now().plusDays(1L), n.getFaculty());
-            return ResponseEntity.ok(response + " " + n.getRemovedDate());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.ok("Failed Notify: " + n.getRemovedDate().toString() + " updated remove date");
-        }
-    }
-
-    private String notifySchedulerOfResourceChange(LocalDate date, String faculty) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        List<Node> n;
-        if (repo.getAvailableResources(faculty, date).isPresent()) {
-            n = repo.getAvailableResources(faculty, date).get();
-        } else {
-            n = List.of(new Node("", "", "", "", 0, 0, 0));
-        }
-        Resource r = resourceCreator(n);
-        FacultyResource f = new FacultyResource();
-        f.setFaculty(faculty);
-        f.setDate(date);
-        f.setCpuUsage(r.getCpu());
-        f.setGpuUsage(r.getGpu());
-        f.setMemoryUsage(r.getMem());
-        HttpEntity<FacultyResource> requestEntity = new HttpEntity<>(f, headers);
-        ResponseEntity<String> updated = restTemplate.postForEntity("http://localhost:8084/resource-update",
-            requestEntity, String.class);
-        return updated.getBody();
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -294,42 +198,10 @@ public class NodeController {
      * @return list of Jobs to be scheduled
      */
     @GetMapping(path = "/resourcesNextDay")
-    public ResponseEntity<List<FacultyResource>> getResourcesNextDay() throws Exception {
-        ResponseEntity<String[]> facultyType = restTemplate.postForEntity(usersUrl
-                + "/faculty", new NetId(authManager.getNetId()), String[].class);
-
-        List<String> faculties = Arrays.asList(Objects.requireNonNull(facultyType.getBody()));
-        System.out.println(faculties);
-
-        List<FacultyResource> res = new ArrayList<>();
-
-        for (String f : faculties) {
-            List<Node> n = repo.getAvailableResources(f, LocalDate.now().plusDays(1)).get();
-            Resource r = resourceCreator(n);
-            FacultyResource facultyResources = new FacultyResource();
-            facultyResources.setFaculty(f);
-            facultyResources.setDate(LocalDate.now().plusDays(1));
-            facultyResources.setCpuUsage(r.getCpu());
-            facultyResources.setGpuUsage(r.getGpu());
-            facultyResources.setMemoryUsage(r.getMem());
-            res.add(facultyResources);
-        }
+    public ResponseEntity<List<FacultyResource>> getResourcesNextDay() {
+        List<FacultyResource> res = getResourceService.getResourcesNextDay(getFaculty());
         return ResponseEntity.ok(res);
     }
 
-    private Resource resourceCreator(List<Node> nodes) {
-        if (nodes == null) {
-            return new Resource(0, 0, 0);
-        }
-        int cpu = 0;
-        int gpu = 0;
-        int mem = 0;
-        for (Node n : nodes) {
-            cpu += n.getCpu();
-            gpu += n.getGpu();
-            mem += n.getMemory();
-        }
-        return new Resource(cpu, gpu, mem);
-    }
 }
 
