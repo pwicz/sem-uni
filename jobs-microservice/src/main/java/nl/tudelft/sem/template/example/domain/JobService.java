@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.example.domain;
 
 import commons.Job;
 import commons.NetId;
+import commons.Role;
 import commons.RoleValue;
 import commons.ScheduleJob;
 import commons.Status;
@@ -93,8 +94,7 @@ public class JobService {
         if (!netId.toString().equals(authNetId.toString())) {
             throw new InvalidNetIdException(netId.toString());
         }
-        if (!role.equals(RoleValue.EMPLOYEE)) {
-            System.out.println(role);
+        if (role != RoleValue.EMPLOYEE) {
             throw new BadCredentialsException(role.toString());
         }
 
@@ -124,8 +124,7 @@ public class JobService {
         if (!job.getNetId().toString().equals(authNetId.toString())) {
             throw new InvalidNetIdException(job.getNetId().toString());
         }
-        if (!role.equals(RoleValue.EMPLOYEE)) {
-            System.out.println(role);
+        if (role != RoleValue.EMPLOYEE) {
             throw new BadCredentialsException(role.toString());
         }
 
@@ -140,11 +139,17 @@ public class JobService {
      * @param id the unique id of the Job.
      * @throws Exception if there is no Job with the provided id.
      */
-    public void deleteJob(long id) throws Exception {
+    public void deleteJob(String netId, RoleValue role, long id) throws Exception {
         if (!jobRepository.existsById(id)) {
             throw new InvalidIdException(id);
         }
-        jobRepository.deleteById(id);
+
+        if (role == RoleValue.ADMIN || ((role == RoleValue.EMPLOYEE)
+            && netId.equals(jobRepository.getOne(id).getNetId().toString()))) {
+            jobRepository.deleteById(id);
+        } else {
+            throw new BadCredentialsException("Not admin or not your job");
+        }
     }
 
     /**
@@ -199,15 +204,15 @@ public class JobService {
      * @return a list of Job entities containing all jobs in the database.
      * @throws Exception if the NetId is invalid or the creator of the request does not have the admin role.
      */
-    public List<Job> getAllJobs(NetId netId, NetId authNetId, String role) throws Exception {
+    public List<Job> getAllJobs(NetId netId, NetId authNetId, RoleValue role) throws Exception {
         if (netId == null) {
             throw new InvalidNetIdException(nullValue);
         }
         if (!netId.toString().equals(authNetId.toString())) {
             throw new InvalidNetIdException(netId.toString());
         }
-        if (!role.equals("admin")) {
-            throw new BadCredentialsException(role);
+        if (role != RoleValue.ADMIN) {
+            throw new BadCredentialsException(role.toString());
         }
         return jobRepository.findAll();
     }
@@ -222,15 +227,15 @@ public class JobService {
      * @return a list of Job entities containing all jobs in the database.
      * @throws Exception if the NetId is invalid or the creator of the request does not have the admin role.
      */
-    public List<Job> getAllScheduledJobs(NetId netId, NetId authNetId, String role) throws Exception {
+    public List<Job> getAllScheduledJobs(NetId netId, NetId authNetId, RoleValue role) throws Exception {
         if (netId == null) {
             throw new InvalidNetIdException(nullValue);
         }
         if (!netId.toString().equals(authNetId.toString())) {
             throw new InvalidNetIdException(netId.toString());
         }
-        if (!role.equals("admin")) {
-            throw new BadCredentialsException(role);
+        if (role != RoleValue.ADMIN) {
+            throw new BadCredentialsException(role.toString());
         }
         return jobRepository.findAll().stream().filter(j -> j.getStatus() == Status.ACCEPTED).collect(Collectors.toList());
     }

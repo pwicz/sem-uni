@@ -47,8 +47,8 @@ public class JwtTokenGenerator {
         Map<String, Object> claims = new HashMap<>();
         ArrayList<GrantedAuthority> authorities = new ArrayList<>(userDetails.getAuthorities());
 
-        String role = authorities.get(0).getAuthority();
-        String faculty = authorities.get(1).getAuthority();
+        String role = authorities.get(1).getAuthority();
+        String faculty = authorities.get(0).getAuthority();
 
         claims.put("role", role);
         claims.put("faculty", faculty);

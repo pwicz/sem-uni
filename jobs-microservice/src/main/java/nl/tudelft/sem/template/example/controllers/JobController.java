@@ -77,7 +77,7 @@ public class JobController {
         try {
             NetId netId = new NetId(authManager.getNetId());
             NetId authNetId = new NetId(authManager.getNetId());
-            String role = authManager.getRole().toString();
+            RoleValue role = authManager.getRole().getRoleValue();
 
             List<Job> jobs = this.jobService.getAllJobs(netId, authNetId, role);
             List<JobResponseModel> responseModels = jobs.stream()
@@ -153,6 +153,7 @@ public class JobController {
             int memoryUsage = request.getMemoryUsage();
             Role role = authManager.getRole();
             LocalDate preferredDate = LocalDate.now();
+
             Job createdJob = this.jobService.createJob(jobNetId, authNetId, desc, cpuUsage,
                     gpuUsage, memoryUsage, role.getRoleValue(), preferredDate);
 
@@ -176,7 +177,7 @@ public class JobController {
     @PostMapping("/deleteJob")
     public ResponseEntity deleteJob(@RequestBody long jobId) throws Exception {
         try {
-            this.jobService.deleteJob(jobId);
+            this.jobService.deleteJob(authManager.getNetId(), authManager.getRole().getRoleValue(), jobId);
         } catch (InvalidIdException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, invalidId, e);
         }
@@ -214,7 +215,7 @@ public class JobController {
         try {
             NetId netId = new NetId(authManager.getNetId());
             NetId authNetId = new NetId(authManager.getNetId());
-            String role = authManager.getRole().toString();
+            RoleValue role = authManager.getRole().getRoleValue();
 
             List<Job> jobs = this.jobService.getAllScheduledJobs(netId, authNetId, role);
             return ResponseEntity.ok(jobs);

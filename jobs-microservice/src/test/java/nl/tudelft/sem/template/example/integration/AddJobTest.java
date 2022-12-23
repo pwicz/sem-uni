@@ -88,7 +88,7 @@ public class AddJobTest {
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
         jobService.createJob(u1, u1, "d", 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
-        List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
+        List<Job> fromDb = jobService.getAllJobs(u1, u1, RoleValue.ADMIN);
         j1.setJobId(fromDb.get(0).getJobId());
         assertThat(fromDb.size()).isEqualTo(1);
         assertThat(j1.equals(fromDb.get(0))).isEqualTo(true);
@@ -103,7 +103,7 @@ public class AddJobTest {
 
         jobService.createJob(u1, u1, "d", 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
         jobService.createJob(new NetId("Tmp"), new NetId("Tmp"), "d", 12, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
-        List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
+        List<Job> fromDb = jobService.getAllJobs(u1, u1, RoleValue.ADMIN);
         assertThat(fromDb.size()).isEqualTo(2);
     }
 
@@ -117,7 +117,7 @@ public class AddJobTest {
 
         jobService.createJob(u1, u1, "d", 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
         jobService.createJob(u2, u2, "d", 12, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
-        List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
+        List<Job> fromDb = jobService.getAllJobs(u1, u1, RoleValue.ADMIN);
         j2.setJobId(2);
         j1.setJobId(1);
         assertThat(fromDb.size()).isEqualTo(2);

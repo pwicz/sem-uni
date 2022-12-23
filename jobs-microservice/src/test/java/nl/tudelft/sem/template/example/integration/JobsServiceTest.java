@@ -12,6 +12,7 @@ import commons.Status;
 import exceptions.InvalidIdException;
 import java.time.LocalDate;
 import java.util.List;
+import javax.transaction.Transactional;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.authentication.JwtTokenVerifier;
 import nl.tudelft.sem.template.example.domain.JobRepository;
@@ -27,6 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -38,6 +40,7 @@ import org.springframework.web.client.RestTemplate;
 @ActiveProfiles({"test", "mockTokenVerifier", "mockAuthenticationManager"})
 //@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
+@Transactional
 public class JobsServiceTest {
 
     @MockBean
@@ -98,7 +101,7 @@ public class JobsServiceTest {
 
         jobService.createJob(u2, j2, RoleValue.EMPLOYEE);
 
-        List<Job> fromDb = jobService.getAllScheduledJobs(u1, u1, "admin");
+        List<Job> fromDb = jobService.getAllScheduledJobs(u1, u1, RoleValue.ADMIN);
         assertThat(fromDb.size()).isEqualTo(2);
         assertSame(fromDb.get(0).getStatus(), Status.ACCEPTED);
         assertSame(fromDb.get(1).getStatus(), Status.ACCEPTED);
@@ -131,12 +134,12 @@ public class JobsServiceTest {
         jobService.createJob(u1, u1, "d", 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
         jobService.createJob(u1, u1, "d", 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
 
-        List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
+        List<Job> fromDb = jobService.getAllJobs(u1, u1, RoleValue.ADMIN);
         assertThat(fromDb.size()).isEqualTo(2);
         assertSame(fromDb.get(0).getStatus(), Status.PENDING);
 
         jobService.updateJob(fromDb.get(0).getJobId(), Status.ACCEPTED, dateConstant);
-        fromDb = jobService.getAllJobs(u1, u1, "admin");
+        fromDb = jobService.getAllJobs(u1, u1, RoleValue.ADMIN);
         assertThat(fromDb.size()).isEqualTo(2);
         assertSame(fromDb.get(0).getStatus(), Status.ACCEPTED);
     }
@@ -151,13 +154,13 @@ public class JobsServiceTest {
         jobService.createJob(u1, u1, "d", 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
         jobService.createJob(u2, u2, "d", 12, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
 
-        List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
+        List<Job> fromDb = jobService.getAllJobs(u1, u1, RoleValue.ADMIN);
         assertThat(fromDb.size()).isEqualTo(2);
 
-        jobService.deleteJob(fromDb.get(0).getJobId());
+        jobService.deleteJob(u1.toString(), RoleValue.ADMIN, fromDb.get(0).getJobId());
 
         Job lastOneStanding = fromDb.get(1);
-        fromDb = jobService.getAllJobs(u1, u1, "admin");
+        fromDb = jobService.getAllJobs(u1, u1, RoleValue.ADMIN);
         assertThat(fromDb.size()).isEqualTo(1);
         assertThat(fromDb.get(0).equals(lastOneStanding)).isTrue();
     }
@@ -170,12 +173,48 @@ public class JobsServiceTest {
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
         jobService.createJob(u1, u1, "d", 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
-        List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
+        List<Job> fromDb = jobService.getAllJobs(u1, u1, RoleValue.ADMIN);
         assertThat(fromDb.size()).isEqualTo(1);
 
         assertThrows(InvalidIdException.class, () -> {
-            jobService.deleteJob(fromDb.get(0).getJobId() + 1);
+            jobService.deleteJob(u1.toString(), RoleValue.ADMIN, fromDb.get(0).getJobId() + 1);
         });
+    }
+
+    @Test
+    public void deleteJobTest_ExceptionNotAdmin() throws Exception {
+        String url = "http://localhost:8083" + "/addJob";
+
+        Mockito.when(restTemplate.getForEntity(url, Job.class))
+            .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
+
+        jobService.createJob(u1, u1, "d", 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+        List<Job> fromDb = jobService.getAllJobs(u1, u1, RoleValue.ADMIN);
+        assertThat(fromDb.size()).isEqualTo(1);
+
+
+        assertThrows(BadCredentialsException.class, () -> {
+            jobService.deleteJob("OtherUser", RoleValue.EMPLOYEE, fromDb.get(0).getJobId());
+        });
+    }
+
+    @Test
+    public void deleteJobTest_Ok_sameUser() throws Exception {
+        String url = "http://localhost:8083" + "/addJob";
+
+        Mockito.when(restTemplate.getForEntity(url, Job.class))
+            .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
+
+        NetId user = new NetId("user");
+
+        jobService.createJob(user, user, "d", 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+        List<Job> fromDb = jobService.getAllJobs(u1, u1, RoleValue.ADMIN);
+        assertThat(fromDb.size()).isEqualTo(1);
+
+        jobService.deleteJob(user.toString(), RoleValue.EMPLOYEE, fromDb.get(0).getJobId());
+        fromDb = jobService.getAllJobs(u1, u1, RoleValue.ADMIN);
+        assertThat(fromDb.size()).isEqualTo(0);
+
     }
 
     @Test

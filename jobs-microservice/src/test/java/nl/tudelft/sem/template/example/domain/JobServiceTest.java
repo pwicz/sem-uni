@@ -120,7 +120,7 @@ class JobServiceTest {
         }
         try {
             assert j != null;
-            jobService.deleteJob(j.getJobId());
+            jobService.deleteJob(netId.toString(), RoleValue.ADMIN, j.getJobId());
             assertFalse(jobRepository.existsById(j.getJobId()));
         } catch (Exception e) {
             fail();
@@ -165,7 +165,7 @@ class JobServiceTest {
     void getAllJobs() {
         NetId netId = new NetId("administrator");
         try {
-            List<Job> jobs = jobService.getAllJobs(netId, netId, "admin");
+            List<Job> jobs = jobService.getAllJobs(netId, netId, RoleValue.ADMIN);
             assertEquals(jobs.size(), 3);
         } catch (Exception e) {
             fail();
