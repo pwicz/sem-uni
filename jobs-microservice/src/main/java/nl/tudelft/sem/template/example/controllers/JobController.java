@@ -6,6 +6,7 @@ import commons.Job;
 import commons.NetId;
 import commons.Role;
 import commons.RoleValue;
+import commons.ScheduleJob;
 import commons.Status;
 import commons.UpdateJob;
 import exceptions.InvalidIdException;
@@ -22,6 +23,7 @@ import nl.tudelft.sem.template.example.models.JobNotificationResponseModel;
 import nl.tudelft.sem.template.example.models.JobRequestModel;
 import nl.tudelft.sem.template.example.models.JobResponseModel;
 import nl.tudelft.sem.template.example.models.NetIdRequestModel;
+import nl.tudelft.sem.template.example.models.ScheduledJobsResponseModel;
 import nl.tudelft.sem.template.example.models.StatusResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -178,9 +180,9 @@ public class JobController {
      * @param jobId the jobId which identifies the job that needs to be deleted
      */
     @PostMapping("/deleteJob")
-    public ResponseEntity deleteJob(@RequestBody long jobId) throws Exception {
+    public ResponseEntity deleteJob(@RequestBody IdRequestModel jobId) throws Exception {
         try {
-            this.jobService.deleteJob(authManager.getNetId(), authManager.getRole().getRoleValue(), jobId);
+            this.jobService.deleteJob(authManager.getNetId(), authManager.getRole().getRoleValue(), jobId.getId());
         } catch (InvalidIdException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, invalidId, e);
         }
@@ -198,7 +200,9 @@ public class JobController {
         try {
             long id = request.getId();
             Status status = Status.valueOf(request.getStatus());
+            System.out.println(request.getScheduleDate());
             LocalDate localDate = request.getScheduleDate();
+            System.out.println(localDate);
 
             this.jobService.updateJob(id, status, localDate);
         } catch (InvalidIdException e) {
@@ -214,14 +218,18 @@ public class JobController {
      * @return response indicating if the operation was successful
      */
     @GetMapping(path = "/getAllScheduledJobs")
-    public ResponseEntity<List<Job>> getAllScheduledJobs() throws Exception {
+    public ResponseEntity<List<JobResponseModel>> getAllScheduledJobs() throws Exception {
         try {
             NetId netId = new NetId(authManager.getNetId());
             NetId authNetId = new NetId(authManager.getNetId());
             RoleValue role = authManager.getRole().getRoleValue();
 
             List<Job> jobs = this.jobService.getAllScheduledJobs(netId, authNetId, role);
-            return ResponseEntity.ok(jobs);
+            List<JobResponseModel> responseModels = jobs.stream()
+                .map(x -> jobService.populateJobResponseModel(x.getJobId(), x.getStatus(), x.getNetId().toString()))
+                .collect(Collectors.toList());
+
+            return ResponseEntity.ok(responseModels);
         } catch (InvalidNetIdException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, invalidId, e);
         } catch (BadCredentialsException e) {
