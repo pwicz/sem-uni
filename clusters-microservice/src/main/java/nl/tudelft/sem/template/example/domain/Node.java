@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.NoArgsConstructor;
+import nl.tudelft.sem.template.example.dtos.AddNode;
+import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Table(name = "NODE")
@@ -43,12 +45,12 @@ public class Node implements Comparable {
     @Column(name = "memory", nullable = false)
     private int memory;
 
-    @Column(name = "RELEASEDSTART", nullable = true)
+    @Column(name = "RELEASEDSTART")
     private LocalDate released = null;
 
-    @Column(name = "RELEASEDEND", nullable = true)
+    @Column(name = "RELEASEDEND")
     private LocalDate releaseEnd = null;
-    @Column(name = "REMOVEDDATE", nullable = true)
+    @Column(name = "REMOVEDDATE")
     private LocalDate removedDate = null;
 
     /**
@@ -71,6 +73,24 @@ public class Node implements Comparable {
         this.memory = memUsage;
     }
 
+    /**
+     * Node creator that verified requirements.
+     *
+     * @param node note data
+     * @param name name for the node
+     * @return ready to be saved to a database node.
+     */
+    public static Node nodeCreator(AddNode node, String name) {
+        if (node.getCpu() < 0 || node.getGpu() < 0 || node.getMemory() < 0) {
+            return null;
+        }
+        if (node.getFaculty() == null || node.getToken() == null || node.getUrl() == null) {
+            return null;
+        }
+        return new Node(name, node.getUrl(), node.getFaculty(), node.getToken(),
+                node.getCpu(), node.getGpu(), node.getMemory());
+    }
+
     public long getId() {
         return id;
     }
@@ -81,6 +101,10 @@ public class Node implements Comparable {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getUrl() {
@@ -129,7 +153,7 @@ public class Node implements Comparable {
         return releaseEnd;
     }
 
-    public void setReleaseTime(LocalDate releasEnd) {
+    public void setReleaseTime(LocalDate releaseEnd) {
         this.releaseEnd = releaseEnd;
     }
 
@@ -147,7 +171,7 @@ public class Node implements Comparable {
      * @param otherNode other node you are comparing to
      */
     @Override
-    public int compareTo(Object otherNode) {
+    public int compareTo(@NotNull Object otherNode) {
         if (otherNode instanceof Node) {
             Node o = (Node) otherNode;
             return ((int) (this.id - o.id));

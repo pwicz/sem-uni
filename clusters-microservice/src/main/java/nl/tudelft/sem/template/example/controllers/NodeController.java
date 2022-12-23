@@ -14,10 +14,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.Node;
 import nl.tudelft.sem.template.example.domain.NodeRepository;
+import nl.tudelft.sem.template.example.dtos.AddNode;
 import nl.tudelft.sem.template.example.models.ReleaseFacultyModel;
 import nl.tudelft.sem.template.example.models.ToaRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,7 +108,7 @@ public class NodeController {
     }
 
     /**
-     * Gets the number of free resources available for facculty and day.
+     * Gets the number of free resources available for faculty and day.
      * Only allowed to access if you belong to the faculty.
      *
      * @param facDay request model for faculty and date
@@ -118,58 +118,44 @@ public class NodeController {
         if (repo.getAvailableResources(facDay.getFaculty(), facDay.getDate()).isPresent()) {
             List<Node> n = repo.getAvailableResources(facDay.getFaculty(), facDay.getDate()).get();
             Resource r = resourceCreator(n);
-            FacultyResource facultyResources = new FacultyResource();
-            facultyResources.setFaculty(facDay.getFaculty());
-            facultyResources.setDate(facDay.getDate());
-            facultyResources.setCpuUsage(r.getCpu());
-            facultyResources.setGpuUsage(r.getGpu());
-            facultyResources.setMemoryUsage(r.getMem());
+            FacultyResource facultyResources =
+                    new FacultyResource(facDay.getFaculty(), facDay.getDate(), r.getCpu(), r.getGpu(), r.getMem());
             return ResponseEntity.ok(facultyResources);
         }
-        FacultyResource facultyResources = new FacultyResource();
-        facultyResources.setFaculty(facDay.getFaculty());
-        facultyResources.setDate(facDay.getDate());
-        facultyResources.setCpuUsage(0);
-        facultyResources.setGpuUsage(0);
-        facultyResources.setMemoryUsage(0);
+        FacultyResource facultyResources = new FacultyResource(facDay.getFaculty(), facDay.getDate(), 0, 0, 0);
         return ResponseEntity.ok(facultyResources);
     }
 
     /**
      * Endpoint where you can add node.
-     * The node has to belongto the facculty you are in
-     * The nodes resources has to match cpu >= gpu || cpu >= mem
+     * The node has to belong to the faculty you are in
+     * The nodes resources has to match cpu >= gpu && cpu >= mem
      *
      * @param node you want to add
      */
     @PostMapping(path = {"/addNode"})
-    public ResponseEntity<Node> addNode(@RequestBody Node node) {
-        if (node.getName() == null || node.getUrl() == null
-                || node.getFaculty() == null
-                || node.getToken() == null) {
+    public ResponseEntity<Node> addNode(@RequestBody AddNode node) {
+        Node n = Node.nodeCreator(node, authManager.getNetId());
+        if (n == null) {
             System.out.println("Value is null");
             return ResponseEntity.badRequest().build();
         }
-        if (node.getCpu() < node.getGpu()
-                || node.getCpu() < node.getMemory()) {
+        if (n.getCpu() < n.getGpu()
+                || n.getCpu() < n.getMemory()) {
             System.out.println("CPU resource smaller than GPU or MEMORY");
-            return ResponseEntity.badRequest().build();
-        }
-        if (!node.getName().equals(authManager.getNetId())) {
-            System.out.println("Node doesnt belong to " + node.getName());
             return ResponseEntity.badRequest().build();
         }
         List<String> faculties = getFaculty();
         System.out.println(faculties);
-        if (!(faculties.contains(node.getFaculty()))) {
+        if (!(faculties.contains(n.getFaculty()))) {
             System.out.println("failed after get faculty");
             return ResponseEntity.badRequest().build();
         } else if (checkIfAdmin()) {
-            node.setFaculty("FreePool");
+            n.setFaculty("FreePool");
         }
         try {
             //node.setToken(authManager.getToken()); // check if this works
-            Node newNode = repo.save(node);
+            Node newNode = repo.save(n);
             return ResponseEntity.ok(newNode);
         } catch (Exception e) {
             System.out.println("failed to add node\n");
