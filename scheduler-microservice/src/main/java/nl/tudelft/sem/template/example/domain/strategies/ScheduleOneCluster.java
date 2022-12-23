@@ -28,7 +28,8 @@ public class ScheduleOneCluster implements SchedulingStrategy {
             int memoryToSchedule = job.getMemoryUsage();
 
             // 1. Make a request to Clusters microservice to check available resources for a given day
-            List<FacultyResource> facultyResources = resourceGetter.getAvailableResources(job.getFaculty(), currentDate);
+            List<FacultyResource> facultyResources = resourceGetter
+                    .getAvailableResources(job.getFaculty().toString(), currentDate);
             for (var r : facultyResources) {
                 // 2. Compare it with already used resources (sum all usage from ScheduledInstances in the db)
                 List<ScheduledInstance> instancesInDb =
@@ -47,7 +48,7 @@ public class ScheduleOneCluster implements SchedulingStrategy {
 
                 if (providedCpu == cpuToSchedule && providedGpu == gpuToSchedule && providedMemory == memoryToSchedule) {
                     // found suitable cluster
-                    return List.of(new ScheduledInstance(job.getJobId(), job.getFaculty(), r.getFaculty(),
+                    return List.of(new ScheduledInstance(job.getJobId(), job.getFaculty().toString(), r.getFaculty(),
                             providedCpu, providedGpu, providedMemory, currentDate));
                 }
 

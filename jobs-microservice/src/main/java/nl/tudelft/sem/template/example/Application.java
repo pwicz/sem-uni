@@ -9,12 +9,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Example microservice application.
  */
 @SpringBootApplication
 @EntityScan(basePackages = {"commons"})
+@EnableScheduling
 public class Application {
 
     private final transient JobRepository jobRepository;

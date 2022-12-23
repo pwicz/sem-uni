@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.domain;
 
+import commons.Faculty;
 import commons.Job;
 import commons.NetId;
 import commons.RoleValue;
@@ -18,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /**
  * A DDD service for handling jobs.
@@ -50,6 +50,7 @@ public class JobService {
      *
      * @param scheduleJob the Job object to be scheduled
      * @return the response message of the Scheduler
+     * @throws InvalidScheduleJobException if scheduleJob is null
      */
     public String scheduleJob(ScheduleJob scheduleJob) throws InvalidScheduleJobException {
         if (scheduleJob == null) {
@@ -60,8 +61,7 @@ public class JobService {
                 .postForEntity(schedulerUrl + "/schedule", scheduleJob, String.class);
 
         if (response.getBody() == null) {
-            //TODO: why is response null?
-            return "Problem: ResponseEntity was null!";
+            return "Response body is null!";
         }
         return response.getBody();
     }
@@ -78,7 +78,7 @@ public class JobService {
      * @throws Exception if the resources of NetId are invalid
      */
 
-    public Job createJob(NetId netId, NetId authNetId, int cpuUsage, int gpuUsage,
+    public Job createJob(NetId netId, NetId authNetId, Faculty faculty, int cpuUsage, int gpuUsage,
                          int memoryUsage, RoleValue role, LocalDate preferredDate) throws Exception {
         if (cpuUsage < 0 || gpuUsage < 0 || memoryUsage < 0) {
             throw new InvalidResourcesException(Math.min(cpuUsage, Math.min(gpuUsage, memoryUsage)));
@@ -98,7 +98,7 @@ public class JobService {
             throw new BadCredentialsException(role.toString());
         }
 
-        Job newJob = new Job(netId, cpuUsage, gpuUsage, memoryUsage, preferredDate);
+        Job newJob = new Job(netId, faculty, cpuUsage, gpuUsage, memoryUsage, preferredDate);
         jobRepository.save(newJob);
 
         return newJob;
@@ -219,7 +219,7 @@ public class JobService {
      * @param netId NetId of the request creator
      * @param authNetId NetId of the authenticated user
      * @param role role of the request creator
-     * @return a list of Job entities containing all jobs in the database.
+     * @return a list of Job entities containing all "ACCEPTED" jobs in the database.
      * @throws Exception if the NetId is invalid or the creator of the request does not have the admin role.
      */
     public List<Job> getAllScheduledJobs(NetId netId, NetId authNetId, String role) throws Exception {

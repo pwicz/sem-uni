@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class ScheduleJob {
     private final long jobId;
-    private final String faculty;
+    private final Faculty faculty;
     private final LocalDate scheduleBefore;
     private final int cpuUsage;
     private final int gpuUsage;
@@ -20,7 +20,7 @@ public class ScheduleJob {
      * @param gpuUsage the number of gpu units needed
      * @param memoryUsage the number of memory units needed
      */
-    public ScheduleJob(long jobId, String faculty, LocalDate scheduleBefore, int cpuUsage, int gpuUsage, int memoryUsage) {
+    public ScheduleJob(long jobId, Faculty faculty, LocalDate scheduleBefore, int cpuUsage, int gpuUsage, int memoryUsage) {
         this.jobId = jobId;
         this.faculty = faculty;
         this.scheduleBefore = scheduleBefore;
@@ -33,7 +33,7 @@ public class ScheduleJob {
         return jobId;
     }
 
-    public String getFaculty() {
+    public Faculty getFaculty() {
         return faculty;
     }
 

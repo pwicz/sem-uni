@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.example.domain.processing;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import commons.Faculty;
 import commons.FacultyResource;
 import commons.ScheduleJob;
 import commons.UpdateJob;
@@ -46,11 +47,11 @@ public class ProcessingJobsServiceTest {
 
     @Test
     public void scheduleJob_forNextDay_worksCorrectly() throws ResourceBiggerThanCpuException {
-        String facultyConstant = "EEMCS";
+        Faculty facultyConstant = new Faculty("EEMCS");
         LocalDate dateConstant = LocalDate.now().plusDays(1);
 
         List<ScheduledInstance> scheduledInstances = List.of(
-            new ScheduledInstance(1L, facultyConstant, 5, 2, 2, dateConstant)
+            new ScheduledInstance(1L, facultyConstant.toString(), 5, 2, 2, dateConstant)
         );
         ScheduleJob scheduleJob = new ScheduleJob(1L, facultyConstant, dateConstant.plusDays(2),
                 5, 2, 2);
@@ -83,7 +84,7 @@ public class ProcessingJobsServiceTest {
         String facultyConstant = "EEMCS";
         LocalDate dateConstant = LocalDate.now().plusDays(1);
 
-        ScheduleJob scheduleJob = new ScheduleJob(1L, facultyConstant, dateConstant.plusDays(2),
+        ScheduleJob scheduleJob = new ScheduleJob(1L, new Faculty(facultyConstant), dateConstant.plusDays(2),
                 5, 2, 2);
         Mockito.when(scheduleBetweenClusters.scheduleBetween(Mockito.eq(scheduleJob),
                 Mockito.any(LocalDate.class), Mockito.any(LocalDate.class))).thenReturn(new ArrayList<>());
@@ -101,7 +102,7 @@ public class ProcessingJobsServiceTest {
 
     @Test
     public void scheduleJob_withGpuGreaterThanCpu_throwsException() {
-        ScheduleJob scheduleJob = new ScheduleJob(1, "EEMCS", LocalDate.now().plusDays(1),
+        ScheduleJob scheduleJob = new ScheduleJob(1, new Faculty("EEMCS"), LocalDate.now().plusDays(1),
                 1, 2, 1);
         Exception e = assertThrows(ResourceBiggerThanCpuException.class,
                 () -> processingJobsService.scheduleJob(scheduleJob));
@@ -110,7 +111,7 @@ public class ProcessingJobsServiceTest {
 
     @Test
     public void scheduleJob_withMemoryGreaterThanCpu_throwsException() {
-        ScheduleJob scheduleJob = new ScheduleJob(1, "EEMCS", LocalDate.now().plusDays(1),
+        ScheduleJob scheduleJob = new ScheduleJob(1, new Faculty("EEMCS"), LocalDate.now().plusDays(1),
                 1, 1, 2);
         Exception e = assertThrows(ResourceBiggerThanCpuException.class,
                 () -> processingJobsService.scheduleJob(scheduleJob));

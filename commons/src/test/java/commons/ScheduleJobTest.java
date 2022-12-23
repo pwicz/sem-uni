@@ -13,7 +13,7 @@ class ScheduleJobTest {
 
     @BeforeEach
     void setUp() {
-        sj = new ScheduleJob(1L, "ARCH", LocalDate.now().plusDays(4), 3, 2, 1);
+        sj = new ScheduleJob(1L, new Faculty("ARCH"), LocalDate.now().plusDays(4), 3, 2, 1);
     }
 
     @Test
@@ -23,7 +23,7 @@ class ScheduleJobTest {
 
     @Test
     void getFaculty() {
-        assertThat(sj.getFaculty()).isEqualTo("ARCH");
+        assertThat(sj.getFaculty()).isEqualTo(new Faculty("ARCH"));
     }
 
     @Test
