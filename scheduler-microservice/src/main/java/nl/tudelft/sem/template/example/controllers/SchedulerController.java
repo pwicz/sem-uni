@@ -112,7 +112,6 @@ public class SchedulerController {
     @PostMapping("/change-scheduling-strategy")
     public ResponseEntity<String> changeSchedulingStrategy(@RequestBody ChangeSchedulingStrategy
                                                                        changeSchedulingStrategy) {
-        System.out.println("GOT HER!");
         if (!authManager.getRole().toString().equals("ADMIN")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
