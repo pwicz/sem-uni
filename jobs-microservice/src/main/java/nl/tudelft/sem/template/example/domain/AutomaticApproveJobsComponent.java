@@ -35,7 +35,7 @@ public class AutomaticApproveJobsComponent {
      * @throws InvalidScheduleJobException if scheduleJob is null
      */
     @Scheduled(cron = "0 0 18 * * ?")
-    public void approveJobsAfter6pm() throws InvalidScheduleJobException {
+    public void approveJobsAfter6pm() throws InvalidScheduleJobException, ResponseEntityException {
 
         // 1. get all pending Jobs that are due tomorrow
         List<Job> filteredPendingJobs = jobRepository.findByStatusAndPreferredDate(

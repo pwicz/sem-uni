@@ -1,7 +1,6 @@
 package nl.tudelft.sem.template.example.domain.processing;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 
 import commons.FacultyResource;

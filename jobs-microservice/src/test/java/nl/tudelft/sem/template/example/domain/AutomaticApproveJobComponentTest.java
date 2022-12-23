@@ -82,7 +82,7 @@ class AutomaticApproveJobComponentTest {
     }
 
     @Test
-    public void approveJobsAfter6pmTest() throws InvalidScheduleJobException {
+    public void approveJobsAfter6pmTest() throws InvalidScheduleJobException, ResponseEntityException {
         Mockito.when(mockJobRepository.findByStatusAndPreferredDate(
                 Status.PENDING, LocalDate.now().plusDays(1))).thenReturn(pendingJobs);
 

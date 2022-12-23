@@ -71,8 +71,8 @@ public class SchedulerController {
      * @param jobId ID of a job that is to be unscheduled
      * @return response indicating if the operation was successful
      */
-    @PostMapping("/unschedule/{jobId}")
-    public ResponseEntity<String> unscheduleJob(@PathVariable("jobId") long jobId) {
+    @PostMapping("/unschedule")
+    public ResponseEntity<String> unscheduleJob(@RequestBody long jobId) {
         boolean status = removingJobsService.removeJob(jobId);
         if (!status) {
             return ResponseEntity.badRequest().body("Job with " + jobId + " id could not be unscheduled.");
