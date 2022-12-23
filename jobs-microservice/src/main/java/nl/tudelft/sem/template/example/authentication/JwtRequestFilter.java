@@ -68,19 +68,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         String netId = jwtTokenVerifier.getNetIdFromToken(token);
                         String role = jwtTokenVerifier.getRoleFromToken(token);
 
-                        RoleValue roleValue;
-                        if (role.equals("EMPLOYEE")) {
-                            roleValue = RoleValue.EMPLOYEE;
-                        } else if (role.equals("ADMIN")) {
-                            roleValue = RoleValue.ADMIN;
-                        } else {
-                            roleValue = RoleValue.FAC_ACC;
-                        }
                         Faculties faculty = new Faculties(jwtTokenVerifier.getFacultyFromToken(token));
 
                         var authenticationToken = new UsernamePasswordAuthenticationToken(
                                 netId,
-                                roleValue, List.of(faculty)
+                                role, List.of(faculty)
                         );
                         authenticationToken.setDetails(new WebAuthenticationDetailsSource()
                                 .buildDetails(request));

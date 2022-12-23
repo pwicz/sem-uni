@@ -154,7 +154,6 @@ public class NodeController {
             n.setFaculty("FreePool");
         }
         try {
-            //node.setToken(authManager.getToken()); // check if this works
             Node newNode = repo.save(n);
             return ResponseEntity.ok(newNode);
         } catch (Exception e) {

@@ -27,4 +27,8 @@ public class Role implements GrantedAuthority {
     public String getAuthority() {
         return roleValue.toString();
     }
+
+    public boolean isAdmin() {
+        return roleValue == RoleValue.ADMIN;
+    }
 }
