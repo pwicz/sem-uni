@@ -122,10 +122,12 @@ public class NodeController {
      */
     @PostMapping(path = {"/addNode"})
     public ResponseEntity<Node> addNode(@RequestBody Node node) throws JsonProcessingException {
+        List<String> faculties = getFaculty();
+        faculties.add("FreePool");
         if (checkIfAdmin()) {
             node.setFaculty("FreePool");
         }
-        Node newNode = modifyRepoService.addNode(node, authManager.getNetId(), getFaculty());
+        Node newNode = modifyRepoService.addNode(node, authManager.getNetId(), faculties);
         if (newNode == null) {
             return ResponseEntity.badRequest().build();
         }
