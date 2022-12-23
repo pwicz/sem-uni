@@ -12,6 +12,7 @@ import exceptions.InvalidNetIdException;
 import exceptions.InvalidResourcesException;
 import exceptions.ResourceBiggerThanCpuException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -254,7 +255,16 @@ public class JobService {
         if (role != RoleValue.ADMIN) {
             throw new BadCredentialsException(role.toString());
         }
-        return jobRepository.findAll().stream().filter(j -> j.getStatus() == Status.ACCEPTED).collect(Collectors.toList());
+        List<Job> jobs = new ArrayList<>();
+        List<Job> all = jobRepository.findAll();
+        for (Job j : all) {
+            if (j.getStatus() == Status.ACCEPTED) {
+                System.out.println(j.getJobId());
+                jobs.add(j);
+            }
+        }
+
+        return jobs;
     }
 
     /**

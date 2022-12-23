@@ -146,7 +146,6 @@ public class JobController {
      */
     @PostMapping("/addJob")
     public ResponseEntity addJob(@RequestBody JobRequestModel request) throws Exception {
-
         try {
             NetId jobNetId = new NetId(request.getNetId());
             NetId authNetId = new NetId(authManager.getNetId());
@@ -179,9 +178,9 @@ public class JobController {
      * @param jobId the jobId which identifies the job that needs to be deleted
      */
     @PostMapping("/deleteJob")
-    public ResponseEntity deleteJob(@RequestBody long jobId) throws Exception {
+    public ResponseEntity deleteJob(@RequestBody IdRequestModel jobId) throws Exception {
         try {
-            this.jobService.deleteJob(authManager.getNetId(), authManager.getRole().getRoleValue(), jobId);
+            this.jobService.deleteJob(authManager.getNetId(), authManager.getRole().getRoleValue(), jobId.getId());
         } catch (InvalidIdException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, invalidId, e);
         }
@@ -199,7 +198,9 @@ public class JobController {
         try {
             long id = request.getId();
             Status status = Status.valueOf(request.getStatus());
+            System.out.println(request.getScheduleDate());
             LocalDate localDate = request.getScheduleDate();
+            System.out.println(localDate);
 
             this.jobService.updateJob(id, status, localDate);
         } catch (InvalidIdException e) {
@@ -215,14 +216,18 @@ public class JobController {
      * @return response indicating if the operation was successful
      */
     @GetMapping(path = "/getAllScheduledJobs")
-    public ResponseEntity<List<Job>> getAllScheduledJobs() throws Exception {
+    public ResponseEntity<List<JobResponseModel>> getAllScheduledJobs() throws Exception {
         try {
             NetId netId = new NetId(authManager.getNetId());
             NetId authNetId = new NetId(authManager.getNetId());
             RoleValue role = authManager.getRole().getRoleValue();
 
             List<Job> jobs = this.jobService.getAllScheduledJobs(netId, authNetId, role);
-            return ResponseEntity.ok(jobs);
+            List<JobResponseModel> responseModels = jobs.stream()
+                .map(x -> jobService.populateJobResponseModel(x.getJobId(), x.getStatus(), x.getNetId().toString()))
+                .collect(Collectors.toList());
+
+            return ResponseEntity.ok(responseModels);
         } catch (InvalidNetIdException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, invalidId, e);
         } catch (BadCredentialsException e) {
