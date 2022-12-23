@@ -1,6 +1,10 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import commons.*;
+import commons.Job;
+import commons.NetId;
+import commons.Role;
+import commons.ScheduleJob;
+import commons.Status;
 import exceptions.InvalidIdException;
 import exceptions.InvalidNetIdException;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
@@ -24,7 +28,13 @@ public class ChainController {
     private final transient ChainService chainService;
     private final transient JobService jobService;
 
-
+    /**
+     * Constructor of the Chain controller.
+     *
+     * @param authManager Spring Security component used to authenticate and authorize the user
+     * @param chainService the service which handles the approval/rejection of jobs
+     * @param jobService  the service which handles the communication with the database & scheduler microservice
+     */
     @Autowired
     public ChainController(AuthManager authManager, ChainService chainService, JobService jobService) {
         this.authManager = authManager;
