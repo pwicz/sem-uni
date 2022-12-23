@@ -1,9 +1,10 @@
 package nl.tudelft.sem.template.example.domain;
 
+
 import commons.Job;
 import commons.ScheduleJob;
+import commons.Status;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,13 @@ import org.springframework.stereotype.Component;
 public class AutomaticApproveJobsComponent {
 
     public transient JobService jobService;
+    public transient JobRepository jobRepository;
+
 
     @Autowired
-    public AutomaticApproveJobsComponent(JobService jobService) {
+    public AutomaticApproveJobsComponent(JobService jobService, JobRepository jobRepository) {
         this.jobService = jobService;
+        this.jobRepository = jobRepository;
     }
 
     public void setJobService(JobService jobservice) {
@@ -33,12 +37,12 @@ public class AutomaticApproveJobsComponent {
     @Scheduled(cron = "0 0 18 * * ?")
     public void approveJobsAfter6pm() throws InvalidScheduleJobException {
 
-        // 1. get all pending Jobs
-        List<Job> pendingJobs = jobService.getAllPendingJobs();
+        // 1. get all pending Jobs that are due tomorrow
+        List<Job> filteredPendingJobs = jobRepository.findByStatusAndPreferredDate(
+                Status.PENDING, LocalDate.now().plusDays(1));
 
-        // 2. filter and sort so that only pending Jobs due tomorrow are considered
-        // and sorted according to their creation date
-        List<Job> filteredSortedPendingJobs = filterAndSortPendingJobs(pendingJobs);
+        // 2. sort jobs according to their creation date
+        List<Job> filteredSortedPendingJobs = sortJobsAccordingCreationDate(filteredPendingJobs);
 
         // 3. approve & send jobs to scheduler
         for (Job job : filteredSortedPendingJobs) {
@@ -56,9 +60,8 @@ public class AutomaticApproveJobsComponent {
      * @param pendingJobs list of Jobs that have the status "PENDING"
      * @return a sorted (according to creationDate) list of jobs that are due tomorrow
      */
-    public List<Job> filterAndSortPendingJobs(List<Job> pendingJobs) {
+    public List<Job> sortJobsAccordingCreationDate(List<Job> pendingJobs) {
         return pendingJobs.stream()
-                .filter(x -> x.getPreferredDate().equals(LocalDate.now().plusDays(1)))
                 .sorted((j1, j2) -> j1.getDateCreated().compareTo(j2.getDateCreated()))
                 .collect(Collectors.toList());
     }

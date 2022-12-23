@@ -192,15 +192,6 @@ class JobServiceTest {
     }
 
     @Test
-    void getAllPendingJobs() {
-        List<Job> jobs = jobService.getAllPendingJobs();
-        for (Job job : jobs) {
-            assertThat(job.getStatus()).isEqualTo(Status.PENDING);
-        }
-        assertThat(jobs.size()).isEqualTo(2);
-    }
-
-    @Test
     void updateJob() {
         NetId netId = new NetId("mlica");
         Optional<List<Job>> query = jobRepository.findAllByNetId(netId);

@@ -236,15 +236,6 @@ public class JobService {
     }
 
     /**
-     * Retrieve all the "PENDING" Job entities from the database.
-     *
-     * @return a list of Job entities containing all "PENDING" jobs in the database.
-     */
-    public List<Job> getAllPendingJobs() {
-        return jobRepository.findAll().stream().filter(j -> j.getStatus() == Status.PENDING).collect(Collectors.toList());
-    }
-
-    /**
      * Update information about the Job specified by a microservice.
      *
      * @param id id of the Job

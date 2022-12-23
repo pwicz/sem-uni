@@ -29,8 +29,8 @@ class AutomaticApproveJobComponentTest {
     @MockBean
     private RestTemplate restTemplate;
 
-    @Autowired
-    private transient JobRepository jobRepository;
+    @MockBean
+    private transient JobRepository mockJobRepository;
 
     @MockBean
     private transient JobService mockJobService;
@@ -49,41 +49,42 @@ class AutomaticApproveJobComponentTest {
     void setUp() {
         job1 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 10, 10, 10, LocalDate.now().plusDays(1));
         job1.setStatus(Status.PENDING);
-        job2 = new Job(new NetId("ppolitowicz"), new Faculty("EEMCS"), 1, 2, 3, LocalDate.now());
+        job2 = new Job(new NetId("ppolitowicz"), new Faculty("EEMCS"), 1, 2, 3, LocalDate.now().plusDays(1));
         job2.setStatus(Status.PENDING);
         job3 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 20, 10, 1, LocalDate.now().plusDays(1));
         job3.setStatus(Status.PENDING);
-        job4 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 20, 10, 1, LocalDate.now().plusDays(2));
+        job4 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 20, 10, 1, LocalDate.now().plusDays(1));
         job4.setStatus(Status.PENDING);
         job5 = new Job(new NetId("mlica"), new Faculty("EEMCS"), 20, 10, 1, LocalDate.now().plusDays(1));
         job5.setStatus(Status.PENDING);
 
         pendingJobs = new ArrayList<>();
-        pendingJobs.add(job5); // due tomorrow
+        pendingJobs.add(job5);
         pendingJobs.add(job2);
-        pendingJobs.add(job1); // due tomorrow
-        pendingJobs.add(job3); // due tomorrow
+        pendingJobs.add(job1);
+        pendingJobs.add(job3);
         pendingJobs.add(job4);
 
-        jobRepository.save(job5); // due tomorrow
-        jobRepository.save(job2);
-        jobRepository.save(job1); // due tomorrow
-        jobRepository.save(job3); // due tomorrow
-        jobRepository.save(job4);
+        mockJobRepository.save(job5);
+        mockJobRepository.save(job2);
+        mockJobRepository.save(job1);
+        mockJobRepository.save(job3);
+        mockJobRepository.save(job4);
     }
 
     @Test
-    void filterAndSortPendingJobs() {
-        List<Job> filterSortedPendingJobs = aajc.filterAndSortPendingJobs(pendingJobs);
-        assertThat(filterSortedPendingJobs.size()).isEqualTo(3);
+    void sortPendingJobs() {
+        List<Job> filterSortedPendingJobs = aajc.sortJobsAccordingCreationDate(pendingJobs);
+        assertThat(filterSortedPendingJobs.size()).isEqualTo(5);
         assertThat(filterSortedPendingJobs.get(0)).isEqualTo(job5);
-        assertThat(filterSortedPendingJobs.get(1)).isEqualTo(job1);
-        assertThat(filterSortedPendingJobs.get(2)).isEqualTo(job3);
+        assertThat(filterSortedPendingJobs.get(1)).isEqualTo(job2);
+        assertThat(filterSortedPendingJobs.get(2)).isEqualTo(job1);
     }
 
     @Test
     public void approveJobsAfter6pmTest() throws InvalidScheduleJobException {
-        Mockito.when(mockJobService.getAllPendingJobs()).thenReturn(pendingJobs);
+        Mockito.when(mockJobRepository.findByStatusAndPreferredDate(
+                Status.PENDING, LocalDate.now().plusDays(1))).thenReturn(pendingJobs);
 
         // Inject the mock jobService into the approveJobsAfter6pm method
         aajc.setJobService(mockJobService);
@@ -92,6 +93,6 @@ class AutomaticApproveJobComponentTest {
         aajc.approveJobsAfter6pm();
 
         // Verify that the mock jobService's scheduleJob method was called three times
-        Mockito.verify(mockJobService, Mockito.times(3)).scheduleJob(Mockito.any());
+        Mockito.verify(mockJobService, Mockito.times(5)).scheduleJob(Mockito.any());
     }
 }
