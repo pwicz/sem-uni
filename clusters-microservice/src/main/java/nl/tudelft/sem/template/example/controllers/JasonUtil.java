@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.example.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Arrays;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +20,7 @@ public class JasonUtil {
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.writeValueAsString(object);
         } catch (Exception e) {
-            System.out.println(e.getStackTrace());
+            System.out.println(Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
@@ -35,7 +36,7 @@ public class JasonUtil {
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(jsonString, type);
         } catch (Exception e) {
-            System.out.println(e.getStackTrace());
+            System.out.println(Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
