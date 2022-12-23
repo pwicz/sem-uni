@@ -28,7 +28,8 @@ public class ScheduleBetweenClusters implements SchedulingStrategy {
             int gpuToSchedule = job.getGpuUsage();
             int memoryToSchedule = job.getMemoryUsage();
 
-            List<FacultyResource> facultyResources = resourceGetter.getAvailableResources(job.getFaculty(), currentDate);
+            List<FacultyResource> facultyResources = resourceGetter
+                    .getAvailableResources(job.getFaculty().toString(), currentDate);
             List<ScheduledInstance> scheduledInstances = new ArrayList<>();
             for (var r : facultyResources) {
                 if (!(cpuToSchedule > 0 || gpuToSchedule > 0 || memoryToSchedule > 0)) {
@@ -51,7 +52,7 @@ public class ScheduleBetweenClusters implements SchedulingStrategy {
                 cpuToSchedule -= providedCpu;
                 gpuToSchedule -= providedGpu;
                 memoryToSchedule -= providedMemory;
-                scheduledInstances.add(new ScheduledInstance(job.getJobId(), job.getFaculty(), r.getFaculty(),
+                scheduledInstances.add(new ScheduledInstance(job.getJobId(), job.getFaculty().toString(), r.getFaculty(),
                         providedCpu, providedGpu, providedMemory, currentDate));
             }
 

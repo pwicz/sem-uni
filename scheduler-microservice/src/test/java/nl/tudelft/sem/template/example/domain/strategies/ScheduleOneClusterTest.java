@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.example.domain.strategies;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import commons.Faculty;
 import commons.FacultyResource;
 import commons.ScheduleJob;
 import java.time.LocalDate;
@@ -44,7 +45,7 @@ public class ScheduleOneClusterTest {
         Mockito.when(resourceGetter.getAvailableResources(facultyConstant, dateConstant))
                 .thenReturn(dayOne);
 
-        ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(1),
+        ScheduleJob scheduleJob = new ScheduleJob(1, new Faculty(facultyConstant), dateConstant.plusDays(1),
                 5, 2, 2);
         List<ScheduledInstance> answer = scheduleOneCluster.scheduleBetween(scheduleJob,
                 dateConstant, dateConstant.plusDays(1));
@@ -67,7 +68,7 @@ public class ScheduleOneClusterTest {
         Mockito.when(resourceGetter.getAvailableResources(facultyConstant, dateConstant))
                 .thenReturn(dayOne);
 
-        ScheduleJob scheduleJob = new ScheduleJob(1, facultyConstant, dateConstant.plusDays(1),
+        ScheduleJob scheduleJob = new ScheduleJob(1, new Faculty(facultyConstant), dateConstant.plusDays(1),
                 5, 2, 2);
         List<ScheduledInstance> answer = scheduleOneCluster.scheduleBetween(scheduleJob,
                 dateConstant, dateConstant.plusDays(1));

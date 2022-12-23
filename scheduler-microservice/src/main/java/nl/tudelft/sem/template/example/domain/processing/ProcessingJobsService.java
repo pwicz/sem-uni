@@ -152,7 +152,7 @@ public class ProcessingJobsService {
     /**
      * Checks if it is 5 minutes before a new day starts.
      *
-     * @return true if the current time is between 25:55 and 00:00 (excluding)
+     * @return true if the current time is between 25:55 (including) and 00:00 (excluding)
      */
     public boolean isFiveMinutesBeforeDayStarts(LocalTime currentTime) {
         LocalTime startTime = LocalTime.of(23, 55);

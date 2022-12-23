@@ -1,11 +1,7 @@
 package commons;
 
-import exceptions.InvalidNetIdException;
-import exceptions.InvalidResourcesException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
-import java.util.Optional;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -14,7 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "jobs")
@@ -30,6 +25,10 @@ public class Job {
     @Convert(converter = NetIdAttributeConverter.class)
     private NetId netId;
 
+    @Column(name = "faculty", nullable = false)
+    @Convert(converter = FacultyAttributeConverter.class)
+    private Faculty faculty;
+
     @Column(name = "cpu_usage", nullable = false)
     private int cpuUsage;
 
@@ -42,8 +41,11 @@ public class Job {
     @Column(name = "status", nullable = false)
     private Status status;
 
-    @Column(name = "preferredDate", nullable = false)
+    @Column(name = "preferred_date", nullable = false)
     private LocalDate preferredDate;
+
+    @Column(name = "date_created", nullable = false)
+    private LocalDate dateCreated;
 
 
     /**
@@ -54,13 +56,15 @@ public class Job {
      * @param gpuUsage the amount of gpu units needed
      * @param memoryUsage the amount of memory units needed
      */
-    public Job(NetId netId, int cpuUsage, int gpuUsage, int memoryUsage, LocalDate preferredDate) {
+    public Job(NetId netId, Faculty faculty, int cpuUsage, int gpuUsage, int memoryUsage, LocalDate preferredDate) {
         this.netId = netId;
+        this.faculty = faculty;
         this.cpuUsage = cpuUsage;
         this.gpuUsage = gpuUsage;
         this.memoryUsage = memoryUsage;
         this.status = Status.PENDING;
         this.preferredDate = preferredDate;
+        this.dateCreated = LocalDate.now();
     }
 
     /**
@@ -68,6 +72,7 @@ public class Job {
      */
     public Job(int temp) {
         this.netId = new NetId("test");
+        this.faculty = new Faculty("EEMCS");
         cpuUsage = 0;
         gpuUsage = 0;
         memoryUsage = 0;
@@ -90,6 +95,14 @@ public class Job {
 
     public void setNetId(NetId netId) {
         this.netId = netId;
+    }
+
+    public Faculty getFaculty() {
+        return this.faculty;
+    }
+
+    public void setFaculty(Faculty faculty) {
+        this.faculty = faculty;
     }
 
     public int getCpuUsage() {
@@ -124,17 +137,16 @@ public class Job {
         this.status = status;
     }
 
-    /**
-     * getter and converter of scheduleDate, from String to LocalDate.
-     *
-     * @return the scheduleDate as a LocalDate Object.
-     */
     public LocalDate getPreferredDate() {
         return preferredDate;
     }
 
     public void setPreferredDate(LocalDate preferredDate) {
         this.preferredDate = preferredDate;
+    }
+
+    public LocalDate getDateCreated() {
+        return dateCreated;
     }
 
     @Override
@@ -146,13 +158,15 @@ public class Job {
             return false;
         }
         Job job = (Job) o;
-        return jobId == job.jobId && cpuUsage == job.cpuUsage && gpuUsage == job.gpuUsage && memoryUsage == job.memoryUsage
+        return jobId == job.jobId && Objects.equals(faculty, job.faculty) && cpuUsage == job.cpuUsage
+                && gpuUsage == job.gpuUsage && memoryUsage == job.memoryUsage
                 && Objects.equals(netId, job.netId) && Objects.equals(status, job.status)
                 && Objects.equals(preferredDate, job.preferredDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(jobId, netId, cpuUsage, gpuUsage, memoryUsage, status);
+        return Objects.hash(jobId, netId, faculty, cpuUsage,
+                gpuUsage, memoryUsage, status, preferredDate, dateCreated);
     }
 }

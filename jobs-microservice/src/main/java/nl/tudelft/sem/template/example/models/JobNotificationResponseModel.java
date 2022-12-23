@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.models;
 
+import commons.Status;
 import java.time.LocalDate;
 import lombok.Data;
 
@@ -10,7 +11,7 @@ import lombok.Data;
 public class JobNotificationResponseModel {
 
     private long jobId;
-    private String status;
+    private Status status;
     private LocalDate scheduleDate;
 
     /**
@@ -20,7 +21,7 @@ public class JobNotificationResponseModel {
      * @param status the status of the Job
      * @param scheduleDate the date of executing the Job
      */
-    public JobNotificationResponseModel(long jobId, String status, LocalDate scheduleDate) {
+    public JobNotificationResponseModel(long jobId, Status status, LocalDate scheduleDate) {
         this.jobId = jobId;
         this.status = status;
         this.scheduleDate = scheduleDate;
@@ -28,13 +29,18 @@ public class JobNotificationResponseModel {
 
     @Override
     public String toString() {
-        //TODO: need to be updated!
         String text = "Job with job id " + jobId
                 + " is " + status + ".";
-        if (status.equals("ACCEPTED") || status.equals("RESCHEDULED")) {
-            text += " The Job will be executed on the " + scheduleDate.toString();
-        } else if (status.equals("PENDING")) {
+        if (status == Status.ACCEPTED) {
+            text += " The Job will be executed on the " + scheduleDate.toString() + ".";
+        } else if (status == Status.FINISHED) {
+            text += " The Job was executed on the " + scheduleDate.toString() + ".";
+        } else if (status == Status.PENDING) {
             text += " Please check at another time, if the Job has been scheduled!";
+        } else if (status == Status.RUNNING) {
+            text += " The Job is executed today.";
+        } else if (status == Status.REJECTED) {
+            text += " The Job is rejected, since no resources were available.";
         }
 
         return text;

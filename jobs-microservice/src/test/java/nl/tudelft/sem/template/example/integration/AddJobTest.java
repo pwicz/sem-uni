@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import commons.Faculty;
 import commons.Job;
 import commons.NetId;
 import commons.RoleValue;
@@ -60,6 +61,7 @@ public class AddJobTest {
     NetId u2;
     Job j1;
     Job j2;
+    Faculty f1;
     @Autowired
     private JobRepository jobRepository;
 
@@ -75,8 +77,9 @@ public class AddJobTest {
 
         u1 = new NetId("User");
         u2 = new NetId("User2");
-        j1 = new Job(u1, 10, 10, 10, LocalDate.now());
-        j2 = new Job(u2, 12, 10, 10, LocalDate.now());
+        f1 = new Faculty("EEMCS");
+        j1 = new Job(u1, f1, 10, 10, 10, LocalDate.now());
+        j2 = new Job(u2, f1, 12, 10, 10, LocalDate.now());
 
     }
 
@@ -87,7 +90,7 @@ public class AddJobTest {
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
-        jobService.createJob(u1, u1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+        jobService.createJob(u1, u1, f1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
         j1.setJobId(fromDb.get(0).getJobId());
         assertThat(fromDb.size()).isEqualTo(1);
@@ -101,8 +104,10 @@ public class AddJobTest {
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
-        jobService.createJob(u1, u1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
-        jobService.createJob(new NetId("Tmp"), new NetId("Tmp"), 12, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+
+        jobService.createJob(u1, u1, f1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+        jobService.createJob(new NetId("Tmp"), new NetId("Tmp"), f1, 12, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
         assertThat(fromDb.size()).isEqualTo(2);
     }
@@ -115,8 +120,10 @@ public class AddJobTest {
         Mockito.when(restTemplate.getForEntity(url, Job.class))
                 .thenReturn(new ResponseEntity<>(j1, HttpStatus.OK));
 
-        jobService.createJob(u1, u1,  10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
-        jobService.createJob(u2, u2, 12, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+
+        jobService.createJob(u1, u1, f1, 10, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+        jobService.createJob(u2, u2, f1, 12, 10, 10, RoleValue.EMPLOYEE, LocalDate.now());
+
         List<Job> fromDb = jobService.getAllJobs(u1, u1, "admin");
         j2.setJobId(2);
         j1.setJobId(1);
@@ -141,7 +148,7 @@ public class AddJobTest {
     @Test
     public void addJobWithGpuGreaterThanCpu_throwsException() {
         Exception e = assertThrows(ResourceBiggerThanCpuException.class, () -> {
-            jobService.createJob(u1, u1, 1, 2, 0, RoleValue.EMPLOYEE, LocalDate.now());
+            jobService.createJob(u1, u1, f1, 1, 2, 0, RoleValue.EMPLOYEE, LocalDate.now());
         });
         assertThat(e.getMessage()).isEqualTo("GPU usage cannot be greater than the CPU usage.");
     }
@@ -149,7 +156,7 @@ public class AddJobTest {
     @Test
     public void addJobWithMemoryGreaterThanCpu_throwsException() {
         Exception e = assertThrows(ResourceBiggerThanCpuException.class, () -> {
-            jobService.createJob(u1, u1, 1, 0, 2, RoleValue.EMPLOYEE, LocalDate.now());
+            jobService.createJob(u1, u1, f1, 1, 0, 2, RoleValue.EMPLOYEE, LocalDate.now());
         });
         assertThat(e.getMessage()).isEqualTo("Memory usage cannot be greater than the CPU usage.");
     }

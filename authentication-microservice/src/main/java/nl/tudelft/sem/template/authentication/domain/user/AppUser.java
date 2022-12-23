@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.authentication.domain.user;
 
 import commons.Faculty;
-import commons.FacultyAttributeConverter;
+import commons.FacultyListAttributeConverter;
 import commons.NetId;
 import commons.NetIdAttributeConverter;
 import commons.Role;
@@ -46,7 +46,7 @@ public class AppUser extends HasEvents {
     private Role role;
 
     @Column(name = "faculty", nullable = false)
-    @Convert(converter = FacultyAttributeConverter.class)
+    @Convert(converter = FacultyListAttributeConverter.class)
     private List<Faculty> faculty;
 
     /**
