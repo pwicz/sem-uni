@@ -30,6 +30,9 @@ public class Job {
     @Convert(converter = NetIdAttributeConverter.class)
     private NetId netId;
 
+    @Column(name = "description", nullable = false)
+    private String description;
+
     @Column(name = "cpu_usage", nullable = false)
     private int cpuUsage;
 
@@ -54,8 +57,9 @@ public class Job {
      * @param gpuUsage the amount of gpu units needed
      * @param memoryUsage the amount of memory units needed
      */
-    public Job(NetId netId, int cpuUsage, int gpuUsage, int memoryUsage, LocalDate preferredDate) {
+    public Job(NetId netId, String description, int cpuUsage, int gpuUsage, int memoryUsage, LocalDate preferredDate) {
         this.netId = netId;
+        this.description = description;
         this.cpuUsage = cpuUsage;
         this.gpuUsage = gpuUsage;
         this.memoryUsage = memoryUsage;
@@ -68,6 +72,7 @@ public class Job {
      */
     public Job(int temp) {
         this.netId = new NetId("test");
+        description = "desc";
         cpuUsage = 0;
         gpuUsage = 0;
         memoryUsage = 0;
@@ -75,6 +80,13 @@ public class Job {
         this.preferredDate = LocalDate.now().plusDays(3);
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public long getJobId() {
         return jobId;

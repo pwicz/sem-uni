@@ -147,13 +147,13 @@ public class JobController {
         try {
             NetId jobNetId = new NetId(request.getNetId());
             NetId authNetId = new NetId(authManager.getNetId());
+            String desc = request.getDescription();
             int cpuUsage = request.getCpuUsage();
             int gpuUsage = request.getGpuUsage();
             int memoryUsage = request.getMemoryUsage();
             Role role = authManager.getRole();
-            //String role = (String) authManager.getRole();
             LocalDate preferredDate = LocalDate.now();
-            Job createdJob = this.jobService.createJob(jobNetId, authNetId, cpuUsage,
+            Job createdJob = this.jobService.createJob(jobNetId, authNetId, desc, cpuUsage,
                     gpuUsage, memoryUsage, role.getRoleValue(), preferredDate);
 
             JobResponseModel jobResponseModel = jobService.populateJobResponseModel(createdJob.getJobId(),
