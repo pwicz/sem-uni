@@ -242,7 +242,7 @@ public class NodeController {
 
         //n.setRemovedDate(LocalDate.now().plusDays(1L)); // not updated forever in the database
         try {
-            String response = notifySchedulerOfResourceChange(LocalDate.now().plusDays(1L), n.getFaculty());
+            notifySchedulerOfResourceChange(LocalDate.now().plusDays(1L), n.getFaculty());
             return ResponseEntity.ok("Node(s) with token " + token.getToken() + " removed from "
                     + LocalDate.now().plusDays(1L));
         } catch (Exception e) {
