@@ -86,7 +86,7 @@ public class NodeController {
      * Returns all the nodes available for admin to see.
      */
     @GetMapping(path = {"/resources"})
-    public ResponseEntity<List<Node>> getAllNodes(@RequestBody String token) {
+    public ResponseEntity<List<Node>> getAllNodes() {
         if (!checkIfAdmin()) {
             System.out.println("Admin privileges required. Current Role:" + authManager.getRole().toString());
             return ResponseEntity.badRequest().build();
@@ -98,19 +98,6 @@ public class NodeController {
         List<Node> nodes = repo.getAllNodes().get();
 
         return ResponseEntity.ok(nodes);
-    }
-
-    /**
-     * Test to see what role you currently are.
-     */
-    @GetMapping(path = {"/role"})
-    public ResponseEntity<String> userRole() {
-        if (authManager.getRole() == null) {
-            System.out.println("user has null role");
-            return ResponseEntity.badRequest().build();
-        }
-        System.out.println(repo.getTest1().toString());
-        return ResponseEntity.ok(authManager.getRole().toString());
     }
 
     /**
