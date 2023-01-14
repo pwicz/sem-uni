@@ -5,6 +5,8 @@ import commons.Resource;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import nl.tudelft.sem.template.example.controllers.NodeUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,15 +51,17 @@ public class GetResourceService {
      * @param faculty faculty requested
      * @param date free resources on this day
      */
-    public FacultyResource getFacultyAvailableResourcesForDay(String faculty, LocalDate date) {
+    public Object[] getFacultyAvailableResourcesForDay(String faculty, LocalDate date) {
+        List<FacultyResource> answer = new ArrayList<>();
         if (repo.getAvailableResources(faculty, date).isPresent()) {
             List<Node> n = repo.getAvailableResources(faculty, date).get();
-            Resource r = NodeUtil.resourceCreator(n);
-            FacultyResource facultyResources = new FacultyResource(faculty, date,
-                    r.getCpu(), r.getGpu(), r.getMem());
-            return facultyResources;
+            List<Resource> resources = NodeUtil.resourceCreatorForDifferentClusters(n);
+
+            for (Resource r : resources) {
+                answer.add(new FacultyResource(faculty, date, r.getCpu(), r.getGpu(), r.getMem()));
+            }
         }
-        return new FacultyResource(faculty, date, 0, 0, 0);
+        return answer.toArray();
     }
 
     /**
@@ -75,4 +79,7 @@ public class GetResourceService {
         }
         return res;
     }
+
+
+
 }

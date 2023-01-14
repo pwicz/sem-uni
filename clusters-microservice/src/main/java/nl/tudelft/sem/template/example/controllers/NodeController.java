@@ -73,9 +73,6 @@ public class NodeController {
             return ResponseEntity.badRequest().build();
         }
         Resource r = getResourceService.getTotalResourcesForFaculty(faculty);
-        if (facultyNodesOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
         return ResponseEntity.ok(r);
     }
 
@@ -94,10 +91,6 @@ public class NodeController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         List<Node> nodes = getResourceService.getAllNodes();
-        if (repo.getAllNodes().isEmpty()) {
-            System.out.println("Db is empty");
-            return ResponseEntity.ok(new ArrayList<>());
-        }
         return ResponseEntity.ok(nodes);
     }
 
@@ -120,23 +113,10 @@ public class NodeController {
      * @param facDay request model for faculty and date
      */
     @PostMapping(path = {"/facultyDayResource"})
-    public ResponseEntity<FacultyResource> getFacultyAvailableResourcesForDay(@RequestBody FacultyResourceModel facDay) {
-        FacultyResource facultyResources = getResourceService.getFacultyAvailableResourcesForDay(
+    public ResponseEntity<FacultyResource[]> getFacultyAvailableResourcesForDay(@RequestBody FacultyResourceModel facDay) {
+        FacultyResource[] facultyResources = (FacultyResource[]) getResourceService.getFacultyAvailableResourcesForDay(
                 facDay.getFaculty(), facDay.getDate());
         return ResponseEntity.ok(facultyResources);
-    public ResponseEntity<Object[]> getFacultyAvailableResourcesForDay(@RequestBody FacultyResourceModel facDay) {
-        List<FacultyResource> answer = new ArrayList<>();
-
-        if (repo.getAvailableResources(facDay.getFaculty(), facDay.getDate()).isPresent()) {
-            List<Node> n = repo.getAvailableResources(facDay.getFaculty(), facDay.getDate()).get();
-            List<Resource> resources = resourceCreatorForDifferentClusters(n);
-
-            for (Resource r : resources) {
-                answer.add(new FacultyResource(facDay.getFaculty(), facDay.getDate(), r.getCpu(), r.getGpu(), r.getMem()));
-            }
-        }
-
-        return ResponseEntity.ok(answer.toArray());
     }
 
     /**
@@ -147,7 +127,7 @@ public class NodeController {
      * @param node you want to add
      */
     @PostMapping(path = {"/addNode"})
-    public ResponseEntity<Node> addNode(@RequestBody Node node) throws JsonProcessingException {
+    public ResponseEntity<Node> addNode(@RequestBody Node node) {
         List<String> faculties = getFaculty();
         faculties.add("FreePool");
         if (checkIfAdmin()) {
@@ -229,21 +209,6 @@ public class NodeController {
     public ResponseEntity<List<FacultyResource>> getResourcesNextDay() {
         List<FacultyResource> res = getResourceService.getResourcesNextDay(getFaculty());
         return ResponseEntity.ok(res);
-    }
-
-    private Resource resourceCreator(List<Node> nodes) {
-        if (nodes == null) {
-            return new Resource(0, 0, 0);
-        }
-        int cpu = 0;
-        int gpu = 0;
-        int mem = 0;
-        for (Node n : nodes) {
-            cpu += n.getCpu();
-            gpu += n.getGpu();
-            mem += n.getMemory();
-        }
-        return new Resource(cpu, gpu, mem);
     }
 }
 
