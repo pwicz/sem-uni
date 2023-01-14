@@ -9,6 +9,7 @@ import exceptions.InvalidIdException;
 import exceptions.InvalidNetIdException;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.chain.ChainService;
+import nl.tudelft.sem.template.example.domain.JobRepository;
 import nl.tudelft.sem.template.example.domain.JobService;
 import nl.tudelft.sem.template.example.models.ApproveRequestModel;
 import nl.tudelft.sem.template.example.models.JobResponseModel;
@@ -27,6 +28,8 @@ public class ChainController {
     private final transient AuthManager authManager;
     private final transient ChainService chainService;
     private final transient JobService jobService;
+    private final transient JobRepository jobRepository;
+
 
     /**
      * Constructor of the Chain controller.
@@ -36,10 +39,12 @@ public class ChainController {
      * @param jobService  the service which handles the communication with the database & scheduler microservice
      */
     @Autowired
-    public ChainController(AuthManager authManager, ChainService chainService, JobService jobService) {
+    public ChainController(AuthManager authManager, ChainService chainService,
+                           JobService jobService, JobRepository jobRepository) {
         this.authManager = authManager;
         this.chainService = chainService;
         this.jobService = jobService;
+        this.jobRepository = jobRepository;
     }
 
     /**
@@ -56,6 +61,7 @@ public class ChainController {
             Role role = authManager.getRole();
             Long id = request.getId();
             Job approvedJob = chainService.approveJob(netId, role.getRoleValue(), id);
+            jobRepository.save(approvedJob);
             if (approvedJob.getStatus() == Status.ACCEPTED) {
                 ScheduleJob scheduleJob = new ScheduleJob(id, approvedJob.getFaculty(),
                         approvedJob.getPreferredDate(), approvedJob.getCpuUsage(), approvedJob.getGpuUsage(),
@@ -88,8 +94,8 @@ public class ChainController {
             NetId netId = new NetId(authManager.getNetId());
             Role role = authManager.getRole();
             Long id = request.getId();
-
             Job rejectedJob = chainService.rejectJob(netId, role.getRoleValue(), id);
+            jobRepository.save(rejectedJob);
             JobResponseModel jobResponseModel = new JobResponseModel();
             jobResponseModel.setNetId(rejectedJob.getNetId().toString());
             jobResponseModel.setStatus(rejectedJob.getStatus());

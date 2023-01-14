@@ -15,11 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface NodeRepository extends JpaRepository<Node, Long> {
-    @Query(
-            nativeQuery = true,
-            value = "SELECT new Resource(SUM(CPU), SUM(GPU), SUM(MEMORY)) FROM Node ")
-    Optional<Resource> getTest1();
-
     /**
      * Deletes the Node from the database.
      *
@@ -29,6 +24,7 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
             nativeQuery = true,
             value = "DELETE FROM Node WHERE id = ?1")
     void deleteNode(long id);
+
 
     /**
      * Gets all Nodes currently available.

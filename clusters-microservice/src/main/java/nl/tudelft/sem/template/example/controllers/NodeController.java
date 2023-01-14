@@ -1,6 +1,5 @@
 package nl.tudelft.sem.template.example.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import commons.FacultyRequestModel;
 import commons.FacultyResource;
 import commons.FacultyResourceModel;
@@ -9,11 +8,17 @@ import commons.Resource;
 import commons.RoleValue;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.GetResourceService;
 import nl.tudelft.sem.template.example.domain.ModifyRepoService;
 import nl.tudelft.sem.template.example.domain.Node;
+import nl.tudelft.sem.template.example.domain.NodeRepository;
+import nl.tudelft.sem.template.example.dtos.AddNode;
 import nl.tudelft.sem.template.example.models.ReleaseFacultyModel;
 import nl.tudelft.sem.template.example.models.ToaRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +73,9 @@ public class NodeController {
             return ResponseEntity.badRequest().build();
         }
         Resource r = getResourceService.getTotalResourcesForFaculty(faculty);
+        if (facultyNodesOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         return ResponseEntity.ok(r);
     }
 
@@ -80,12 +88,16 @@ public class NodeController {
      * Returns all the nodes available for admin to see.
      */
     @GetMapping(path = {"/resources"})
-    public ResponseEntity<List<Node>> getAllNodes(@RequestBody String token) {
+    public ResponseEntity<List<Node>> getAllNodes() {
         if (!checkIfAdmin()) {
             System.out.println("Admin privileges required. Current Role:" + authManager.getRole().toString());
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         List<Node> nodes = getResourceService.getAllNodes();
+        if (repo.getAllNodes().isEmpty()) {
+            System.out.println("Db is empty");
+            return ResponseEntity.ok(new ArrayList<>());
+        }
         return ResponseEntity.ok(nodes);
     }
 
@@ -103,6 +115,7 @@ public class NodeController {
 
     /**
      * Gets the number of free resources available for facculty and day.
+     * Only allowed to access if you belong to the faculty.
      *
      * @param facDay request model for faculty and date
      */
@@ -111,12 +124,25 @@ public class NodeController {
         FacultyResource facultyResources = getResourceService.getFacultyAvailableResourcesForDay(
                 facDay.getFaculty(), facDay.getDate());
         return ResponseEntity.ok(facultyResources);
+    public ResponseEntity<Object[]> getFacultyAvailableResourcesForDay(@RequestBody FacultyResourceModel facDay) {
+        List<FacultyResource> answer = new ArrayList<>();
+
+        if (repo.getAvailableResources(facDay.getFaculty(), facDay.getDate()).isPresent()) {
+            List<Node> n = repo.getAvailableResources(facDay.getFaculty(), facDay.getDate()).get();
+            List<Resource> resources = resourceCreatorForDifferentClusters(n);
+
+            for (Resource r : resources) {
+                answer.add(new FacultyResource(facDay.getFaculty(), facDay.getDate(), r.getCpu(), r.getGpu(), r.getMem()));
+            }
+        }
+
+        return ResponseEntity.ok(answer.toArray());
     }
 
     /**
      * Endpoint where you can add node.
-     * The node has to belongto the facculty you are in
-     * The nodes resources has to match cpu >= gpu || cpu >= mem
+     * The node has to belong to the faculty you are in
+     * The nodes resources has to match cpu >= gpu && cpu >= mem
      *
      * @param node you want to add
      */
@@ -140,8 +166,7 @@ public class NodeController {
      * Only sets the date its released from and till
      */
     @PostMapping("/releaseFaculty")
-    public ResponseEntity<String> releaseFaculty(@RequestBody ReleaseFacultyModel releaseModel)
-                                                throws JsonProcessingException {
+    public ResponseEntity<String> releaseFaculty(@RequestBody ReleaseFacultyModel releaseModel) {
         if (authManager.getRole().getRoleValue() != RoleValue.FAC_ACC) {
             System.out.println("Account is not faculty account. Current: " + getFaculty());
             return ResponseEntity.badRequest().build();
@@ -154,7 +179,7 @@ public class NodeController {
         return ResponseEntity.ok(response);
     }
 
-    private List<String> getFaculty2(String netId) throws JsonProcessingException {
+    private List<String> getFaculty2(String netId) {
         String usersUrl = "http://localhost:8081/faculty"; //authentication microservice
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -177,7 +202,7 @@ public class NodeController {
 
     /**
      * Marks Node with the id as deleted.
-     * Later when database cleaner is called it will actually delete from database.
+     * Later when database clearer is called it will actually delete it from database.
      *
      * @param token token of access
      */
@@ -195,9 +220,10 @@ public class NodeController {
     }
 
     /**
-     * The api GET endpoint to get all Jobs in the database.
+     * The api GET endpoint to get a list of all resources in all clusters that are available
+     * to the user.
      *
-     * @return list of Jobs to be scheduled
+     * @return list of all resources in all clusters available to the user.
      */
     @GetMapping(path = "/resourcesNextDay")
     public ResponseEntity<List<FacultyResource>> getResourcesNextDay() {
@@ -205,5 +231,19 @@ public class NodeController {
         return ResponseEntity.ok(res);
     }
 
+    private Resource resourceCreator(List<Node> nodes) {
+        if (nodes == null) {
+            return new Resource(0, 0, 0);
+        }
+        int cpu = 0;
+        int gpu = 0;
+        int mem = 0;
+        for (Node n : nodes) {
+            cpu += n.getCpu();
+            gpu += n.getGpu();
+            mem += n.getMemory();
+        }
+        return new Resource(cpu, gpu, mem);
+    }
 }
 

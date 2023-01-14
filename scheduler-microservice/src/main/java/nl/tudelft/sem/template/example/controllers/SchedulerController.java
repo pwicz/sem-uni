@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.example.controllers;
 import commons.FacultyResource;
 import commons.FacultyTotalResource;
 import commons.Job;
+import commons.RoleValue;
 import commons.ScheduleJob;
 import java.util.List;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
@@ -86,11 +87,10 @@ public class SchedulerController {
      *
      * @return list of Jobs to be scheduled
      */
-    @GetMapping(path = "/allResourcesNextDay")
+    @GetMapping(path = "/all-resources-next-day")
     public ResponseEntity<List<FacultyTotalResource>> getAllResourcesNextDay() {
-        String role = authManager.getRole().toString();
-        if (!role.equals("admin")) {
-            return ResponseEntity.badRequest().build();
+        if (authManager.getRole().getRoleValue() != RoleValue.ADMIN) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         List<FacultyTotalResource> res = processingJobsService.getAllResourcesNextDay();
         return ResponseEntity.ok(res);
@@ -112,7 +112,6 @@ public class SchedulerController {
     @PostMapping("/change-scheduling-strategy")
     public ResponseEntity<String> changeSchedulingStrategy(@RequestBody ChangeSchedulingStrategy
                                                                        changeSchedulingStrategy) {
-        System.out.println("GOT HER!");
         if (!authManager.getRole().toString().equals("ADMIN")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
