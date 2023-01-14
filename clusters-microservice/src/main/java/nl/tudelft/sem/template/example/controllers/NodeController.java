@@ -69,8 +69,9 @@ public class NodeController {
     @GetMapping(path = {"/resources/{faculty}"})
     public ResponseEntity<Resource> getTotalResourcesForFaculty(@PathVariable("faculty") String faculty) {
         if (!checkIfAdmin()) {
-            System.out.println("Needed Admin permissions.Current: " + authManager.getRole().toString());
-            return ResponseEntity.badRequest().build();
+            System.out.println("Admin privileges required. Current Role:" + authManager.getRole().toString());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
         }
         Resource r = getResourceService.getTotalResourcesForFaculty(faculty);
         return ResponseEntity.ok(r);
