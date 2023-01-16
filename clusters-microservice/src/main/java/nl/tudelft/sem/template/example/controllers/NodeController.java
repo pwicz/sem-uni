@@ -9,7 +9,13 @@ import nl.tudelft.sem.template.example.domain.CheckHelper;
 import nl.tudelft.sem.template.example.domain.GetResourceService;
 import nl.tudelft.sem.template.example.domain.ModifyRepoService;
 import nl.tudelft.sem.template.example.domain.Node;
+import nl.tudelft.sem.template.example.exceptions.InvalidDateException;
+import nl.tudelft.sem.template.example.exceptions.InvalidFacultyException;
+import nl.tudelft.sem.template.example.exceptions.InvalidOwnerException;
+import nl.tudelft.sem.template.example.exceptions.InvalidPeriodException;
+import nl.tudelft.sem.template.example.exceptions.NullValueException;
 import nl.tudelft.sem.template.example.exceptions.ObjectIsNullException;
+import nl.tudelft.sem.template.example.exceptions.ResourceMismatchException;
 import nl.tudelft.sem.template.example.models.ReleaseFacultyModel;
 import nl.tudelft.sem.template.example.models.ToaRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,7 +101,8 @@ public class NodeController extends CheckHelper {
      * @param node you want to add
      */
     @PostMapping(path = {"/addNode"})
-    public ResponseEntity<Node> addNode(@RequestBody Node node) throws ObjectIsNullException {
+    public ResponseEntity<Node> addNode(@RequestBody Node node) throws ObjectIsNullException, NullValueException,
+            InvalidOwnerException, InvalidFacultyException, ResourceMismatchException {
         List<String> faculties = getFaculty(authManager);
         faculties.add("FreePool");
         setNodeFaculty(node, authManager);
@@ -109,7 +116,9 @@ public class NodeController extends CheckHelper {
      * Only sets the date its released from and till
      */
     @PostMapping("/releaseFaculty")
-    public ResponseEntity<String> releaseFaculty(@RequestBody ReleaseFacultyModel releaseModel) {
+    public ResponseEntity<String> releaseFaculty(@RequestBody ReleaseFacultyModel releaseModel)
+            throws InvalidDateException, InvalidFacultyException, InvalidPeriodException,
+            NullValueException, ObjectIsNullException {
         return releaseFacultyHelper(authManager, modifyRepoService, releaseModel);
     }
 
