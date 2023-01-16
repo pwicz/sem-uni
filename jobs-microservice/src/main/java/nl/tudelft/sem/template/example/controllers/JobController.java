@@ -106,20 +106,14 @@ public class JobController {
     @PostMapping("/addJob")
     public ResponseEntity addJob(@RequestBody JobRequestModel request) throws Exception {
         try {
-            NetId jobNetId = new NetId(request.getNetId());
-            NetId authNetId = new NetId(authManager.getNetId());
-            String desc = request.getDescription();
-            Faculty faculty = new Faculty(request.getFaculty());
-            Job createdJob = this.jobService.createJob(jobNetId, authNetId, faculty, desc,
+            Job createdJob = this.jobService.createJob(
+                new NetId(request.getNetId()), new NetId(authManager.getNetId()),
+                new Faculty(request.getFaculty()), request.getDescription(),
                 request.getCpuUsage(), request.getGpuUsage(), request.getMemoryUsage(),
                 authManager.getRole().getRoleValue(), LocalDate.now());
             JobResponseModel jobResponseModel = jobService.populateJobResponseModel(createdJob.getJobId(),
                 Status.PENDING, createdJob.getNetId().toString());
             return ResponseEntity.ok(jobResponseModel);
-        } catch (InvalidNetIdException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, invalidId, e);
-        } catch (InvalidResourcesException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "INVALID_RESOURCE_ALLOCATION", e);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
