@@ -106,7 +106,7 @@ public class ProcessingJobsServiceTest {
                 1, 2, 1);
         Exception e = assertThrows(ResourceBiggerThanCpuException.class,
                 () -> processingJobsService.scheduleJob(scheduleJob));
-        assertThat(e.getMessage()).isEqualTo("GPU usage cannot be greater than the CPU usage.");
+        assertThat(e.getMessage()).isEqualTo("GPU or Memory usage cannot be greater than the CPU usage.");
     }
 
     @Test
@@ -115,7 +115,22 @@ public class ProcessingJobsServiceTest {
                 1, 1, 2);
         Exception e = assertThrows(ResourceBiggerThanCpuException.class,
                 () -> processingJobsService.scheduleJob(scheduleJob));
-        assertThat(e.getMessage()).isEqualTo("Memory usage cannot be greater than the CPU usage.");
+        assertThat(e.getMessage()).isEqualTo("GPU or Memory usage cannot be greater than the CPU usage.");
+    }
+
+    @Test
+    public void verifyCpuBiggerThanMaxOfGpuOrMemoryTest() {
+        ScheduleJob scheduleJob = new ScheduleJob(1, new Faculty("EEMCS"), LocalDate.now().plusDays(1),
+                1, 1, 2);
+        Exception e = assertThrows(ResourceBiggerThanCpuException.class,
+                () -> processingJobsService.verifyCpuBiggerThanMaxOfGpuOrMemory(scheduleJob));
+        assertThat(e.getMessage()).isEqualTo("GPU or Memory usage cannot be greater than the CPU usage.");
+
+        ScheduleJob scheduleJob2 = new ScheduleJob(1, new Faculty("EEMCS"), LocalDate.now().plusDays(1),
+                1, 2, 1);
+        Exception e2 = assertThrows(ResourceBiggerThanCpuException.class,
+                () -> processingJobsService.scheduleJob(scheduleJob));
+        assertThat(e2.getMessage()).isEqualTo("GPU or Memory usage cannot be greater than the CPU usage.");
     }
 
     @Test
@@ -131,6 +146,18 @@ public class ProcessingJobsServiceTest {
         Exception e = assertThrows(InvalidStrategyNameException.class,
                 () -> processingJobsService.setSchedulingStrategy("undefined-useless-string"));
         assertThat(e.getMessage()).isEqualTo("Strategy undefined-useless-string does not exist.");
+    }
+
+    @Test
+    public void scheduleAfterInclusiveTest() {
+        assertThat(processingJobsService.scheduleAfterInclusive(LocalTime.of(23, 55)))
+                .isEqualTo(LocalDate.now().plusDays(2));
+        assertThat(processingJobsService.scheduleAfterInclusive(LocalTime.of(23, 59)))
+                .isEqualTo(LocalDate.now().plusDays(2));
+        assertThat(processingJobsService.scheduleAfterInclusive(LocalTime.of(23, 55).minusMinutes(1)))
+                .isEqualTo(LocalDate.now().plusDays(1));
+        assertThat(processingJobsService.scheduleAfterInclusive(LocalTime.of(23, 59).plusMinutes(1)))
+                .isEqualTo(LocalDate.now().plusDays(1));
     }
 
     @Test

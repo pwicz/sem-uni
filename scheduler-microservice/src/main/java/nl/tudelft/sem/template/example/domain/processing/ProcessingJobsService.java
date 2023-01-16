@@ -70,21 +70,10 @@ public class ProcessingJobsService {
      */
     @Synchronized
     public void scheduleJob(ScheduleJob j) throws ResourceBiggerThanCpuException {
-        // verify the CPU >= Max(GPU, Memory) requirement
-        if (j.getCpuUsage() < Math.max(j.getGpuUsage(), j.getMemoryUsage())) {
-            String resource = j.getGpuUsage() > j.getMemoryUsage() ? "GPU" : "Memory";
-            throw new ResourceBiggerThanCpuException(resource);
-        }
-
-        // start with the first possible day: tomorrow or the day after tomorrow
-        int possibleInXdays = 1;
-
-        if (isFiveMinutesBeforeDayStarts(LocalTime.now())) {
-            possibleInXdays = 2;
-        }
+        verifyCpuBiggerThanMaxOfGpuOrMemory(j);
 
         List<ScheduledInstance> scheduledInstances =
-                schedulingStrategy.scheduleBetween(j, LocalDate.now().plusDays(possibleInXdays), j.getScheduleBefore());
+                schedulingStrategy.scheduleBetween(j, scheduleAfterInclusive(LocalTime.now()), j.getScheduleBefore());
 
         if (scheduledInstances.isEmpty()) {
             // inform the Job microservice that the job was not scheduled
@@ -93,16 +82,24 @@ public class ProcessingJobsService {
             return;
         }
 
-        try {
-            scheduledInstanceRepository.saveAll(scheduledInstances);
-        } catch (Exception e) {
-            System.out.println("There was a problem: " + e.getMessage());
-        }
+        scheduledInstanceRepository.saveAll(scheduledInstances);
 
         // inform the Job microservice about a success!
         restTemplate.postForEntity(jobsUrl + "/updateStatus",
                 new UpdateJob(j.getJobId(), "scheduled", scheduledInstances.get(0).getDate()), Void.class);
-        System.out.println("saved!");
+    }
+
+    /**
+     * checks if CPU is at least as big as CPU and Memory.
+     *
+     * @param j a ScheduleJob DTO of a Job to be scheduled
+     * @throws ResourceBiggerThanCpuException if CPU is smaller than GPU or Memory
+     */
+    public void verifyCpuBiggerThanMaxOfGpuOrMemory(ScheduleJob j) throws ResourceBiggerThanCpuException {
+        // verify the CPU >= Max(GPU, Memory) requirement
+        if (j.getCpuUsage() < Math.max(j.getGpuUsage(), j.getMemoryUsage())) {
+            throw new ResourceBiggerThanCpuException("GPU or Memory");
+        }
     }
 
     /**
@@ -143,6 +140,20 @@ public class ProcessingJobsService {
     }
 
     /**
+     * Find the day, after which a Job can potentially be scheduled (including the day).
+     *
+     * @param currentTime the time right now
+     * @return the day, after which a Job can potentially be scheduled (including the day).
+     */
+    public LocalDate scheduleAfterInclusive(LocalTime currentTime) {
+        if (isFiveMinutesBeforeDayStarts(currentTime)) {
+            return LocalDate.now().plusDays(2);
+        } else {
+            return LocalDate.now().plusDays(1);
+        }
+    }
+
+    /**
      * Checks if it is 5 minutes before a new day starts.
      *
      * @return true if the current time is between 25:55 (including) and 00:00 (excluding)
@@ -151,6 +162,8 @@ public class ProcessingJobsService {
         LocalTime startTime = LocalTime.of(23, 55);
         return currentTime.isAfter(startTime) || currentTime.equals(startTime);
     }
+
+
 
     public SchedulingStrategy getSchedulingStrategy() {
         return schedulingStrategy;
