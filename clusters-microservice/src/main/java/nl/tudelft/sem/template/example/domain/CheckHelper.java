@@ -40,6 +40,18 @@ public class CheckHelper {
     }
 
     /**
+     * Checks is a object is null.
+     *
+     * @param o the object to be checked
+     * @throws ObjectIsNullException throws an exception when a node is null
+     */
+    public void checkIfObjectIsNull(Object o) throws ObjectIsNullException {
+        if (o == null) {
+            throw new ObjectIsNullException();
+        }
+    }
+
+    /**
      * A helper method that gets the total resources for a given faculty.
      *
      * @param authManager contains details about the user

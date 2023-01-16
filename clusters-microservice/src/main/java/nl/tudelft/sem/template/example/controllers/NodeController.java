@@ -120,10 +120,8 @@ public class NodeController extends CheckHelper {
      * @param token token of access
      */
     @PostMapping("/delete")
-    public ResponseEntity<String> deleteNode(@RequestBody ToaRequestModel token) {
-        if (token == null) {
-            return new ResponseEntity<>("No token of access provided", HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<String> deleteNode(@RequestBody ToaRequestModel token) throws ObjectIsNullException {
+        checkIfObjectIsNull(token);
         List<String> faculties = getFaculty(authManager);
         String response = modifyRepoService.disableNodeFromRepo(token.getToken(), faculties);
         if (response == null) {
