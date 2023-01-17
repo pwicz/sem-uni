@@ -51,17 +51,19 @@ public class GetResourceService {
      * @param faculty faculty requested
      * @param date free resources on this day
      */
-    public Object[] getFacultyAvailableResourcesForDay(String faculty, LocalDate date) {
+    public FacultyResource getFacultyAvailableResourcesForDay(String faculty, LocalDate date) {
         List<FacultyResource> answer = new ArrayList<>();
+        FacultyResource realAnswer = new FacultyResource(faculty, date, 0, 0, 0);
         if (repo.getAvailableResources(faculty, date).isPresent()) {
             List<Node> n = repo.getAvailableResources(faculty, date).get();
             List<Resource> resources = NodeUtil.resourceCreatorForDifferentClusters(n);
 
             for (Resource r : resources) {
-                answer.add(new FacultyResource(faculty, date, r.getCpu(), r.getGpu(), r.getMem()));
+                realAnswer = new FacultyResource(faculty, date, realAnswer.getCpuUsage() + r.getCpu(),
+                    realAnswer.getGpuUsage() + r.getGpu(), realAnswer.getMemoryUsage() + r.getMem());
             }
         }
-        return answer.toArray();
+        return realAnswer;
     }
 
     /**

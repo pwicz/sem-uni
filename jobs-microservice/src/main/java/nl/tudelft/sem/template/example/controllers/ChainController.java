@@ -63,10 +63,10 @@ public class ChainController {
             Job approvedJob = chainService.approveJob(netId, role.getRoleValue(), id);
             jobRepository.save(approvedJob);
             if (approvedJob.getStatus() == Status.ACCEPTED) {
-                ScheduleJob scheduleJob = new ScheduleJob(id, approvedJob.getFaculty(),
+                ScheduleJob scheduleJob = new ScheduleJob(id, approvedJob.getFaculty().toString(),
                         approvedJob.getPreferredDate(), approvedJob.getCpuUsage(), approvedJob.getGpuUsage(),
                         approvedJob.getMemoryUsage());
-                jobService.scheduleJob(scheduleJob);
+                //jobService.scheduleJob(scheduleJob);
             }
             JobResponseModel jobResponseModel = new JobResponseModel();
             jobResponseModel.setId(id);

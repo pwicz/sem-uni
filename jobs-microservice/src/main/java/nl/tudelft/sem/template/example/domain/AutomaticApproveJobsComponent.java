@@ -47,7 +47,7 @@ public class AutomaticApproveJobsComponent {
         // 3. approve & send jobs to scheduler
         for (Job job : filteredSortedPendingJobs) {
             ScheduleJob scheduleJob = new ScheduleJob(job.getJobId(),
-                    job.getFaculty(), job.getPreferredDate(),
+                    job.getFaculty().toString(), job.getPreferredDate(),
                     job.getCpuUsage(), job.getGpuUsage(), job.getMemoryUsage());
 
             jobService.scheduleJob(scheduleJob);

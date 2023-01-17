@@ -1,6 +1,7 @@
 package commons;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
@@ -8,12 +9,14 @@ import org.springframework.security.core.GrantedAuthority;
  */
 @EqualsAndHashCode
 public class Faculty {
+
     private final transient String facultyName;
 
     public Faculty(String facultyName) {
         // validate Faculty
         this.facultyName = facultyName;
     }
+
 
     @Override
     public String toString() {

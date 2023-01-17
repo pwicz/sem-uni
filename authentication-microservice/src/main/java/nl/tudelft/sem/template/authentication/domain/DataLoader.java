@@ -1,5 +1,13 @@
 package nl.tudelft.sem.template.authentication.domain;
 
+import commons.Faculty;
+import commons.NetId;
+import commons.Role;
+import commons.RoleValue;
+import java.util.ArrayList;
+import java.util.List;
+import nl.tudelft.sem.template.authentication.domain.user.AppUser;
+import nl.tudelft.sem.template.authentication.domain.user.Password;
 import nl.tudelft.sem.template.authentication.domain.user.PasswordHashingService;
 import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +33,14 @@ public class DataLoader implements CommandLineRunner {
     }
 
     public void loadUsers() {
-        /*userRepository.save(new AppUser(new NetId("mlica"),
+        userRepository.save(new AppUser(new NetId("mlica"),
             passwordHashingService.hash(new Password("passwd")),
             new Role(RoleValue.FAC_ACC), new ArrayList<>(List.of(new Faculty("EEMCS")))));
-        userRepository.save(new AppUser(new NetId("test"),
-            passwordHashingService.hash(new Password("passwd")),
-            new Role(RoleValue.FAC_ACC), new ArrayList<>(List.of(new Faculty("EEMCS")))));
-        userRepository.save(new AppUser(new NetId("test1"),
-            passwordHashingService.hash(new Password("passwd")),
-            new Role(RoleValue.FAC_ACC), new ArrayList<>(List.of(new Faculty("EEMCS")))));*/
+        userRepository.save(new AppUser(new NetId("admin"),
+            passwordHashingService.hash(new Password("admin")),
+            new Role(RoleValue.ADMIN), new ArrayList<>(List.of(new Faculty("EEMCS")))));
+        userRepository.save(new AppUser(new NetId("employee"),
+            passwordHashingService.hash(new Password("employee")),
+            new Role(RoleValue.EMPLOYEE), new ArrayList<>(List.of(new Faculty("EEMCS")))));
     }
 }

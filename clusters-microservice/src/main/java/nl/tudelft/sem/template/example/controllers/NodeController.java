@@ -8,17 +8,11 @@ import commons.Resource;
 import commons.RoleValue;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.GetResourceService;
 import nl.tudelft.sem.template.example.domain.ModifyRepoService;
 import nl.tudelft.sem.template.example.domain.Node;
-import nl.tudelft.sem.template.example.domain.NodeRepository;
-import nl.tudelft.sem.template.example.dtos.AddNode;
 import nl.tudelft.sem.template.example.models.ReleaseFacultyModel;
 import nl.tudelft.sem.template.example.models.ToaRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,9 +108,10 @@ public class NodeController {
      * @param facDay request model for faculty and date
      */
     @PostMapping(path = {"/facultyDayResource"})
-    public ResponseEntity<FacultyResource[]> getFacultyAvailableResourcesForDay(@RequestBody FacultyResourceModel facDay) {
-        FacultyResource[] facultyResources = (FacultyResource[]) getResourceService.getFacultyAvailableResourcesForDay(
+    public ResponseEntity<FacultyResource> getFacultyAvailableResourcesForDay(@RequestBody FacultyResourceModel facDay) {
+        FacultyResource facultyResources = getResourceService.getFacultyAvailableResourcesForDay(
                 facDay.getFaculty(), facDay.getDate());
+
         return ResponseEntity.ok(facultyResources);
     }
 

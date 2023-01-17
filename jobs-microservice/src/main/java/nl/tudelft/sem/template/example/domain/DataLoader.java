@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.example.domain;
 
+import commons.Faculty;
 import commons.Job;
 import commons.NetId;
 import java.time.LocalDate;
@@ -23,8 +24,8 @@ public class DataLoader implements CommandLineRunner {
     }
 
     public void loadUsers() {
-        /*jobRepository.save(new Job(new NetId("mlica"), 10, 10, 10, LocalDate.now()));
-        jobRepository.save(new Job(new NetId("mlica"), 100, 2000, 1, LocalDate.now()));
-        jobRepository.save(new Job(new NetId("mlica"), 100, 20, 200, LocalDate.now()));*/
+        jobRepository.save(new Job(new NetId("employee"), new Faculty("EEMCS"), "resnet model", 300, 200, 100, LocalDate.now()));
+        jobRepository.save(new Job(new NetId("adam"), new Faculty("EE"), "computer simulation", 300, 200, 100, LocalDate.now()));
+        jobRepository.save(new Job(new NetId("megan"), new Faculty("AE"), "fluid dynamics simulation", 10, 10, 10, LocalDate.now()));
     }
 }

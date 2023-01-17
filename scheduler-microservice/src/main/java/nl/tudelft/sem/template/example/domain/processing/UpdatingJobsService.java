@@ -117,7 +117,7 @@ public class UpdatingJobsService {
         int gpu  = instances.stream().mapToInt(ScheduledInstance::getGpuUsage).sum();
         int memory = instances.stream().mapToInt(ScheduledInstance::getMemoryUsage).sum();
 
-        return new ScheduleJob(jobId, new Faculty(instances.get(0).getJobFaculty()), null, cpu, gpu, memory);
+        return new ScheduleJob(jobId, instances.get(0).getJobFaculty(), null, cpu, gpu, memory);
     }
 
     private boolean rescheduleJob(ScheduleJob job, LocalDate date) {

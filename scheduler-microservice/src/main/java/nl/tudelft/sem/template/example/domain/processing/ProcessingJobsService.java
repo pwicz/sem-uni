@@ -84,11 +84,11 @@ public class ProcessingJobsService {
         }
 
         List<ScheduledInstance> scheduledInstances =
-                schedulingStrategy.scheduleBetween(j, LocalDate.now().plusDays(possibleInXdays), j.getScheduleBefore());
+                schedulingStrategy.scheduleBetween(j, LocalDate.now(), j.getScheduleBefore().plusDays(possibleInXdays));
 
         if (scheduledInstances.isEmpty()) {
             // inform the Job microservice that the job was not scheduled
-            restTemplate.postForEntity(jobsUrl + "/updateStatus",
+            restTemplate.postForEntity(jobsUrl + "/update",
                     new UpdateJob(j.getJobId(), "unscheduled", null), Void.class);
             return;
         }
@@ -100,7 +100,7 @@ public class ProcessingJobsService {
         }
 
         // inform the Job microservice about a success!
-        restTemplate.postForEntity(jobsUrl + "/updateStatus",
+        restTemplate.postForEntity(jobsUrl + "/update",
                 new UpdateJob(j.getJobId(), "scheduled", scheduledInstances.get(0).getDate()), Void.class);
         System.out.println("saved!");
     }

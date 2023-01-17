@@ -11,7 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.example.dtos.AddNode;
-import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Table(name = "NODE")
@@ -171,7 +170,7 @@ public class Node implements Comparable {
      * @param otherNode other node you are comparing to
      */
     @Override
-    public int compareTo(@NotNull Object otherNode) {
+    public int compareTo(Object otherNode) {
         if (otherNode instanceof Node) {
             Node o = (Node) otherNode;
             return ((int) (this.id - o.id));
