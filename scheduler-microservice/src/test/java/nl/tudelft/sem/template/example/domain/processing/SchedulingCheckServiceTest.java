@@ -37,14 +37,6 @@ class SchedulingCheckServiceTest {
     }
 
     @Test
-    void scheduleAfterInclusive() {
-    }
-
-    @Test
-    void isFiveMinutesBeforeDayStarts() {
-    }
-
-    @Test
     public void scheduleAfterInclusiveTest() {
         assertThat(schedulingCheckService.scheduleAfterInclusive(LocalTime.of(23, 55)))
                 .isEqualTo(LocalDate.now().plusDays(2));
