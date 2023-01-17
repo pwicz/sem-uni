@@ -15,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class UpdatingJobsService {
     private final transient ScheduledInstanceRepository scheduledInstanceRepository;
-    private final transient RemovingJobsService removingJobsService;
+    private final transient ExcessRemovalService excessRemovalService;
     private final transient ProcessingJobsService processingJobsService;
     private final transient RestTemplate restTemplate;
 
@@ -24,13 +24,13 @@ public class UpdatingJobsService {
      *
      * @param scheduledInstanceRepository .
      * @param restTemplate .
-     * @param removingJobsService .
+     * @param excessRemovalService .
      * @param processingJobsService .
      */
     public UpdatingJobsService(ScheduledInstanceRepository scheduledInstanceRepository, RestTemplate restTemplate,
-                               RemovingJobsService removingJobsService, ProcessingJobsService processingJobsService) {
+                               ExcessRemovalService excessRemovalService, ProcessingJobsService processingJobsService) {
         this.scheduledInstanceRepository = scheduledInstanceRepository;
-        this.removingJobsService = removingJobsService;
+        this.excessRemovalService = excessRemovalService;
         this.processingJobsService = processingJobsService;
         this.restTemplate = restTemplate;
     }
@@ -57,7 +57,17 @@ public class UpdatingJobsService {
                 int memoryExcess = Math.max(memoryUsageSum - resource.getMemoryUsage(), 0);
 
                 if (cpuExcess > 0 || gpuExcess > 0 || memoryExcess > 0) {
-                    reduceExcess(instancesInDb, cpuExcess, gpuExcess, memoryExcess);
+                    List<ScheduleJob> toReschedule =
+                            excessRemovalService.reduceExcess(instancesInDb, cpuExcess, gpuExcess, memoryExcess);
+
+                    for (ScheduleJob job : toReschedule) {
+                        // try to schedule the job again the same day
+                        if (!rescheduleJob(job)) {
+                            // could not reschedule, inform the Jobs microservice
+                            restTemplate.postForEntity(processingJobsService.getJobsUrl() + "/updateStatus",
+                                    new UpdateJob(job.getJobId(), "cancelled", null), Void.class);
+                        }
+                    }
                 }
             }
 
@@ -73,56 +83,10 @@ public class UpdatingJobsService {
         }
     }
 
-    private void reduceExcess(List<ScheduledInstance> jobs, int cpu, int gpu, int memory) {
-        jobs.sort((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()));
-
-        for (ScheduledInstance instance : jobs) {
-            if (!(cpu > 0 || gpu > 0 || memory > 0)) {
-                break;
-            }
-
-            if (!(cpu > 0 && instance.getGpuUsage() > 0 || gpu > 0 && instance.getCpuUsage() > 0
-                    || memory > 0 && instance.getMemoryUsage() > 0)) {
-                // skip instances that don't use the excess
-                continue;
-            }
-
-            ScheduleJob job = recreateScheduleJobFromScheduledInstances(instance.getJobId());
-            if (job == null || !removingJobsService.removeJob(instance.getJobId())) {
-                // something went wrong...
-                // TODO: proper error handling with exceptions
-                continue;
-            }
-
-            cpu -= instance.getCpuUsage();
-            gpu -= instance.getGpuUsage();
-            memory -= instance.getMemoryUsage();
-
-            // try to schedule the job again the same day
-            if (!rescheduleJob(job, instance.getDate())) {
-                // could not reschedule, inform the Jobs microservice
-                restTemplate.postForEntity(processingJobsService.getJobsUrl() + "/updateStatus",
-                        new UpdateJob(job.getJobId(), "cancelled", null), Void.class);
-            }
-        }
-    }
-
-    private ScheduleJob recreateScheduleJobFromScheduledInstances(long jobId) {
-        List<ScheduledInstance> instances = scheduledInstanceRepository.findAllByJobId(jobId);
-        if (instances.isEmpty()) {
-            return null;
-        }
-
-        int cpu = instances.stream().mapToInt(ScheduledInstance::getCpuUsage).sum();
-        int gpu  = instances.stream().mapToInt(ScheduledInstance::getGpuUsage).sum();
-        int memory = instances.stream().mapToInt(ScheduledInstance::getMemoryUsage).sum();
-
-        return new ScheduleJob(jobId, new Faculty(instances.get(0).getJobFaculty()), null, cpu, gpu, memory);
-    }
-
-    private boolean rescheduleJob(ScheduleJob job, LocalDate date) {
+    private boolean rescheduleJob(ScheduleJob job) {
         List<ScheduledInstance> scheduledInstances =
-                processingJobsService.getSchedulingStrategy().scheduleBetween(job, date, date.plusDays(1));
+                processingJobsService.getSchedulingStrategy().scheduleBetween(job, job.getScheduleBefore(),
+                        job.getScheduleBefore().plusDays(1));
 
         if (scheduledInstances.size() == 0) {
             return false;
