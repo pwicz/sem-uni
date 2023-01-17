@@ -64,18 +64,6 @@ public class NodeController extends CheckHelper {
     }
 
     /**
-     * Test to see what role you currently are.
-     */
-    @GetMapping(path = {"/role"})
-    public ResponseEntity<String> userRole() {
-        if (authManager.getRole() == null) {
-            System.out.println("user has null role");
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(authManager.getRole().toString());
-    }
-
-    /**
      * Gets the number of free resources available for faculty and day.
      * Only allowed to access if you belong to the faculty.
      *
