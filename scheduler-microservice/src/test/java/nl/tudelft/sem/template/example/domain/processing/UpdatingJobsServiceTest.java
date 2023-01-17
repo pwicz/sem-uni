@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import commons.FacultyResource;
 import commons.ScheduleJob;
 import commons.UpdateJob;
+import commons.Url;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -123,10 +124,9 @@ class UpdatingJobsServiceTest {
         FacultyResource update = new FacultyResource("EEMCS", LocalDate.now().plusDays(1), 10, 5, 3);
         updatingJobsService.updateSchedule(update);
 
-        String url = processingJobsService.getJobsUrl();
-        Mockito.verify(restTemplate).postForEntity(url + "/updateStatus",
+        Mockito.verify(restTemplate).postForEntity(Url.getJobsUrl() + "/updateStatus",
                 new UpdateJob(3L, "cancelled", null), Void.class);
-        Mockito.verify(restTemplate).postForEntity(url + "/updateStatus",
+        Mockito.verify(restTemplate).postForEntity(Url.getJobsUrl() + "/updateStatus",
                 new UpdateJob(4L, "cancelled", null), Void.class);
 
         assertThat(scheduledInstanceRepository.findAll().size()).isEqualTo(2);
