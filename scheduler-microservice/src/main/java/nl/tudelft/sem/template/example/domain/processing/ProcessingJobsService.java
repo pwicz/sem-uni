@@ -5,11 +5,11 @@ import commons.FacultyResponseModel;
 import commons.FacultyTotalResource;
 import commons.ScheduleJob;
 import commons.UpdateJob;
+import commons.Url;
 import exceptions.ResourceBiggerThanCpuException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import lombok.Synchronized;
 import nl.tudelft.sem.template.example.domain.ResourceGetter;
@@ -31,32 +31,13 @@ public class ProcessingJobsService {
     private final RestTemplate restTemplate;
     private final ResourceGetter resourceGetter;
     private SchedulingStrategy schedulingStrategy;
-
-    private String resourcesUrl = "http://localhost:8085";
-    private String jobsUrl = "http://localhost:8083";
-    private String authUrl = "http://localhost:8081";
-
-    public void setResources_url(String resourcesUrl) {
-        this.resourcesUrl = resourcesUrl;
-        resourceGetter.setResourcesUrl(resourcesUrl);
-    }
-
-    public void setJobs_url(String jobsUrl) {
-        this.jobsUrl = jobsUrl;
-    }
-
-    public String getResourcesUrl() {
-        return resourcesUrl;
-    }
-
-    public String getJobsUrl() {
-        return jobsUrl;
-    }
+    private final SchedulingCheckService schedulingCheckService;
 
     ProcessingJobsService(ScheduledInstanceRepository scheduledInstanceRepository, RestTemplate restTemplate) {
         this.scheduledInstanceRepository = scheduledInstanceRepository;
         this.restTemplate = restTemplate;
-        this.resourceGetter = new ResourceGetter(this.restTemplate, resourcesUrl);
+        this.schedulingCheckService = new SchedulingCheckService();
+        this.resourceGetter = new ResourceGetter(this.restTemplate, Url.getClustersUrl());
         schedulingStrategy = new ScheduleBetweenClusters(this.resourceGetter,
                 this.scheduledInstanceRepository);
     }
@@ -70,40 +51,27 @@ public class ProcessingJobsService {
      */
     @Synchronized
     public void scheduleJob(ScheduleJob j) throws ResourceBiggerThanCpuException {
-        // verify the CPU >= Max(GPU, Memory) requirement
-        if (j.getCpuUsage() < Math.max(j.getGpuUsage(), j.getMemoryUsage())) {
-            String resource = j.getGpuUsage() > j.getMemoryUsage() ? "GPU" : "Memory";
-            throw new ResourceBiggerThanCpuException(resource);
-        }
-
-        // start with the first possible day: tomorrow or the day after tomorrow
-        int possibleInXdays = 1;
-
-        if (isFiveMinutesBeforeDayStarts(LocalTime.now())) {
-            possibleInXdays = 2;
-        }
+        schedulingCheckService.verifyCpuBiggerThanMaxOfGpuOrMemory(j);
 
         List<ScheduledInstance> scheduledInstances =
-                schedulingStrategy.scheduleBetween(j, LocalDate.now().plusDays(possibleInXdays), j.getScheduleBefore());
+                schedulingStrategy.scheduleBetween(j, schedulingCheckService
+                        .scheduleAfterInclusive(LocalTime.now()), j.getScheduleBefore());
 
         if (scheduledInstances.isEmpty()) {
             // inform the Job microservice that the job was not scheduled
-            restTemplate.postForEntity(jobsUrl + "/updateStatus",
+            restTemplate.postForEntity(Url.getJobsUrl() + "/updateStatus",
                     new UpdateJob(j.getJobId(), "unscheduled", null), Void.class);
             return;
         }
 
-        try {
-            scheduledInstanceRepository.saveAll(scheduledInstances);
-        } catch (Exception e) {
-            System.out.println("There was a problem: " + e.getMessage());
-        }
+        scheduledInstanceRepository.saveAll(scheduledInstances);
 
         // inform the Job microservice about a success!
-        restTemplate.postForEntity(jobsUrl + "/updateStatus",
+        restTemplate.postForEntity(Url.getJobsUrl() + "/updateStatus",
                 new UpdateJob(j.getJobId(), "scheduled", scheduledInstances.get(0).getDate()), Void.class);
-        System.out.println("saved!");
     }
+
+
 
     /**
      * Gets the number of available resources out of total resources for the next day. Only admin can access it.
@@ -112,7 +80,7 @@ public class ProcessingJobsService {
      */
     public List<FacultyTotalResource> getAllResourcesNextDay() {
 
-        ResponseEntity<FacultyResponseModel> fac = restTemplate.getForEntity(authUrl
+        ResponseEntity<FacultyResponseModel> fac = restTemplate.getForEntity(Url.getAuthenticationUrl()
                 + "/faculties", FacultyResponseModel.class);
 
         List<String> faculties = new ArrayList<>();
@@ -142,15 +110,11 @@ public class ProcessingJobsService {
         return res;
     }
 
-    /**
-     * Checks if it is 5 minutes before a new day starts.
-     *
-     * @return true if the current time is between 25:55 (including) and 00:00 (excluding)
-     */
-    public boolean isFiveMinutesBeforeDayStarts(LocalTime currentTime) {
-        LocalTime startTime = LocalTime.of(23, 55);
-        return currentTime.isAfter(startTime) || currentTime.equals(startTime);
-    }
+
+
+
+
+
 
     public SchedulingStrategy getSchedulingStrategy() {
         return schedulingStrategy;

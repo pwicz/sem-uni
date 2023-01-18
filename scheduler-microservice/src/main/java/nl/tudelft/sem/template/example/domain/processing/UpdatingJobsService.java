@@ -1,9 +1,9 @@
 package nl.tudelft.sem.template.example.domain.processing;
 
-import commons.Faculty;
 import commons.FacultyResource;
 import commons.ScheduleJob;
 import commons.UpdateJob;
+import commons.Url;
 import java.time.LocalDate;
 import java.util.List;
 import nl.tudelft.sem.template.example.domain.db.ScheduledInstance;
@@ -64,7 +64,7 @@ public class UpdatingJobsService {
                         // try to schedule the job again the same day
                         if (!rescheduleJob(job)) {
                             // could not reschedule, inform the Jobs microservice
-                            restTemplate.postForEntity(processingJobsService.getJobsUrl() + "/updateStatus",
+                            restTemplate.postForEntity(Url.getJobsUrl() + "/updateStatus",
                                     new UpdateJob(job.getJobId(), "cancelled", null), Void.class);
                         }
                     }
@@ -95,4 +95,5 @@ public class UpdatingJobsService {
         scheduledInstanceRepository.saveAll(scheduledInstances);
         return true;
     }
+
 }
