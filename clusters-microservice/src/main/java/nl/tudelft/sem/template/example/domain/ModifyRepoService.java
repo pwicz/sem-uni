@@ -38,20 +38,15 @@ public class ModifyRepoService extends ModifyRepoHelper {
      * @param tokenOfAccess token of access
      * @param faculties faculties of the user
      */
-    public String disableNodeFromRepo(String tokenOfAccess, List<String> faculties) {
-        if (tokenOfAccess == null) {
-            System.out.println("No token provided");
-            return null;
-        }
+    public String disableNodeFromRepo(String tokenOfAccess, List<String> faculties) throws ObjectIsNullException {
+        checkIfObjectIsNull(tokenOfAccess);
         if (repo.getNodeByToken(tokenOfAccess).isEmpty()) {
             System.out.println("There are no nodes that can be accessed with this token");
             return null;
-        }
-        if (!faculties.contains(repo.getNodeByToken(tokenOfAccess).get().getFaculty())) {
+        } else if (!faculties.contains(repo.getNodeByToken(tokenOfAccess).get().getFaculty())) {
             System.out.println("Faculties don't match");
             return null;
         }
-
         repo.setAsDeleted(tokenOfAccess, LocalDate.now().plusDays(1L));
         Node n = repo.getNodeByToken(tokenOfAccess).get();
 

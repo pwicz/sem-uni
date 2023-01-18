@@ -2,6 +2,8 @@ package nl.tudelft.sem.template.example.domain;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 import nl.tudelft.sem.template.example.exceptions.InvalidDateException;
 import nl.tudelft.sem.template.example.exceptions.InvalidFacultyException;
 import nl.tudelft.sem.template.example.exceptions.InvalidOwnerException;
@@ -18,33 +20,22 @@ public class ModifyRepoHelper {
      * @throws NullValueException if a node's name or url is null
      */
     public void checkNullValues(Node node) throws NullValueException {
-        check1(node);
-        check2(node);
-    }
-
-    /**
-     * A method that checks whether a node's fields are null.
-     *
-     * @param node the node under consideration
-     * @throws NullValueException if a node's name or url is null
-     */
-    public void check1(Node node) throws NullValueException {
-        if (node.getName() == null || node.getUrl() == null) {
+        if (Stream.of(node.getName(), node.getUrl(), node.getFaculty(), node.getToken())
+                .anyMatch(Objects::isNull)) {
             System.out.println("Value is null");
             throw new NullValueException();
         }
     }
 
     /**
-     * A method that checks whether a node's fields are null.
+     * Checks is a object is null.
      *
-     * @param node the node under consideration
-     * @throws NullValueException if a node's name or url is null
+     * @param o the object to be checked
+     * @throws ObjectIsNullException throws an exception when a node is null
      */
-    public void check2(Node node) throws NullValueException {
-        if (node.getFaculty() == null || node.getToken() == null) {
-            System.out.println("Value is null");
-            throw new NullValueException();
+    public void checkIfObjectIsNull(Object o) throws ObjectIsNullException {
+        if (o == null) {
+            throw new ObjectIsNullException();
         }
     }
 

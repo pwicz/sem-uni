@@ -70,18 +70,6 @@ public class NodeController extends CheckHelper {
     }
 
     /**
-     * Test to see what role you currently are.
-     */
-    @GetMapping(path = {"/role"})
-    public ResponseEntity<String> userRole() {
-        if (authManager.getRole() == null) {
-            System.out.println("user has null role");
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(authManager.getRole().toString());
-    }
-
-    /**
      * Gets the number of free resources available for faculty and day.
      * Only allowed to access if you belong to the faculty.
      *
@@ -129,10 +117,8 @@ public class NodeController extends CheckHelper {
      * @param token token of access
      */
     @PostMapping("/delete")
-    public ResponseEntity<String> deleteNode(@RequestBody ToaRequestModel token) {
-        if (token == null) {
-            return new ResponseEntity<>("No token of access provided", HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<String> deleteNode(@RequestBody ToaRequestModel token) throws ObjectIsNullException {
+        checkIfObjectIsNull(token);
         List<String> faculties = getFaculty(authManager);
         String response = modifyRepoService.disableNodeFromRepo(token.getToken(), faculties);
         if (response == null) {
