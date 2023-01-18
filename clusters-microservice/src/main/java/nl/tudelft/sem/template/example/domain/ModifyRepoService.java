@@ -5,7 +5,6 @@ import commons.Resource;
 import java.time.LocalDate;
 import java.util.List;
 import nl.tudelft.sem.template.example.controllers.NodeUtil;
-import nl.tudelft.sem.template.example.exceptions.ObjectIsNullException;
 import nl.tudelft.sem.template.example.exceptions.InvalidDateException;
 import nl.tudelft.sem.template.example.exceptions.InvalidFacultyException;
 import nl.tudelft.sem.template.example.exceptions.InvalidOwnerException;
