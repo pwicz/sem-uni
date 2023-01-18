@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
+import nl.tudelft.sem.template.example.exceptions.InvalidDateException;
+import nl.tudelft.sem.template.example.exceptions.InvalidFacultyException;
+import nl.tudelft.sem.template.example.exceptions.InvalidPeriodException;
+import nl.tudelft.sem.template.example.exceptions.NullValueException;
 import nl.tudelft.sem.template.example.exceptions.ObjectIsNullException;
 import nl.tudelft.sem.template.example.models.ReleaseFacultyModel;
 import org.springframework.http.HttpStatus;
@@ -96,7 +100,9 @@ public class CheckHelper {
      * @return the response of the modifyRepoService
      */
     public ResponseEntity<String> releaseFacultyHelper(AuthManager authManager,
-                                               ModifyRepoService modifyRepoService, ReleaseFacultyModel releaseModel) {
+                                               ModifyRepoService modifyRepoService, ReleaseFacultyModel releaseModel)
+            throws InvalidDateException, InvalidFacultyException, InvalidPeriodException, NullValueException,
+            ObjectIsNullException {
         if (authManager.getRole().getRoleValue() != RoleValue.FAC_ACC) {
             System.out.println("Account is not faculty account. Current: " + getFaculty(authManager));
             return ResponseEntity.badRequest().build();
