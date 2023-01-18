@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import nl.tudelft.sem.template.example.exceptions.InvalidDateException;
 import nl.tudelft.sem.template.example.exceptions.InvalidFacultyException;
 import nl.tudelft.sem.template.example.exceptions.InvalidOwnerException;
