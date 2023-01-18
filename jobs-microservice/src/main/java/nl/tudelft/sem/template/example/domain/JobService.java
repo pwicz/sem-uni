@@ -28,14 +28,7 @@ import org.springframework.web.client.RestTemplate;
  */
 
 @Service
-public class JobService {
-    private final transient JobRepository jobRepository;
-    private final transient RestTemplate restTemplate;
-    private static final String nullValue = "null";
-
-    private final transient String schedulerUrl = "http://localhost:8084";
-    private final transient String url = "http://localhost:8083";
-
+public class JobService extends JobServiceBasic {
     /**
      * Instantiates a new JobService.
      *
@@ -43,132 +36,9 @@ public class JobService {
      * @param restTemplate                the template to make REST API calls
      */
     public JobService(JobRepository jobRepository, RestTemplate restTemplate) {
-        this.jobRepository = jobRepository;
-        this.restTemplate = restTemplate;
+        super(jobRepository, restTemplate);
     }
 
-    /**
-     * Makes a POST request to the Scheduler, to schedule Jobs.
-     *
-     * @param scheduleJob the Job object to be scheduled
-     * @return the response message of the Scheduler
-     * @throws InvalidScheduleJobException if scheduleJob is null
-     */
-    public String scheduleJob(ScheduleJob scheduleJob) throws InvalidScheduleJobException, ResponseEntityException {
-        if (scheduleJob == null) {
-            throw new InvalidScheduleJobException(null);
-        }
-
-        ResponseEntity<String> response = restTemplate
-                .postForEntity(schedulerUrl + "/schedule", scheduleJob, String.class);
-
-        if (response.getBody() == null) {
-            throw new ResponseEntityException();
-        }
-        return response.getBody();
-    }
-
-    /**
-     * Makes a POST request to the Scheduler to unschedule Jobs.
-     *
-     * @param jobId - the id of the job to be unscheduled
-     * @return the response message of the scheduler
-     * @throws ResponseEntityException - exception that handles empty response from the Scheduler
-     */
-    public String unscheduleJob(JobIdRequestModel jobId) throws ResponseEntityException {
-        ResponseEntity<String> response = restTemplate
-                .postForEntity(schedulerUrl + "/unschedule", jobId, String.class);
-
-        if (response.getBody() == null) {
-            throw new ResponseEntityException();
-        }
-        return response.getBody();
-    }
-
-    /**
-     * Create a new job.
-     *
-     * @param netId NetId of the job creator
-     * @param authNetId NetId of the authenticated user
-     * @param cpuUsage CPU usage
-     * @param gpuUsage GPU usage
-     * @param memoryUsage memory usage
-     * @return a new Job
-     * @throws Exception if the resources of NetId are invalid
-     */
-
-    public Job createJob(NetId netId, NetId authNetId, Faculty faculty, String desc, int cpuUsage, int gpuUsage,
-                         int memoryUsage, RoleValue role, LocalDate preferredDate) throws Exception {
-        if (cpuUsage < 0 || gpuUsage < 0 || memoryUsage < 0) {
-            throw new InvalidResourcesException(Math.min(cpuUsage, Math.min(gpuUsage, memoryUsage)));
-        }
-        if (cpuUsage < Math.max(gpuUsage, memoryUsage)) {
-            String resource = gpuUsage > memoryUsage ? "GPU" : "Memory";
-            throw new ResourceBiggerThanCpuException(resource);
-        }
-        if (netId == null) {
-            throw new InvalidNetIdException(nullValue);
-        }
-        if (!netId.toString().equals(authNetId.toString())) {
-            throw new InvalidNetIdException(netId.toString());
-        }
-        if (role != RoleValue.EMPLOYEE) {
-            throw new BadCredentialsException(role.toString());
-        }
-
-        Job newJob = new Job(netId, faculty, desc, cpuUsage, gpuUsage, memoryUsage, preferredDate);
-        jobRepository.save(newJob);
-
-        return newJob;
-    }
-
-    /**
-     * Create a new job.
-     *
-     * @param authNetId NetId of the authenticated user
-     * @param job a job
-     * @param role a role of a user who creates a job
-     * @return a new Job
-     * @throws Exception if the resources of NetId are invalid
-     */
-    public Job createJob(NetId authNetId, Job job, RoleValue role) throws Exception {
-        if (job.getCpuUsage() < 0 || job.getGpuUsage() < 0 || job.getMemoryUsage() < 0) {
-            throw new InvalidResourcesException(Math.min(job.getCpuUsage(),
-                    Math.min(job.getGpuUsage(), job.getMemoryUsage())));
-        }
-        if (job.getNetId() == null) {
-            throw new InvalidNetIdException(nullValue);
-        }
-        if (!job.getNetId().toString().equals(authNetId.toString())) {
-            throw new InvalidNetIdException(job.getNetId().toString());
-        }
-        if (role != RoleValue.EMPLOYEE) {
-            throw new BadCredentialsException(role.toString());
-        }
-
-        jobRepository.save(job);
-
-        return job;
-    }
-
-    /**
-     * Remove a job from the database.
-     *
-     * @param id the unique id of the Job.
-     * @throws Exception if there is no Job with the provided id.
-     */
-    public void deleteJob(String netId, RoleValue role, long id) throws Exception {
-        if (!jobRepository.existsById(id)) {
-            throw new InvalidIdException(id);
-        }
-
-        if (role == RoleValue.ADMIN || ((role == RoleValue.EMPLOYEE)
-            && netId.equals(jobRepository.getOne(id).getNetId().toString()))) {
-            jobRepository.deleteById(id);
-        } else {
-            throw new BadCredentialsException("Not admin or not your job");
-        }
-    }
 
     /**
      * Collect all the jobs in the database created by a specific user.
@@ -179,9 +49,7 @@ public class JobService {
      * @throws Exception if the NetId is invalid or there is no associated Job to the NetId
      */
     public List<Job> collectJobsByNetId(NetId netId, NetId authNetId) throws Exception {
-        if (netId == null) {
-            throw new InvalidNetIdException(nullValue);
-        }
+        checkNetIdNull(netId);
         Optional<List<Job>> jobs = jobRepository.findAllByNetId(netId);
         if (jobs.isEmpty() || !netId.toString().equals(authNetId.toString())) {
             throw new InvalidNetIdException(netId.toString());
@@ -199,14 +67,11 @@ public class JobService {
      * @throws Exception if the NetId is invalid or the NetId does not have permission to access the requested job.
      */
     public Status getJobStatus(NetId netId, NetId authNetId, long jobId) throws Exception {
-        if (netId == null) {
-            throw new InvalidNetIdException(nullValue);
-        }
+        checkNetIdNull(netId);
 
         Optional<Job> job = jobRepository.findById(jobId);
-        if (job.isEmpty()) {
-            throw new InvalidIdException(jobId);
-        }
+        checkJobEmpty(job, jobId);
+
         if (!netId.toString().equals(authNetId.toString()) || !job.get().getNetId().toString().equals(netId.toString())) {
             throw new InvalidNetIdException(netId.toString());
         }
@@ -223,15 +88,10 @@ public class JobService {
      * @throws Exception if the NetId is invalid or the creator of the request does not have the admin role.
      */
     public List<Job> getAllJobs(NetId netId, NetId authNetId, RoleValue role) throws Exception {
-        if (netId == null) {
-            throw new InvalidNetIdException(nullValue);
-        }
-        if (!netId.toString().equals(authNetId.toString())) {
-            throw new InvalidNetIdException(netId.toString());
-        }
-        if (role != RoleValue.ADMIN) {
-            throw new BadCredentialsException(role.toString());
-        }
+        checkNetIdNull(netId);
+        checkNetIdAuth(netId, authNetId);
+        checkIsAdmin(role);
+
         return jobRepository.findAll();
     }
 
@@ -246,15 +106,10 @@ public class JobService {
      * @throws Exception if the NetId is invalid or the creator of the request does not have the admin role.
      */
     public List<Job> getAllScheduledJobs(NetId netId, NetId authNetId, RoleValue role) throws Exception {
-        if (netId == null) {
-            throw new InvalidNetIdException(nullValue);
-        }
-        if (!netId.toString().equals(authNetId.toString())) {
-            throw new InvalidNetIdException(netId.toString());
-        }
-        if (role != RoleValue.ADMIN) {
-            throw new BadCredentialsException(role.toString());
-        }
+        checkNetIdNull(netId);
+        checkNetIdAuth(netId, authNetId);
+        checkIsAdmin(role);
+
         List<Job> jobs = new ArrayList<>();
         List<Job> all = jobRepository.findAll();
         for (Job j : all) {
@@ -265,25 +120,6 @@ public class JobService {
         }
 
         return jobs;
-    }
-
-    /**
-     * Update information about the Job specified by a microservice.
-     *
-     * @param id id of the Job
-     * @param status the new status of the Job
-     * @param localDate the time the Job is scheduled to start
-     * @throws Exception if the id does not exist in the database
-     */
-    public void updateJob(long id, Status status, LocalDate localDate) throws Exception {
-        Optional<Job> jobOptional = jobRepository.findById(id);
-        if (jobOptional.isEmpty()) {
-            throw new InvalidIdException(id);
-        }
-        Job job = jobOptional.get();
-        job.setStatus(status);
-        job.setPreferredDate(localDate);
-        jobRepository.save(job);
     }
 
     /**
