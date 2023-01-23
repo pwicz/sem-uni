@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.example.controllers;
 
 import commons.Resource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,10 +40,11 @@ public class NodeUtil {
      */
 
     public static List<Resource> resourceCreatorForDifferentClusters(List<Node> nodes) {
-        List<Resource> answer = new ArrayList<>();
         if (nodes == null) {
-            return answer;
+            return Collections.emptyList();
         }
+
+        List<Resource> answer = new ArrayList<>();
 
         Set<String> faculties = new HashSet<>();
         for (Node n : nodes) {
