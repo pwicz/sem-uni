@@ -88,7 +88,7 @@ public class Node implements Comparable {
             return null;
         }
         return new Node(name, node.getUrl(), node.getFaculty(), node.getToken(),
-                node.getCpu(), node.getGpu(), node.getMemory());
+            node.getCpu(), node.getGpu(), node.getMemory());
     }
 
     public long getId() {
