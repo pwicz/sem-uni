@@ -3,7 +3,6 @@ package nl.tudelft.sem.template.example.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import commons.FacultyResource;
-
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.Test;
