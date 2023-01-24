@@ -1,12 +1,11 @@
 package nl.tudelft.sem.template.example.domain;
 
-import exceptions.ResourceBiggerThanCpuException;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import nl.tudelft.sem.template.example.exceptions.NullValueException;
 import nl.tudelft.sem.template.example.exceptions.ResourceMismatchException;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ModifyRepoHelperTest {
 
@@ -17,21 +16,28 @@ class ModifyRepoHelperTest {
     }
 
     @Test
-    void checkNullValuesTest() throws NullValueException {
+    void checkNullValuesTest() {
         Node n = new Node("123", null, "Something", "Something", 10, 10, 10);
         assertThrows(NullValueException.class,
                 () -> modifyRepoHelper.checkNullValues(n));
     }
 
     @Test
-    void checkResources() throws ResourceMismatchException {
+    void checkResources() {
         Node n = new Node("123", null, "Something", "Something", 10, 10, 10);
         assertDoesNotThrow(() -> modifyRepoHelper.checkResources(n));
     }
 
     @Test
-    void checkResourcesThrows(){
+    void checkResourcesThrows() {
         Node n = new Node("123", null, "Something", "Something", 10, 12, 12);
+        assertThrows(ResourceMismatchException.class,
+                () -> modifyRepoHelper.checkResources(n));
+    }
+
+    @Test
+    void checkResourcesThrows_oneResourceIncorrect() {
+        Node n = new Node("123", null, "Something", "Something", 10, 12, 8);
         assertThrows(ResourceMismatchException.class,
                 () -> modifyRepoHelper.checkResources(n));
     }
