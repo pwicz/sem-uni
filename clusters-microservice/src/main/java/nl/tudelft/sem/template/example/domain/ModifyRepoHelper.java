@@ -11,7 +11,10 @@ import nl.tudelft.sem.template.example.exceptions.InvalidPeriodException;
 import nl.tudelft.sem.template.example.exceptions.NullValueException;
 import nl.tudelft.sem.template.example.exceptions.ObjectIsNullException;
 import nl.tudelft.sem.template.example.exceptions.ResourceMismatchException;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+@Component
 public class ModifyRepoHelper {
     /**
      * A method that checks whether a node's fields are null.
