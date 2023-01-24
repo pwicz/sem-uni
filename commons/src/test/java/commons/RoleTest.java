@@ -30,6 +30,14 @@ public class RoleTest {
         assertThat(role.getAuthority()).isEqualTo(RoleValue.EMPLOYEE.toString());
     }
 
+    @Test
+    public void getRoleValueTest() {
+        role = new Role(RoleValue.EMPLOYEE);
+        assertNotNull(role.getRoleValue());
+    }
+
+
+
 
     @Test
     public void getAuthorityTest() {
