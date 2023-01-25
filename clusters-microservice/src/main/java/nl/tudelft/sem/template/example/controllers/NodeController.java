@@ -99,6 +99,22 @@ public class NodeController extends CheckHelper {
     }
 
     /**
+     * Endpoint where you can add node; The node has to belong to the faculty you are in.
+     * The nodes resources has to match cpu >= gpu && cpu >= mem.
+     *
+     * @param node you want to add
+     */
+    @PostMapping(path = {"/addNodeMutant"})
+    public ResponseEntity<Node> addNodeMutant(@RequestBody Node node) throws ObjectIsNullException, NullValueException,
+        InvalidOwnerException, InvalidFacultyException, ResourceMismatchException {
+        List<String> faculties = getFaculty(authManager);
+        faculties.add("FreePool");
+        setNodeFaculty(node, authManager);
+        Node newNode = modifyRepoService.addNodeMutant(node, authManager.getNetId(), faculties);
+        return checkIfNodeIsNull(newNode);
+    }
+
+    /**
      * Endpoint to release nodes to the free pool.
      * Only faculty accounts are allowed to do this.
      * Only sets the date its released from and till

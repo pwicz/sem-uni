@@ -24,6 +24,7 @@ plugins {
 
 	// PITest
 	id 'info.solidsoft.pitest' version '1.5.2'
+
 }
 
 group = 'nl.tudelft.cse.sem.template'

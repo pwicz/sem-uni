@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.example.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -32,6 +33,7 @@ import nl.tudelft.sem.template.example.controllers.NodeController;
 import nl.tudelft.sem.template.example.domain.GetResourceService;
 import nl.tudelft.sem.template.example.domain.Node;
 import nl.tudelft.sem.template.example.domain.NodeRepository;
+import nl.tudelft.sem.template.example.exceptions.InvalidOwnerException;
 import nl.tudelft.sem.template.example.integration.utils.JsonUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -170,6 +172,54 @@ public class ClustersTest {
         assertThat(firstNode.getName()).isEqualTo(testUser.toString());
         assertThat(firstNode.getFaculty()).isEqualTo("EEMCS");
     }
+
+    @Test
+    public void addNodeTest_to_faculty_killsMutant() throws Exception {
+        // Arrange
+        final NetId testUser = new NetId("SomeMutantUser");
+        final Faculty faculty = new Faculty("EEMCS");
+
+        final Node node1 = new Node(testUser.toString(), "url", "EEMCS", "token", 10, 10, 10);
+
+        when(mockAuthManager.getRole()).thenReturn(new Role(RoleValue.EMPLOYEE));
+        when(mockAuthManager.getNetId()).thenReturn(new String("NotSameUser"));
+
+
+        assertThrows(Exception.class, () -> {
+            // mockMvc.perform(post("/cluster/addNodeMutant")
+            mockMvc.perform(post("/cluster/addNode")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.serialize(node1))
+                .header("Authorization", "Bearer MockedToken")
+            );
+        });
+    }
+
+    @Test
+    public void addNodeTest_to_faculty_testsMutant() throws Exception {
+        final NetId testUser = new NetId("SomeMutantUser");
+        final Faculty faculty = new Faculty("EEMCS");
+        final Node node1 = new Node(testUser.toString(), "url", "EEMCS", "token", 10, 10, 10);
+
+        when(mockAuthManager.getRole()).thenReturn(new Role(RoleValue.EMPLOYEE));
+        when(mockAuthManager.getNetId()).thenReturn(new String("NotSameUser"));
+
+        ResultActions resultActions = mockMvc.perform(post("/cluster/addNodeMutant")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(JsonUtil.serialize(node1))
+            .header("Authorization", "Bearer MockedToken")
+        );
+        resultActions.andExpect(status().isOk());
+
+        List<Node> savedNodes = nodeRepository.getAllNodes().orElseThrow();
+
+        assertThat(savedNodes.size()).isEqualTo(1);
+        Node firstNode = savedNodes.get(0);
+
+        assertThat(firstNode.getName()).isEqualTo(testUser.toString());
+        assertThat(firstNode.getFaculty()).isEqualTo("EEMCS");
+    }
+
 
     /**
      * Not yet working test to get all resources.
