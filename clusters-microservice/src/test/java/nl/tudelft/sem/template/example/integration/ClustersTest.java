@@ -1,6 +1,8 @@
 package nl.tudelft.sem.template.example.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -26,6 +28,7 @@ import java.util.List;
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.authentication.JwtTokenVerifier;
 import nl.tudelft.sem.template.example.controllers.NodeController;
+import nl.tudelft.sem.template.example.domain.GetResourceService;
 import nl.tudelft.sem.template.example.domain.Node;
 import nl.tudelft.sem.template.example.domain.NodeRepository;
 import nl.tudelft.sem.template.example.integration.utils.JsonUtil;
@@ -35,7 +38,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -54,6 +59,9 @@ public class ClustersTest {
 
     @Autowired
     private transient NodeController nodeController;
+
+    @Autowired
+    private transient GetResourceService getResourceService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -78,6 +86,30 @@ public class ClustersTest {
         when(mockAuthManager.getFaculty()).thenReturn(new Faculties("EEMCS"));
 
 
+    }
+
+    @Test
+    public void getResourcesIfAdmin() throws Exception {
+        nodeRepository.saveAll(List.of(new Node("XYZ", "XYZ", "EEMCS2", "XYZ", 10, 10, 10),
+                new Node("XYZ2", "XYZ2", "EEMCS2", "XYZ2", 15, 2, 5),
+                new Node("XYZ3", "XYZ3", "3ME", "XYZ3", 10, 10, 10)));
+        when(mockAuthManager.getRole()).thenReturn(new Role(RoleValue.ADMIN));
+
+        ResponseEntity<List<Node>> response = nodeController.getAllNodesHelper(mockAuthManager, getResourceService);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody().size() > 0);
+    }
+
+    @Test
+    public void getResourcesIfNotAdmin() throws Exception {
+        nodeRepository.saveAll(List.of(new Node("XYZ", "XYZ", "EEMCS2", "XYZ", 10, 10, 10),
+                new Node("XYZ2", "XYZ2", "EEMCS2", "XYZ2", 15, 2, 5),
+                new Node("XYZ3", "XYZ3", "3ME", "XYZ3", 10, 10, 10)));
+
+        when(mockAuthManager.getRole()).thenReturn(new Role(RoleValue.FAC_ACC));
+        ResponseEntity<List<Node>> response = nodeController.getAllNodesHelper(mockAuthManager, getResourceService);
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertNull(response.getBody());
     }
 
     @Test
