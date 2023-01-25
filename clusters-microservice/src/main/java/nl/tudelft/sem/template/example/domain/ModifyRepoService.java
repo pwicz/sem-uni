@@ -94,6 +94,7 @@ public class ModifyRepoService extends ModifyRepoHelper {
         return "Released from " + date + " to " + date.plusDays(days);
     }
 
+
     /**
      * Endpoint where you can add node. The node has to belong to the faculty you are in.
      * The nodes resources has to match cpu >= gpu || cpu >= mem
@@ -106,6 +107,22 @@ public class ModifyRepoService extends ModifyRepoHelper {
         checkNullValues(node);
         checkResources(node);
         checkNameAndId(node, netId);
+        facultyContained(node, faculties);
+        repo.save(node);
+        return node;
+    }
+
+    /**
+     * Endpoint where you can add node. The node has to belong to the faculty you are in.
+     * The nodes resources has to match cpu >= gpu || cpu >= mem
+     *
+     * @param node you want to add
+     */
+    @PostMapping(path = {"/addNodeMutant"})
+    public Node addNodeMutant(Node node, String netId, List<String> faculties) throws NullValueException,
+        ResourceMismatchException, InvalidOwnerException, InvalidFacultyException {
+        checkNullValues(node);
+        checkResources(node);
         facultyContained(node, faculties);
         repo.save(node);
         return node;
