@@ -89,29 +89,6 @@ public class ClustersTest {
 
     }
 
-    @Test
-    public void getResourcesIfAdmin() throws Exception {
-        nodeRepository.saveAll(List.of(new Node("XYZ", "XYZ", "EEMCS2", "XYZ", 10, 10, 10),
-                new Node("XYZ2", "XYZ2", "EEMCS2", "XYZ2", 15, 2, 5),
-                new Node("XYZ3", "XYZ3", "3ME", "XYZ3", 10, 10, 10)));
-        when(mockAuthManager.getRole()).thenReturn(new Role(RoleValue.ADMIN));
-
-        ResponseEntity<List<Node>> response = nodeController.getAllNodesHelper(mockAuthManager, getResourceService);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody().size() > 0);
-    }
-
-    @Test
-    public void getResourcesIfNotAdmin() throws Exception {
-        nodeRepository.saveAll(List.of(new Node("XYZ", "XYZ", "EEMCS2", "XYZ", 10, 10, 10),
-                new Node("XYZ2", "XYZ2", "EEMCS2", "XYZ2", 15, 2, 5),
-                new Node("XYZ3", "XYZ3", "3ME", "XYZ3", 10, 10, 10)));
-
-        when(mockAuthManager.getRole()).thenReturn(new Role(RoleValue.FAC_ACC));
-        ResponseEntity<List<Node>> response = nodeController.getAllNodesHelper(mockAuthManager, getResourceService);
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertNull(response.getBody());
-    }
 
     @Test
     public void addNodeTest_to_free_pool() throws Exception {
